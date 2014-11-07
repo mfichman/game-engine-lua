@@ -60,4 +60,4 @@ function Shader:log()
   end
 end
 
-return Shader
+return Shader.new

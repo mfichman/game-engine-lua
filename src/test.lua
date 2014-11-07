@@ -19,7 +19,7 @@ settings.minorVersion = 2
 
 local window = sfml.Window(mode, "test", sfml.DefaultStyle, settings)
 
-local p = graphics.Program.new('foo')
+local p = graphics.Program('foo')
 print(p:log())
 
 --[[

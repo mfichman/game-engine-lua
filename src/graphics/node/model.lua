@@ -29,4 +29,4 @@ function Model.new()
   return self
 end
 
-return Model
+return Model.new

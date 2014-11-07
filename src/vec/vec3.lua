@@ -34,8 +34,11 @@ ffi.cdef[[
 ]]
 
 local Vec3 = {}; Vec3.__index = Vec3
+local Vec3Type = ffi.typeof('struct vec_Vec3')
 
-Vec3.new = ffi.typeof('struct vec_Vec3')
+function Vec3.new(...)
+  return Vec3Type(...)
+end
 
 function Vec3:dot(other)
   return self.x*other.x + self.y*other.y + self.z*other.z
@@ -69,5 +72,6 @@ function Vec3:unit()
   return Vec3.new(self.x/norm, self.y/norm, self.z/norm)
 end
 
-return ffi.metatype(Vec3.new, Vec3)
+ffi.metatype(Vec3Type, Vec3)
+return Vec3.new
 

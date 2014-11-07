@@ -76,4 +76,4 @@ function Program:link()
   end
 end
 
-return Program
+return Program.new

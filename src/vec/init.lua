@@ -28,6 +28,6 @@ return {
   Vec2=require('vec.vec2'),
   Vec3=require('vec.vec3'),
   Vec4=require('vec.vec4'),
-  Mat4=require('vec.mat4'),
+  Mat4x4=require('vec.mat4x4'),
 }
 

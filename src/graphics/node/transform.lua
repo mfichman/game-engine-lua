@@ -44,4 +44,4 @@ function Transform:componentDel(comp)
   end
 end
 
-return Transform
+return Transform.new

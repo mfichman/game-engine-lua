@@ -19,17 +19,42 @@
 -- IN THE SOFTWARE.
 
 local ffi = require('ffi')
+local math = require('math')
 
 ffi.cdef[[
-  typedef float vec_Scalar;
+  struct vec_Quat {
+    union {
+      struct {
+        union { vec_Scalar w; };
+        union { vec_Scalar x; };
+        union { vec_Scalar y; };
+        union { vec_Scalar z; };
+      };
+      vec_Scalar data[4];
+    };
+  };
 ]]
 
-return {
-  Vec2=require('vec.vec2'),
-  Vec3=require('vec.vec3'),
-  Vec4=require('vec.vec4'),
-  Mat4=require('vec.mat4x4'),
-  Mat4x4=require('vec.mat4x4'),
-  Quat=require('vec.quat'),
-}
+local Quat = {}; Quat.__index = Quat
+local QuatType = ffi.typeof('struct vec_Quat')
+
+function Quat.new(...)
+  return QuatType(...)
+end
+
+function Quat:len(other)
+  return math.sqrt(self:len2())
+end
+
+function Quat:len2(other)
+  return self:dot(self)
+end
+
+function Quat:unit()
+  local norm = self:len()
+  return Quat.new(self.x/norm, self.y/norm, self.z/norm, self.w/norm)
+end
+
+ffi.metatype(QuatType, Quat)
+return Quat.new
 

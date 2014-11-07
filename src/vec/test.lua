@@ -97,3 +97,20 @@ assert(v3.y == 4)
 assert(v3.data[0] == 2)
 assert(v3.data[1] == 4)
 assert(ffi.sizeof(v3) == ffi.sizeof('vec_Scalar')*2)
+
+local m = vec.Mat4.frustum(-10, 10, -10, 10, -10, 10)
+local m = vec.Mat4.perspective(90, 1, 1, 100)
+local m = vec.Mat4.look(vec.Vec3(10, 9, 8), vec.Vec3(1, 2, 3), vec.Vec3(0, 1, 0))
+local m = vec.Mat4.ortho(-10, 100, -10, 10, -10, 10)
+local m = vec.Mat4.identity()
+local m = vec.Mat4.translate(vec.Vec3(1, 2, 3))
+local m = vec.Mat4.scale(1, 2, 3)
+local m = vec.Mat4.rotate(vec.Quat(1, 2, 3, 8))
+local m = vec.Mat4.perspective(90, 1, 1, 100):inverse()
+
+local a = vec.Mat4.translate(vec.Vec3(1, 2, 3))
+local b = vec.Mat4.perspective(90, 1, 1, 100)
+local m = a * b
+print(m)
+
+

@@ -44,6 +44,13 @@ function Vec3:dot(other)
   return self.x*other.x + self.y*other.y + self.z*other.z
 end
 
+function Vec3:cross(other)
+  return Vec3.new(
+    self.y*other.z - self.z*other.y,
+    self.z*other.x - self.x*other.z,
+    self.x*other.y - self.y*other.x)
+end
+
 function Vec3:__add(other)
   return Vec3.new(self.x+other.x, self.y+other.y, self.z+other.z)
 end

@@ -25,26 +25,21 @@ local io = require('io')
 local Shader = {}; Shader.__index = Shader
 
 -- Create a new OpenGL shader 
-function Shader.new(name, kind)
+function Shader.new(kind, source)
   local self = setmetatable({}, Shader)
-  self.name = name
   self.id = gl.glCreateShader(kind)
+  self.source = source
   self:compile()
   return self
 end
 
 -- Compile the shader
 function Shader:compile()
-  local fd = io.open(self.name)
-  if not fd then error('file not found: '..self.name) end
-
-  local source = fd:read('*all')
-  fd:close()
-  cstr = ffi.new('char[?]', source:len()+1)
-  ffi.copy(cstr, source)
+  cstr = ffi.new('char[?]', self.source:len()+1)
+  ffi.copy(cstr, self.source)
 
   local strings = ffi.new('GLchar*[1]', cstr) 
-  local lengths = ffi.new('GLint[1]', source:len())
+  local lengths = ffi.new('GLint[1]', self.source:len())
   gl.glShaderSource(self.id, 1, strings, lengths)
   gl.glCompileShader(self.id)
 end
@@ -59,5 +54,12 @@ function Shader:log()
     return ffi.string(log)     
   end
 end
+
+-- Free up the shader's resources
+function Shader:del()
+  gl.glDeleteShader(self.id)
+end
+
+Shader.__gc = Shader.del
 
 return Shader.new

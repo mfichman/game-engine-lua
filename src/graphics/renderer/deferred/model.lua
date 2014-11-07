@@ -23,9 +23,8 @@
 local ffi = require('ffi')
 local gl = require('gl')
 local graphics = require('graphics')
-local assets = require('graphics.assets')
-local program = assets.assetIs(graphics.Program, 'shaders/model')
-
+local asset = require('asset')
+local program = asset.open('shaders/model')
 
 -- Render a mesh, using the current bindings for the material and texture
 local function mesh(g, mesh)
@@ -61,9 +60,9 @@ end
 
 -- Pass the texture data to the shader
 local function texture(g, texture)
-  if texture then
-    gl.glBindTexture(gl.GL_TEXTURE_2D, texture.id) 
-  end
+  if not texture then return end
+  texture:sync()
+  gl.glBindTexture(gl.GL_TEXTURE_2D, texture.id) 
 end
 
 -- Pass the material data to the shader

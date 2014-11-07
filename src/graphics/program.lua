@@ -26,22 +26,12 @@ local Program = {}; Program.__index = Program
 
 -- Create a new OpenGL program from a vertex, fragment, and optional geometry
 -- shader; link the program
-function Program.new(name) 
+function Program.new(fragment, vertex, geometry) 
   local self = setmetatable({}, Program)
   self.id = gl.glCreateProgram()
-  self.name = name
-
-  ok, shader = pcall(graphics.Shader.new, name..'.frag', gl.GL_FRAGMENT_SHADER)
-  if ok then self.fragment = shader end
-  ok, shader = pcall(graphics.Shader.new, name..'.vert', gl.GL_VERTEX_SHADER)
-  if ok then self.vertex = shader end
-  ok, shader = pcall(graphics.Shader.new, name..'.geom', gl.GL_GEOMETRY_SHADER)
-  if ok then self.geometry = shader end
-
-  if #{self.fragment, self.geometry, self.vertex} == 0 then
-    error('program not found')
-  end
-
+  self.fragment = fragment
+  self.vertex = vertex
+  self.geometry = geometry
   self:link()
   return self
 end
@@ -75,5 +65,13 @@ function Program:link()
     error("error: link failed")
   end
 end
+
+-- Free up the program's resources
+function Program:del()
+  gl.glDeleteProgram(self.id)
+end
+
+-- Free up the program's resources
+Program.__gc = Program.del
 
 return Program.new

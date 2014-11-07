@@ -18,30 +18,23 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local ffi = require('ffi')
+local sfml = require('sfml')
 
-ffi.cdef(io.open('gl/gl.h'):read('*all'))
-ffi.cdef(io.open('gl/glenum.h'):read('*all'))
-
--- Look up the OpenGL function in the current executable first. If it's not
--- found, then look in libglew instead for the glew binding.
-local function index(t, k)
-    local ok, fn = pcall(function()
-        return ffi.C[k]
-    end)
-    if ok then
-        return fn
-    else
-        local name = k:gsub('^gl', '__glew')
-        return gl[name]
-    end
+local function create()
+  local mode = sfml.VideoMode()
+  mode.bitsPerPixel = 32
+  mode.width = 100
+  mode.height = 100
+  
+  local settings = sfml.ContextSettings()
+  settings.depthBits = 24
+  settings.stencilBits = 0
+  settings.majorVersion = 3
+  settings.minorVersion = 2
+  
+  return sfml.Window(mode, "test", sfml.DefaultStyle, settings)
 end
 
---local glew = ffi.load('glew')
---local m = {}
---m.glewInit = glew.glewInit()
---ffi.cdef[[
---  int glewInit(void);
---]]
-
-return setmetatable({}, {__index=index})
+return {
+  create=create
+}

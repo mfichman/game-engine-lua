@@ -19,29 +19,38 @@
 -- IN THE SOFTWARE.
 
 local ffi = require('ffi')
+local gl = require('gl')
 
-ffi.cdef(io.open('gl/gl.h'):read('*all'))
-ffi.cdef(io.open('gl/glenum.h'):read('*all'))
+local Texture = {}; Texture.__index = Texture
 
--- Look up the OpenGL function in the current executable first. If it's not
--- found, then look in libglew instead for the glew binding.
-local function index(t, k)
-    local ok, fn = pcall(function()
-        return ffi.C[k]
-    end)
-    if ok then
-        return fn
-    else
-        local name = k:gsub('^gl', '__glew')
-        return gl[name]
-    end
+-- Create a new texture with the given texture data
+function Texture.new(width, height, pixel)
+  local self = setmetatable({}, Texture)
+  self.width = width
+  self.height = height
+
+  local pixel = ffi.cast('void*', pixel)
+  local id = ffi.new('int[1]')
+  gl.glGenTextures(1, id)
+  self.id = id[0]
+
+  gl.glBindTexture(gl.GL_TEXTURE_2D, self.id)
+  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR_MIPMAP_LINEAR);
+  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR);
+  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE);
+  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_EDGE);
+  gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA8, width, height, 0, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, pixel)
+  gl.glGenerateMipmap(gl.GL_TEXTURE_2D)
+
+  return self
 end
 
---local glew = ffi.load('glew')
---local m = {}
---m.glewInit = glew.glewInit()
---ffi.cdef[[
---  int glewInit(void);
---]]
+-- Free the buffer and release the hardware handle
+function Texture:del()
+  local id = ffi.new('int[1]', self.id) 
+  gl.glDeleteTextures(1, id)
+end
 
-return setmetatable({}, {__index=index})
+Texture.__gc = Texture.del
+
+return Texture.new

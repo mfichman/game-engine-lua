@@ -18,30 +18,29 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local ffi = require('ffi')
+local loaders = {
+  ['^.+%.png']=require('asset.texture'),
+  ['^.+%.jpg']=require('asset.texture'),
+  ['^.+%.gif']=require('asset.texture'),
+  ['^.+%.obj']=require('asset.mesh.obj'),
+}
 
-ffi.cdef(io.open('gl/gl.h'):read('*all'))
-ffi.cdef(io.open('gl/glenum.h'):read('*all'))
+local loaded = {}
 
--- Look up the OpenGL function in the current executable first. If it's not
--- found, then look in libglew instead for the glew binding.
-local function index(t, k)
-    local ok, fn = pcall(function()
-        return ffi.C[k]
-    end)
-    if ok then
-        return fn
-    else
-        local name = k:gsub('^gl', '__glew')
-        return gl[name]
+local function open(k)
+  if loaded[k] then return loaded[k] end
+  for pattern, loader in pairs(loaders) do
+    if k:match(pattern) then
+      local asset = loader.open(k)
+      loaded[k] = asset
+      return asset
     end
+  end
+  error('no loader found for '..k)
 end
 
---local glew = ffi.load('glew')
---local m = {}
---m.glewInit = glew.glewInit()
---ffi.cdef[[
---  int glewInit(void);
---]]
+return {
+  open=open,
+  texture=require('asset.texture'),
+}
 
-return setmetatable({}, {__index=index})

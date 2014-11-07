@@ -25,4 +25,8 @@ local function index(t, k)
   return require(string.format('graphics.%s', k:lower()))
 end
 
-return setmetatable({}, {__index=index})
+local m = {
+  window=require('graphics.window')
+}
+
+return setmetatable(m, {__index=index})

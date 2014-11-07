@@ -6,21 +6,11 @@ local gl = require('gl')
 local sfml = require('sfml')
 local os = require('os')
 
-local mode = sfml.VideoMode()
-mode.bitsPerPixel = 32
-mode.width = 100
-mode.height = 100
 
-local settings = sfml.ContextSettings()
-settings.depthBits = 24
-settings.stencilBits = 0
-settings.majorVersion = 3
-settings.minorVersion = 2
-
-local window = sfml.Window(mode, "test", sfml.DefaultStyle, settings)
-
-local p = graphics.Program('foo')
-print(p:log())
+graphics.window.create()
+--local b = graphics.Buffer('int')
+--local p = graphics.Program('foo')
+--print(p:log())
 
 --[[
 while true do

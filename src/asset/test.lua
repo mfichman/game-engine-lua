@@ -18,30 +18,19 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local ffi = require('ffi')
 
-ffi.cdef(io.open('gl/gl.h'):read('*all'))
-ffi.cdef(io.open('gl/glenum.h'):read('*all'))
+local graphics = require('graphics')
+local sfml = require('sfml')
+local asset = require('asset')
 
--- Look up the OpenGL function in the current executable first. If it's not
--- found, then look in libglew instead for the glew binding.
-local function index(t, k)
-    local ok, fn = pcall(function()
-        return ffi.C[k]
-    end)
-    if ok then
-        return fn
-    else
-        local name = k:gsub('^gl', '__glew')
-        return gl[name]
-    end
-end
+local settings = sfml.ContextSettings()
+settings.depthBits = 24
+settings.stencilBits = 0
+settings.majorVersion = 3
+settings.minorVersion = 2
+local context = sfml.Context()
 
---local glew = ffi.load('glew')
---local m = {}
---m.glewInit = glew.glewInit()
---ffi.cdef[[
---  int glewInit(void);
---]]
+local t = asset.open('foo.png')
+local t = asset.open('foo.png')
 
-return setmetatable({}, {__index=index})
+

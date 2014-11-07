@@ -18,30 +18,42 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
+local graphics = require('graphics')
+local gl = require('gl')
+local sfml = require('sfml')
 local ffi = require('ffi')
 
-ffi.cdef(io.open('gl/gl.h'):read('*all'))
-ffi.cdef(io.open('gl/glenum.h'):read('*all'))
+local settings = sfml.ContextSettings()
+settings.depthBits = 24
+settings.stencilBits = 0
+settings.majorVersion = 3
+settings.minorVersion = 2
+local context = sfml.Context()
 
--- Look up the OpenGL function in the current executable first. If it's not
--- found, then look in libglew instead for the glew binding.
-local function index(t, k)
-    local ok, fn = pcall(function()
-        return ffi.C[k]
-    end)
-    if ok then
-        return fn
-    else
-        local name = k:gsub('^gl', '__glew')
-        return gl[name]
-    end
-end
+-- Buffer
+local b = graphics.Buffer(gl.GL_ARRAY_BUFFER, gl.GL_STATIC_DRAW, 'int')
+assert(b.count == 0)
+b[10] = 10
+assert(b[10] == 10)
+assert(b.capacity == 32)
+assert(b.count == 11)
+b:push(99)
+assert(b[11] == 99)
+assert(b.capacity == 32)
+assert(b.count == 12)
+b:sync()
+b:clear()
+assert(b.count == 0)
+b:del()
 
---local glew = ffi.load('glew')
---local m = {}
---m.glewInit = glew.glewInit()
---ffi.cdef[[
---  int glewInit(void);
---]]
+-- Texture
+local t = graphics.Texture(8, 8, ffi.new('int32_t[64]'))
+assert(t.id ~= 0)
+t:del()
 
-return setmetatable({}, {__index=index})
+-- Program
+local f = graphics.Shader(gl.GL_FRAGMENT_SHADER, '#version 330\nvoid main() {}')
+local v = graphics.Shader(gl.GL_VERTEX_SHADER, '#version 330\nvoid main() {}')
+local g = graphics.Shader(gl.GL_GEOMETRY_SHADER, '#version 330\nvoid main() {}')
+local p = graphics.Program(f, v, nil)
+

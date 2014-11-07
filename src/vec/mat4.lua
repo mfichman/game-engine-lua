@@ -18,16 +18,4 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local ffi = require('ffi')
-
-ffi.cdef[[
-  typedef float vec_Scalar;
-]]
-
--- Automatically look up any component that is referenced in the graphics.*
--- table (for convenience)
-local function index(t, k)
-  return require(string.format('vec.%s', k:lower()))
-end
-
-return setmetatable({}, {__index=index})
+return require('vec.mat4x4')

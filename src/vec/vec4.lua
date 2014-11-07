@@ -74,6 +74,10 @@ function Vec4:unit()
   return Vec4.new(self.x/norm, self.y/norm, self.z/norm, self.w/norm)
 end
 
+function Vec4:__tostring()
+  return string.format('%f, %f, %f, %f', self.x, self.y, self.z, self.w)
+end
+
 ffi.metatype(Vec4Type, Vec4)
 return Vec4.new
 

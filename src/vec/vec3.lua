@@ -79,6 +79,10 @@ function Vec3:unit()
   return Vec3.new(self.x/norm, self.y/norm, self.z/norm)
 end
 
+function Vec3:__tostring()
+  return string.format('%f, %f, %f', self.x, self.y, self.z)
+end
+
 ffi.metatype(Vec3Type, Vec3)
 return Vec3.new
 

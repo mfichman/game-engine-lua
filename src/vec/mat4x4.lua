@@ -18,6 +18,7 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
+local vec = require('vec')
 local ffi = require('ffi')
 local math = require('math')
 
@@ -208,7 +209,7 @@ function Mat4x4:__tostring()
   return table.concat(buf)
 end
 
-function Mat4x4:__mul(other)
+local function mulmat4x4(self, other)
   local out = Mat4x4.new()
   local data = out.data
 
@@ -236,6 +237,35 @@ function Mat4x4:__mul(other)
   data[15] = m1[12]*m2[3] + m1[13]*m2[7] + m1[14]*m2[11] + m1[15]*m2[15];
 
   return out
+end
+
+local function mulvec4(self, v)
+  local m = self.data
+  return vec.Vec4(
+    m[0]*v.x + m[4]*v.y + m[8]*v.z + m[12]*v.w,
+    m[1]*v.x + m[5]*v.y + m[9]*v.z + m[13]*v.w,
+    m[2]*v.x + m[6]*v.y + m[10]*v.z + m[14]*v.w,
+    m[3]*v.x + m[7]*v.y + m[11]*v.z + m[15]*v.w)
+end
+
+local function mulvec3(self, v)
+    local m = self.data
+    local invw = 1 / (m[3]*v.x + m[7]*v.y + m[11]*v.z + m[15]);
+    
+    return vec.Vec3(
+      (m[0]*v.x + m[4]*v.y + m[8]*v.z + m[12])*invw,
+      (m[1]*v.x + m[5]*v.y + m[9]*v.z + m[13])*invw,
+      (m[2]*v.x + m[6]*v.y + m[10]*v.z + m[14])*invw)
+end
+
+function Mat4x4:__mul(other)
+  if other.new == Mat4x4.new then
+    return mulmat4x4(self, other)
+  elseif other.new == vec.Vec4 then
+    return mulvec4(self, other)
+  elseif other.new == vec.Vec3 then
+    return mulvec3(self, other)
+  end
 end
 
 ffi.metatype(Mat4x4Type, Mat4x4)

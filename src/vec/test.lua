@@ -113,4 +113,7 @@ local b = vec.Mat4.perspective(90, 1, 1, 100)
 local m = a * b
 print(m)
 
+local v3 = m * vec.Vec4(1, 2, 3, 4)
+print(v3)
+
 

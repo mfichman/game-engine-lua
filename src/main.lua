@@ -31,4 +31,11 @@ settings.stencilBits = 0
 settings.majorVersion = 3
 settings.minorVersion = 2
   
-return sfml.Window(mode, "test", sfml.DefaultStyle, settings)
+local window = sfml.Window(mode, "test", sfml.DefaultStyle, settings)
+
+while true do
+  local event = sfml.Event()
+  while window:pollEvent(event) do
+    if event.type == sfml.EvtClosed then os.exit(0) end
+  end
+end

@@ -18,15 +18,14 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-
--- Automatically look up any component that is referenced in the graphics.*
--- table (for convenience)
-local function index(t, k)
-  return require(string.format('graphics.%s', k:lower()))
-end
-
-local m = {
-  window=require('graphics.window')
+return {
+  Camera=require('graphics.camera'),
+  Context=require('graphics.context'),
+  Buffer=require('graphics.buffer'),
+  Mesh=require('graphics.mesh'),
+  Model=require('graphics.model'),
+  Program=require('graphics.program'),
+  Shader=require('graphics.shader'),
+  Texture=require('graphics.texture'),
+  Transform=require('graphics.transform'),
 }
-
-return setmetatable(m, {__index=index})

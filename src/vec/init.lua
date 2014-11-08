@@ -24,10 +24,11 @@ ffi.cdef[[
   typedef float vec_Scalar;
 ]]
 
--- Automatically look up any component that is referenced in the graphics.*
--- table (for convenience)
-local function index(t, k)
-  return require(string.format('vec.%s', k:lower()))
-end
-
-return setmetatable({}, {__index=index})
+return {
+  Mat4=require('vec.mat4'),
+  Mat4x4=require('vec.mat4x4'),
+  Quat=require('vec.quat'),
+  Vec2=require('vec.vec2'),
+  Vec3=require('vec.vec3'),
+  Vec4=require('vec.vec4'),
+}

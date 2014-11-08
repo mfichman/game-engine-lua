@@ -36,7 +36,7 @@ local function mesh(g, mesh)
   
   -- Calculate the normal matrix and pass it to the vertex shader
   local camera = g.camera
-  local normalMatrix = camera:viewTransform() * g.worldTransform
+  local normalMatrix = camera:view() * g.worldTransform
   normalMatrix = normalMatrix.inverse()
   normalMatrix = normalMatrix.transpose()
 
@@ -59,9 +59,10 @@ local function mesh(g, mesh)
 end
 
 -- Pass the texture data to the shader
-local function texture(g, texture)
+local function texture(g, texture, index)
   if not texture then return end
   texture:sync()
+  gl.glActiveTexture(index)
   gl.glBindTexture(gl.GL_TEXTURE_2D, texture.id) 
 end
 
@@ -73,14 +74,10 @@ local function material(g, material)
   gl.glUniform3fv(program.emissive, 1, material.emissiveColor.data)
   gl.glUniform1f(program.shininess, material.shininess)
 
-  gl.glActiveTexture(gl.GL_TEXTURE0)
-  texture(g, material.diffuseMap)
-  gl.glActiveTexture(gl.GL_TEXTURE1)
-  texture(g, material.specularMap)
-  gl.glActiveTexture(gl.GL_TEXTURE2)
-  texture(g, material.normalMap)
-  gl.glActiveTexture(gl.GL_TEXTURE3)
-  texture(g, material.emissiveMap)
+  texture(g, material.diffuseMap, gl.GL_TEXTURE0)
+  texture(g, material.specularMap, gl.GL_TEXTURE1)
+  texture(g, material.normalMap, gl.GL_TEXTURE2)
+  texture(g, material.emissiveMap, gl.GL_TEXTURE3)
 end
 
 -- Render a model (a mesh with an attached texture and material)
@@ -91,10 +88,8 @@ local function render(g, model)
     return
   end
 
-  g.rendererIs(render) -- Notify that a new renderer is starting
-  g.glUseProgram(program.id) -- Use cached program ID if already set
-  g.glEnable(gl.GL_CULL_FACE)
-  g.glEnable(gl.GL_DEPTH_TEST)
+  g:glUseProgram(program.id) -- Use cached program ID if already set
+  g:glEnable(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST)
 
   material(g, model.material)
   mesh(g, model.mesh)

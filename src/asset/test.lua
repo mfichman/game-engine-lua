@@ -30,7 +30,7 @@ settings.majorVersion = 3
 settings.minorVersion = 2
 local context = sfml.Context()
 
-local t = asset.open('foo.png')
-local t = asset.open('foo.png')
+assert(asset.open('foo.png'))
+assert(asset.open('foo.frag'))
 
 

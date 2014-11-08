@@ -58,6 +58,7 @@ end
 -- Free up the shader's resources
 function Shader:del()
   gl.glDeleteShader(self.id)
+  self.id = 0
 end
 
 Shader.__gc = Shader.del

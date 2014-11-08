@@ -25,7 +25,6 @@ function Model.new()
   self.material = nil
   self.mesh = nil
   self.program = nil
-  self.userData = nil
   return self
 end
 

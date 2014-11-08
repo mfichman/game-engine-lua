@@ -22,7 +22,7 @@ local ffi = require('ffi')
 local math = require('math')
 
 ffi.cdef[[
-  struct vec_Quat {
+  typedef struct vec_Quat {
     union {
       struct {
         union { vec_Scalar w; };
@@ -32,11 +32,11 @@ ffi.cdef[[
       };
       vec_Scalar data[4];
     };
-  };
+  } vec_Quat;
 ]]
 
 local Quat = {}; Quat.__index = Quat
-local QuatType = ffi.typeof('struct vec_Quat')
+local QuatType = ffi.typeof('vec_Quat')
 
 function Quat.new(...)
   return QuatType(...)

@@ -18,23 +18,43 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local sfml = require('sfml')
+local gl = require('gl')
 
-local function create()
-  local mode = sfml.VideoMode()
-  mode.bitsPerPixel = 32
-  mode.width = 100
-  mode.height = 100
-  
-  local settings = sfml.ContextSettings()
-  settings.depthBits = 24
-  settings.stencilBits = 0
-  settings.majorVersion = 3
-  settings.minorVersion = 2
-  
-  return sfml.Window(mode, "test", sfml.DefaultStyle, settings)
+local Context = {}; Context.__index = Context
+
+-- Creates a rendering context, which tracks/caches graphics pipeline state.
+function Context.new(camera)
+  assert(camera, 'camera is missing from context')
+  local self = setmetatable({}, Context) 
+  self.camera = camera
+  self.program = 0
+  self.enabled = {}
+  self.gen = 0 -- Generation; used to track rendering state changes
+  return self
 end
 
-return {
-  create=create
-}
+function Context:glUseProgram(program)
+  if program ~= self.program then
+    self.program = program
+    gl.glUseProgram(self)
+  end
+end
+
+-- Update the enabled OpenGL context flags
+function Context:glEnable(...)
+  for i, enum in ipairs({...}) do
+    if not self.enabled[enum] then
+      gl.glEnable(enum) 
+    end
+    self.enabled[enum] = self.gen
+  end  
+  for enum, gen in pairs(self.enabled) do
+    if gen ~= self.gen then
+      gl.glDisable(enum)
+      self.enabled[enum] = nil
+    end
+  end
+  self.gen = self.gen+1
+end
+
+return Context.new

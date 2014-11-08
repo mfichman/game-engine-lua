@@ -88,7 +88,7 @@ end
 function Buffer:sync()
   if self.status == 'synced' then return end
   if self.id == 0 then
-    local id = ffi.new('int[1]')
+    local id = ffi.new('GLint[1]')
     gl.glGenBuffers(1, id)
     self.id = id[0]
   end
@@ -107,10 +107,9 @@ end
 
 -- Free the buffer and release the hardware handle
 function Buffer:del()
-  if self.id ~= 0 then
-    local id = ffi.new('int[1]', self.id) 
-    gl.glDeleteBuffers(1, id)
-  end
+  local id = ffi.new('GLint[1]', self.id) 
+  gl.glDeleteBuffers(1, id)
+  self.id = 0
 end
 
 Buffer.__gc = Buffer.del

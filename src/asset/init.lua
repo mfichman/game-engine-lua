@@ -19,10 +19,14 @@
 -- IN THE SOFTWARE.
 
 local loaders = {
-  ['^.+%.png']=require('asset.texture'),
-  ['^.+%.jpg']=require('asset.texture'),
-  ['^.+%.gif']=require('asset.texture'),
-  ['^.+%.obj']=require('asset.mesh.obj'),
+  ['%.png$']=require('asset.texture'),
+  ['%.jpg$']=require('asset.texture'),
+  ['%.gif$']=require('asset.texture'),
+  ['%.obj$']=require('asset.mesh.obj'),
+  ['%.prog']=require('asset.program'),
+  ['%.vert']=require('asset.shader'),
+  ['%.geom']=require('asset.shader'),
+  ['%.frag']=require('asset.shader'),
 }
 
 local loaded = {}

@@ -30,7 +30,7 @@ function Texture.new(width, height, pixel)
   self.height = height
 
   local pixel = ffi.cast('void*', pixel)
-  local id = ffi.new('int[1]')
+  local id = ffi.new('GLint[1]')
   gl.glGenTextures(1, id)
   self.id = id[0]
 
@@ -47,8 +47,9 @@ end
 
 -- Free the buffer and release the hardware handle
 function Texture:del()
-  local id = ffi.new('int[1]', self.id) 
+  local id = ffi.new('GLint[1]', self.id) 
   gl.glDeleteTextures(1, id)
+  self.id = 0
 end
 
 Texture.__gc = Texture.del

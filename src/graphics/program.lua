@@ -20,7 +20,6 @@
 
 local ffi = require('ffi')
 local gl = require('gl')
-local graphics = require('graphics')
 
 local Program = {}; Program.__index = Program
 
@@ -69,6 +68,7 @@ end
 -- Free up the program's resources
 function Program:del()
   gl.glDeleteProgram(self.id)
+  self.id = 0
 end
 
 -- Free up the program's resources

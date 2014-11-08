@@ -18,18 +18,20 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local vec = require('vec')
 local ffi = require('ffi')
 local math = require('math')
 
+local Vec3 = require('vec.vec3')
+local Vec4 = require('vec.vec4')
+
 ffi.cdef[[
-  struct vec_Mat4x4 {
+  typedef struct vec_Mat4x4 {
     vec_Scalar data[16];
-  };
+  } vec_Mat4x4;
 ]]
 
 local Mat4x4 = {}; Mat4x4.__index = Mat4x4;
-local Mat4x4Type = ffi.typeof('struct vec_Mat4x4')
+local Mat4x4Type = ffi.typeof('vec_Mat4x4')
 
 function Mat4x4.new(...)
   return Mat4x4Type({{...}})
@@ -241,7 +243,7 @@ end
 
 local function mulvec4(self, v)
   local m = self.data
-  return vec.Vec4(
+  return Vec4(
     m[0]*v.x + m[4]*v.y + m[8]*v.z + m[12]*v.w,
     m[1]*v.x + m[5]*v.y + m[9]*v.z + m[13]*v.w,
     m[2]*v.x + m[6]*v.y + m[10]*v.z + m[14]*v.w,
@@ -252,7 +254,7 @@ local function mulvec3(self, v)
     local m = self.data
     local invw = 1 / (m[3]*v.x + m[7]*v.y + m[11]*v.z + m[15]);
     
-    return vec.Vec3(
+    return Vec3(
       (m[0]*v.x + m[4]*v.y + m[8]*v.z + m[12])*invw,
       (m[1]*v.x + m[5]*v.y + m[9]*v.z + m[13])*invw,
       (m[2]*v.x + m[6]*v.y + m[10]*v.z + m[14])*invw)
@@ -261,9 +263,9 @@ end
 function Mat4x4:__mul(other)
   if other.new == Mat4x4.new then
     return mulmat4x4(self, other)
-  elseif other.new == vec.Vec4 then
+  elseif other.new == Vec4 then
     return mulvec4(self, other)
-  elseif other.new == vec.Vec3 then
+  elseif other.new == Vec3 then
     return mulvec3(self, other)
   end
 end

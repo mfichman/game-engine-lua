@@ -47,7 +47,7 @@ assert(b.count == 0)
 b:del()
 
 -- Texture
-local t = graphics.Texture(8, 8, ffi.new('int32_t[64]'))
+local t = graphics.Texture(8, 8, ffi.new('GLuint[64]'))
 assert(t.id ~= 0)
 t:del()
 
@@ -56,4 +56,22 @@ local f = graphics.Shader(gl.GL_FRAGMENT_SHADER, '#version 330\nvoid main() {}')
 local v = graphics.Shader(gl.GL_VERTEX_SHADER, '#version 330\nvoid main() {}')
 local g = graphics.Shader(gl.GL_GEOMETRY_SHADER, '#version 330\nvoid main() {}')
 local p = graphics.Program(f, v, nil)
+
+-- Mesh
+local m = graphics.Mesh()
+m:sync()
+m:del()
+
+-- Camera
+local c = graphics.Camera()
+c:update()
+c.mode = 'ortho'
+c:update()
+
+-- Context
+local c = graphics.Context(1)
+c:glEnable(gl.GL_DEPTH_TEST)
+c:glEnable(gl.GL_DEPTH_TEST)
+c:glEnable(gl.GL_CULL_FACE)
+c:glEnable(gl.GL_DEPTH_TEST, gl.GL_BLEND, gl.GL_CULL_FACE)
 

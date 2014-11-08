@@ -18,7 +18,6 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local graphics = require('graphics')
 local vec = require('vec')
 
 local Transform = {}; Transform.__index = Transform
@@ -27,7 +26,7 @@ function Transform.new()
   local self = setmetatable({}, Transform)
   self.component = {}
   self.origin = vec.Vec3()
-  self.rotation = vec.Vec4()
+  self.rotation = vec.Quat()
   return self
 end
 

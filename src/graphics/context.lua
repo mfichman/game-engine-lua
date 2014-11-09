@@ -19,6 +19,7 @@
 -- IN THE SOFTWARE.
 
 local gl = require('gl')
+local vec = require('vec')
 
 local Context = {}; Context.__index = Context
 
@@ -27,6 +28,7 @@ function Context.new(camera)
   assert(camera, 'camera is missing from context')
   local self = setmetatable({}, Context) 
   self.camera = camera
+  self.world = vec.Mat4.identity()
   self.program = 0
   self.enabled = {}
   self.gen = 0 -- Generation; used to track rendering state changes
@@ -36,7 +38,7 @@ end
 function Context:glUseProgram(program)
   if program ~= self.program then
     self.program = program
-    gl.glUseProgram(self)
+    gl.glUseProgram(program)
   end
 end
 
@@ -55,6 +57,22 @@ function Context:glEnable(...)
     end
   end
   self.gen = self.gen+1
+end
+
+function Context:glUniform3fv(index, count, data)
+  if index then gl.glUniform3fv(index, count, data) end
+end
+
+function Context:glUniform1f(index, data)
+  if index then gl.glUniform1f(index, data) end
+end
+
+function Context:glUniformMatrix3fv(index, count, transpose, data)
+  if index then gl.glUniformMatrix3fv(index, count, transpose, data) end
+end
+
+function Context:glUniformMatrix4fv(index, count, transpose, data)
+  if index then gl.glUniformMatrix4fv(index, count, transpose, data) end
 end
 
 return Context.new

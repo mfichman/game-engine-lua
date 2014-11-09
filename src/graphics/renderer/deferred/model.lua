@@ -24,55 +24,50 @@ local ffi = require('ffi')
 local gl = require('gl')
 local graphics = require('graphics')
 local asset = require('asset')
-local program = asset.open('shaders/model')
+local program = asset.open('shader/model.prog')
 
 -- Render a mesh, using the current bindings for the material and texture
 local function mesh(g, mesh)
-  assert(model.mesh, "model has no mesh!")
-  assert(model.mesh.indexBuffer, "mesh has no index buffer!")
+  assert(mesh, "model has no mesh!")
+  assert(mesh.index, "mesh has no index buffer!")
   assert(g.camera, "no camera!")
 
   mesh:sync()
   
   -- Calculate the normal matrix and pass it to the vertex shader
   local camera = g.camera
-  local normalMatrix = camera:view() * g.worldTransform
-  normalMatrix = normalMatrix.inverse()
-  normalMatrix = normalMatrix.transpose()
-
+  local normalMatrix = (camera.view * g.world):inverse():transpose()
   local temp = ffi.new('GLfloat[9]', {
     normalMatrix.data[0], normalMatrix.data[1], normalMatrix.data[2], 
     normalMatrix.data[4], normalMatrix.data[5], normalMatrix.data[6], 
     normalMatrix.data[8], normalMatrix.data[9], normalMatrix.data[10], 
   })
 
-  local transform = camera:transform() * g.worldTransform
+  local transform = camera.transform * g.world
 
   -- Pass the model matrix to the vertex shader
-  gl.glUniformMatrix3fv(program.normalMatrix.data, 1, 0, temp)
-  gl.glUniformMatrix4fv(program.transform.data, 1, 0, transform.data) 
+  g:glUniformMatrix3fv(program.normalMatrix, 1, 0, temp)
+  g:glUniformMatrix4fv(program.transform, 1, 0, transform.data) 
 
-  local buffer = mesh.indexBuffer
   gl.glBindVertexArray(mesh.id)
-  gl.glDrawElements(gl.GL_TRIANGLES, buffer.elementCount, gl.GL_UNSIGNED_INT, 0)
+  gl.glDrawElements(gl.GL_TRIANGLES, mesh.index.count, gl.GL_UNSIGNED_INT, nil)
   gl.glBindVertexArray(0)
 end
 
 -- Pass the texture data to the shader
 local function texture(g, texture, index)
   if not texture then return end
-  texture:sync()
   gl.glActiveTexture(index)
   gl.glBindTexture(gl.GL_TEXTURE_2D, texture.id) 
 end
 
 -- Pass the material data to the shader
 local function material(g, material)
-  gl.glUniform3fv(program.ambient, 1, material.ambientColor.data)
-  gl.glUniform3fv(program.diffuse, 1, material.diffuseColor.data)
-  gl.glUniform3fv(program.specular, 1, material.specularColor.data)
-  gl.glUniform3fv(program.emissive, 1, material.emissiveColor.data)
-  gl.glUniform1f(program.shininess, material.shininess)
+  g:glUniform3fv(program.ambientColor, 1, material.ambientColor.data)
+  g:glUniform3fv(program.diffuseColor, 1, material.diffuseColor.data)
+  g:glUniform3fv(program.specularColor, 1, material.specularColor.data)
+  g:glUniform3fv(program.emissiveColor, 1, material.emissiveColor.data)
+  g:glUniform1f(program.hardness, material.hardness)
 
   texture(g, material.diffuseMap, gl.GL_TEXTURE0)
   texture(g, material.specularMap, gl.GL_TEXTURE1)
@@ -83,6 +78,7 @@ end
 -- Render a model (a mesh with an attached texture and material)
 local function render(g, model)
   assert(g, "graphics context is nil!")
+  assert(model, "model is nil")
   assert(model.material, "model has no material!")
   if model.material.opacity < 1 then
     return
@@ -93,7 +89,6 @@ local function render(g, model)
 
   material(g, model.material)
   mesh(g, model.mesh)
-
 end
 
 return {

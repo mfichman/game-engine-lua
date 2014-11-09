@@ -52,10 +52,24 @@ assert(t.id ~= 0)
 t:del()
 
 -- Program
-local f = graphics.Shader(gl.GL_FRAGMENT_SHADER, '#version 330\nvoid main() {}')
+local source = [[
+  #version 330
+  uniform vec3 position;
+  uniform vec3 rotation;
+  out vec3 out1;
+  out vec3 out2;
+  void main() {
+    out1 = position;
+    out2 = rotation;
+  }
+]]
+
+local f = graphics.Shader(gl.GL_FRAGMENT_SHADER, source)
 local v = graphics.Shader(gl.GL_VERTEX_SHADER, '#version 330\nvoid main() {}')
 local g = graphics.Shader(gl.GL_GEOMETRY_SHADER, '#version 330\nvoid main() {}')
 local p = graphics.Program(f, v, nil)
+assert(p.position)
+assert(p.rotation)
 
 -- Mesh
 local m = graphics.Mesh()
@@ -74,4 +88,15 @@ c:glEnable(gl.GL_DEPTH_TEST)
 c:glEnable(gl.GL_DEPTH_TEST)
 c:glEnable(gl.GL_CULL_FACE)
 c:glEnable(gl.GL_DEPTH_TEST, gl.GL_BLEND, gl.GL_CULL_FACE)
+
+-- FrameBuffer
+local width, height = 800, 600
+local f = graphics.FrameBuffer()
+f:drawBufferEnq(graphics.RenderTarget(width, height, gl.GL_RGB))
+f:drawBufferEnq(graphics.RenderTarget(width, height, gl.GL_RGBA))
+f:drawBufferEnq(graphics.RenderTarget(width, height, gl.GL_RGB16F))
+f:drawBufferEnq(graphics.RenderTarget(width, height, gl.GL_RGB))
+f:depthBufferIs(graphics.RenderTarget(width, height, gl.GL_DEPTH_COMPONENT24))
+f:check()
+
 

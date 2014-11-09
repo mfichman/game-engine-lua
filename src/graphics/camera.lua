@@ -34,7 +34,6 @@ function Camera.new()
   self.viewportWidth = 0
   self.viewportHeight = 0
   self.fieldOfView = 45
-  self.state = 'inactive'
   self.mode = 'perspective'
   self.transform = vec.Mat4.identity()
   self.projection = vec.Mat4.identity()

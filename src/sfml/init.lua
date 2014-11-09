@@ -1,34 +1,32 @@
 local ffi = require('ffi')
+local path = require('path')
 local window = ffi.load('csfml-window')
 local graphics = ffi.load('csfml-graphics')
 
-ffi.cdef(io.open('sfml/sfml-window.h'):read('*all'))
-ffi.cdef(io.open('sfml/sfml-graphics.h'):read('*all'))
+ffi.cdef(path.open('sfml/sfml-window.h'):read('*all'))
+ffi.cdef(path.open('sfml/sfml-graphics.h'):read('*all'))
+
+local function symbol(name)
+  local ok, ret = pcall(function() return window[name] end)
+  if ok then return ret end
+  local ok, ret = pcall(function() return graphics[name] end)
+  if ok then return ret end
+  error('symbol not found: '..name)
+end
 
 local function index(t, k)
-  local n = string.format('sf%s', k)
-  local ok, ret = pcall(function() return window[n] end)
-  if ok then return ret end
-  local ok, ret = pcall(function() return graphics[n] end)
-  if ok then return ret end
+  return symbol(string.format('sf%s', k))
 end
 
 local function metatype(class, ctor)
   local mt = {}
   function mt.__index(t, k)
-    local n = string.format('%s_%s', class, k)
-    local ok, ret = pcall(function() return window[n] end)
-    if ok then return ret end
-    local ok, ret = pcall(function() return graphics[n] end)
-    if ok then return ret end
+    return symbol(string.format('%s_%s', class, k))
   end
 
   local t = ffi.metatype(ffi.typeof(class), mt)
   return function(...)
-    local ok, ret = pcall(function() return window[ctor] end)
-    if ok then return ret(...) end
-    local ok, ret = pcall(function() return graphics[ctor] end)
-    if ok then return ret(...) end
+    return symbol(ctor)(...)
   end
 end
 

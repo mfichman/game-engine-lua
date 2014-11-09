@@ -20,14 +20,15 @@
 
 local graphics = require('graphics')
 local string = require('string')
-local io = require('io')
+local path = require('path')
 local shader = require('asset.shader')
 
-local function open(path)
+local function open(name)
+  local name = name:match('^(.+)%.prog$')
   local vert, frag, geom
-  if io.open(path..'.vert') then vert = shader.open(path..'.vert') end
-  if io.open(path..'.frag') then frag = shader.open(path..'.frag') end
-  if io.open(path..'.geom') then geom = shader.open(path..'.geom') end
+  if path.find(name..'.vert') then vert = shader.open(name..'.vert') end
+  if path.find(name..'.frag') then frag = shader.open(name..'.frag') end
+  if path.find(name..'.geom') then geom = shader.open(name..'.geom') end
   return graphics.Program(vert, frag, geom)
 end
 

@@ -29,19 +29,24 @@ function Shader.new(kind, source)
   local self = setmetatable({}, Shader)
   self.id = gl.glCreateShader(kind)
   self.source = source
-  self:compile()
   return self
 end
 
 -- Compile the shader
 function Shader:compile()
-  cstr = ffi.new('char[?]', self.source:len()+1)
+  local cstr = ffi.new('GLchar[?]', self.source:len()+1)
   ffi.copy(cstr, self.source)
 
   local strings = ffi.new('GLchar*[1]', cstr) 
   local lengths = ffi.new('GLint[1]', self.source:len())
   gl.glShaderSource(self.id, 1, strings, lengths)
   gl.glCompileShader(self.id)
+
+  local status = ffi.new('GLint[1]')
+  gl.glGetShaderiv(self.id, gl.GL_COMPILE_STATUS, status)
+  if status[0] == 0 then
+    io:write(self:log())
+  end
 end
 
 -- Return the shader log

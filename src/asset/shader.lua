@@ -22,6 +22,7 @@ local graphics = require('graphics')
 local string = require('string')
 local io = require('io')
 local gl = require('gl')
+local path = require('path')
 
 local include, open
 
@@ -29,9 +30,9 @@ function include(path)
   return open(path).source
 end
 
-function open(path)
+function open(name)
+  local ext = string.match(name, '([^%.]+)$')
   local kind 
-  local ext = string.match(path, '([^%.]+)$')
   if ext == 'frag' then
     kind = gl.GL_FRAGMENT_SHADER 
   elseif ext == 'vert' then
@@ -39,11 +40,10 @@ function open(path)
   elseif ext == 'geom' then
     kind = gl.GL_GEOMETRY_SHADER 
   else
-    error('bad shader filetype: '..path) 
+    error('bad shader filetype: '..name) 
   end
 
-  local fd, err = io.open(path)
-  if not fd then error('file not found: '..path) end
+  local fd = path.open(name)
   local source = fd:read('*all')
   source = source:gsub('#pragma%s+include%s+"(.*)"', include)
   fd:close()

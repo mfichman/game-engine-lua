@@ -1,8 +1,0 @@
-* C wrapper around Bullet (define/query physics stuff)
-* ffi for OpenGL => mostly done 
-* ffi for SFML
-* ffi for freetype
-* rewrite SFR in lua
-* rewrite component system i lua
-
-* game.component.X loads X and looks in X for processes to call; registers automatically

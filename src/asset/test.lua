@@ -30,7 +30,20 @@ settings.majorVersion = 3
 settings.minorVersion = 2
 local context = sfml.Context()
 
-assert(asset.open('foo.png'))
-assert(asset.open('foo.frag'))
+assert(asset.open('texture/white.png'))
+assert(asset.open('shader/flat.frag'))
+local m = asset.open('mesh/quad.obj')
+assert(m)
+assert(m.new == graphics.Transform)
+
+local m = m.component[1]
+assert(m)
+assert(m.new == graphics.Model)
+assert(m.material)
+assert(m.mesh)
+assert(m.mesh.vertex)
+assert(m.mesh.index)
+
+
 
 

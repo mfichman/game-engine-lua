@@ -18,24 +18,33 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local sfml = require('sfml')
+local asset = require('asset')
+local graphics = require('graphics')
+local vec = require('vec')
+local game = require('game')
 
-local mode = sfml.VideoMode()
-mode.bitsPerPixel = 32
-mode.width = 100
-mode.height = 100
-  
-local settings = sfml.ContextSettings()
-settings.depthBits = 24
-settings.stencilBits = 0
-settings.majorVersion = 3
-settings.minorVersion = 2
-  
-local window = sfml.Window(mode, "test", sfml.DefaultStyle, settings)
+local model = require('graphics.renderer.deferred.model')
+local quad = asset.open('mesh/quad.obj')
 
+local g = graphics.Context(graphics.Camera())
+g.camera.viewportWidth = game.config.display.width
+g.camera.viewportHeight = game.config.display.height
+g.camera.world = vec.Mat4.look(vec.Vec3(0, 2, -5), vec.Vec3(0, .3, 0), vec.Vec3(0, 1, 0))
+g.camera:update()
+
+
+game:run()
+--[[
 while true do
   local event = sfml.Event()
-  while window:pollEvent(event) do
+  while window:pollEvent(event) == 1 do
     if event.type == sfml.EvtClosed then os.exit(0) end
   end
+
+  model.render(g, quad.component[1]) 
+  local m = quad.component[1]
+
+  window:display()
 end
+
+]]

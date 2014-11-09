@@ -21,12 +21,15 @@
 local graphics = require('graphics')
 local sfml = require('sfml')
 local ffi = require('ffi')
+local path = require('path')
 
-local function open(path)
-  local image = sfml.Image_createFromFile(path)
-  if image == nil then
-    error('file not found: '..path)
-  end
+local function open(name)
+  local loc = path.find(name)
+  if not loc then error('file not found: '..name) end
+
+  local image = sfml.Image_createFromFile(loc)
+  if not image then error('bad image file: '..loc) end
+
   local size = image:getSize()
   local texture = graphics.Texture(size.x, size.y, image:getPixelsPtr())
   image:destroy()

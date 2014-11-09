@@ -31,16 +31,19 @@ function Program.new(fragment, vertex, geometry)
   self.fragment = fragment
   self.vertex = vertex
   self.geometry = geometry
+  if #{fragment, vertex, geometry} == 0 then
+    error('no shaders attached to program')
+  end
   self:link()
   return self
 end
 
 -- Return the program linker log
 function Program:log()
-  local length = ffi.new('int[1]')
+  local length = ffi.new('GLint[1]')
   gl.glGetProgramiv(self.id, gl.GL_INFO_LOG_LENGTH, length)
   if length[0] > 0 then
-    local log = ffi.new('char[?]', length[0])
+    local log = ffi.new('GLchar[?]', length[0])
     gl.glGetProgramInfoLog(self.id, length[0], length, log)
     return ffi.string(log)     
   end
@@ -48,12 +51,21 @@ end
 
 -- Link the program
 function Program:link()
-  if self.fragment then gl.glAttachShader(self.id, self.fragment.id) end
-  if self.vertex then gl.glAttachShader(self.id, self.vertex.id) end
-  if self.geometry then gl.glAttachShader(self.id, self.geometry.id) end
+  if self.fragment then 
+    gl.glAttachShader(self.id, self.fragment.id) 
+    self.fragment:compile()
+  end
+  if self.vertex then 
+    gl.glAttachShader(self.id, self.vertex.id) 
+    self.vertex:compile()
+  end
+  if self.geometry then 
+    gl.glAttachShader(self.id, self.geometry.id) 
+    self.geometry:compile()
+  end
   gl.glLinkProgram(self.id)
 
-  local status = ffi.new('int[1]')
+  local status = ffi.new('GLint[1]')
   gl.glGetProgramiv(self.id, gl.GL_LINK_STATUS, status)
 
   if status[0] == 0 then
@@ -62,6 +74,18 @@ function Program:link()
     if self.geometry then io.write(self.geometry:log()) end
     io.write(self:log())
     error("error: link failed")
+  end
+
+  local uniforms = ffi.new('GLint[1]')
+  local maxlen = ffi.new('GLint[1]')
+  gl.glGetProgramiv(self.id, gl.GL_ACTIVE_UNIFORMS, uniforms)
+  gl.glGetProgramiv(self.id, gl.GL_ACTIVE_UNIFORM_MAX_LENGTH, maxlen)
+
+  local buf = ffi.new('GLchar[?]', maxlen[0])
+  for i=0,uniforms[0]-1 do
+    gl.glGetActiveUniform(self.id, i, maxlen[0], nil, nil, nil, buf)
+    local name = ffi.string(buf)
+    self[name] = i
   end
 end
 

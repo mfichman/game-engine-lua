@@ -18,32 +18,39 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local ffi = require('ffi')
-local package = require('package')
-local path = require('path')
+local io = require('io')
 
-ffi.cdef(path.open('gl/gl.h'):read('*all'))
-ffi.cdef(path.open('gl/glenum.h'):read('*all'))
+local m = {}
 
--- Look up the OpenGL function in the current executable first. If it's not
--- found, then look in libglew instead for the glew binding.
-local function index(t, k)
-    local ok, fn = pcall(function()
-        return ffi.C[k]
-    end)
-    if ok then
-        return fn
-    else
-        local name = k:gsub('^gl', '__glew')
-        return gl[name]
-    end
+m.path = './src;.'
+
+-- Join filesystem path components
+function m.join(...)
+  local buf = {}
+  for i, v in ipairs({...}) do
+    local v = v:match('^(.+)/$') or v
+    table.insert(buf, v)
+  end
+  return table.concat(buf, '/')
 end
 
---local glew = ffi.load('glew')
---local m = {}
---m.glewInit = glew.glewInit()
---ffi.cdef[[
---  int glewInit(void);
---]]
+-- Find a file on the path
+function m.find(item)
+  for path in m.path:gfind('([^;]+);?') do
+    local path = m.join(path, item)
+    local fd = io.open(path)
+    if fd then 
+      fd:close()
+      return path
+    end
+  end
+end
 
-return setmetatable({}, {__index=index})
+-- Open a file on the path
+function m.open(item, flags)
+  local path = m.find(item)
+  if not path then error('file not found: '..item) end
+  return io.open(path)
+end
+
+return m

@@ -18,32 +18,25 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local ffi = require('ffi')
-local package = require('package')
-local path = require('path')
+local vec = require('vec')
 
-ffi.cdef(path.open('gl/gl.h'):read('*all'))
-ffi.cdef(path.open('gl/glenum.h'):read('*all'))
+local Material = {}; Material.__index = Material
 
--- Look up the OpenGL function in the current executable first. If it's not
--- found, then look in libglew instead for the glew binding.
-local function index(t, k)
-    local ok, fn = pcall(function()
-        return ffi.C[k]
-    end)
-    if ok then
-        return fn
-    else
-        local name = k:gsub('^gl', '__glew')
-        return gl[name]
-    end
+function Material.new(args)
+  local self = setmetatable({}, Material)
+  local args = args or self
+  self.diffuseMap = args.diffuseMap
+  self.specularMap = args.specularMap
+  self.normalMap = args.normalMap
+  self.emissiveMap = args.emissiveMap
+  self.ambientColor = args.ambientColor or vec.Vec4()
+  self.diffuseColor = args.diffuseColor or vec.Vec4()
+  self.specularColor = args.specularColor or vec.Vec4()
+  self.emissiveColor = args.emissiveColor or vec.Vec4()
+  self.hardness = args.hardnesss or 40
+  self.opacity = args.opacity or 1
+  self.blendMode = args.blendMode or 'alpha'
+  return self
 end
 
---local glew = ffi.load('glew')
---local m = {}
---m.glewInit = glew.glewInit()
---ffi.cdef[[
---  int glewInit(void);
---]]
-
-return setmetatable({}, {__index=index})
+return Material.new

@@ -18,32 +18,39 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local ffi = require('ffi')
-local package = require('package')
-local path = require('path')
+display = {
+  vsync = false,
+  width = 800,
+  height = 600,
+  fullscreen = false,
+}
 
-ffi.cdef(path.open('gl/gl.h'):read('*all'))
-ffi.cdef(path.open('gl/glenum.h'):read('*all'))
+log = {
+  cpu = false,
+  memory = false,
+}
 
--- Look up the OpenGL function in the current executable first. If it's not
--- found, then look in libglew instead for the glew binding.
-local function index(t, k)
-    local ok, fn = pcall(function()
-        return ffi.C[k]
-    end)
-    if ok then
-        return fn
-    else
-        local name = k:gsub('^gl', '__glew')
-        return gl[name]
-    end
-end
+chunk = {
+  cachesize = 16,
+  size = 64,
+  pitch = 2,
+}
 
---local glew = ffi.load('glew')
---local m = {}
---m.glewInit = glew.glewInit()
---ffi.cdef[[
---  int glewInit(void);
---]]
+key = {
+  accel = "i",
+  brake = "j",
+  mine = "m",
+  attack = "space",
+  inspect = "enter",
+  inventory = "u",
+  zoomin = "add",
+  zoomout = "subtract",
+}
 
-return setmetatable({}, {__index=index})
+button = {
+  attack = "left",
+  action = "right",
+  click = "left",
+  alt = "right",
+}
+

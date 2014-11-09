@@ -45,6 +45,7 @@ function Mesh.new()
   self.id = 0
   self.index = Buffer(gl.GL_ELEMENT_ARRAY_BUFFER, gl.GL_STATIC_DRAW, 'GLuint')
   self.vertex = Buffer(gl.GL_ARRAY_BUFFER, gl.GL_STATIC_DRAW, 'graphics_MeshVertex')
+  self.format = MeshVertex
   return self
 end
 
@@ -66,6 +67,7 @@ function Mesh:sync()
   struct.defAttribute('graphics_MeshVertex', 3, 'texcoord')
   gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, self.index.id)
   gl.glBindVertexArray(0)
+  self.status = 'synced'
 end
 
 function Mesh:del()

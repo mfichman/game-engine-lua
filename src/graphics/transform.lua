@@ -31,10 +31,12 @@ function Transform.new()
 end
 
 function Transform:componentIs(comp)
+  assert(comp)
   table.insert(self.component, comp)
 end
 
 function Transform:componentDel(comp)
+  assert(comp)
   for i, v in ipairs(self.component) do
     if v == comp then
       table.remove(self.component, i)

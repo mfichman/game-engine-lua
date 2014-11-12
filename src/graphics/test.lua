@@ -22,12 +22,8 @@ local graphics = require('graphics')
 local gl = require('gl')
 local sfml = require('sfml')
 local ffi = require('ffi')
+local vec = require('vec')
 
-local settings = sfml.ContextSettings()
-settings.depthBits = 24
-settings.stencilBits = 0
-settings.majorVersion = 3
-settings.minorVersion = 2
 local context = sfml.Context()
 
 -- Buffer
@@ -83,20 +79,42 @@ c.mode = 'ortho'
 c:update()
 
 -- Context
-local c = graphics.Context(1)
-c:glEnable(gl.GL_DEPTH_TEST)
-c:glEnable(gl.GL_DEPTH_TEST)
-c:glEnable(gl.GL_CULL_FACE)
-c:glEnable(gl.GL_DEPTH_TEST, gl.GL_BLEND, gl.GL_CULL_FACE)
+local ctx = graphics.Context(c)
+ctx:glEnable(gl.GL_DEPTH_TEST)
+ctx:glEnable(gl.GL_DEPTH_TEST)
+ctx:glEnable(gl.GL_CULL_FACE)
+ctx:glEnable(gl.GL_DEPTH_TEST, gl.GL_BLEND, gl.GL_CULL_FACE)
 
 -- FrameBuffer
 local width, height = 800, 600
 local f = graphics.FrameBuffer()
+  
 f:drawBufferEnq(graphics.RenderTarget(width, height, gl.GL_RGB))
-f:drawBufferEnq(graphics.RenderTarget(width, height, gl.GL_RGBA))
+--[[f:drawBufferEnq(graphics.RenderTarget(width, height, gl.GL_RGBA))
 f:drawBufferEnq(graphics.RenderTarget(width, height, gl.GL_RGB16F))
 f:drawBufferEnq(graphics.RenderTarget(width, height, gl.GL_RGB))
 f:depthBufferIs(graphics.RenderTarget(width, height, gl.GL_DEPTH_COMPONENT24))
+]]
 f:check()
+
+
+local nested = graphics.Transform()
+nested.origin = vec.Vec3(2, 4, 6)
+nested.name = '1'
+nested:componentIs(graphics.Model())
+
+local node = graphics.Transform()
+node.origin = vec.Vec3(1, 2, 3)
+node.name = '2'
+node:componentIs(nested)
+
+ctx:submit(node)
+
+assert(#ctx.op == 1)
+assert(ctx.op[1])
+assert(ctx.op[1].node.new == graphics.Model)
+assert(ctx.op[1].transform.origin.x == 3)
+assert(ctx.op[1].transform.origin.y == 6)
+assert(ctx.op[1].transform.origin.z == 9)
 
 

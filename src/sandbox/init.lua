@@ -18,32 +18,24 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local vec = require('vec')
+local Env = require('sandbox.env')
 
-local Transform = {}; Transform.__index = Transform
-
-function Transform.new()
-  local self = setmetatable({}, Transform)
-  self.component = {}
-  self.origin = vec.Vec3()
-  self.rotation = vec.Quat()
-  return self
+local function load(chunk, source, mode)
+  return _G.load(chunk, source, mode, Env())
 end
 
-function Transform:componentIs(comp)
-  assert(comp)
-  table.insert(self.component, comp)
-  return comp
+local function loadfile(path, mode)
+  return _G.loadfile(chunk, mode, Env())
 end
 
-function Transform:componentDel(comp)
-  assert(comp)
-  for i, v in ipairs(self.component) do
-    if v == comp then
-      table.remove(self.component, i)
-      return
-    end
-  end
+local function dofile(path)
+  local fn = loadfile(path)
+  return fn()
 end
 
-return Transform.new
+return {
+  Env=Env,
+  dofile=dofile,
+  load=load,
+  loadfile=loadfile,
+}

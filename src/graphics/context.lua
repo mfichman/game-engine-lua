@@ -22,6 +22,7 @@ local gl = require('gl')
 local vec = require('vec')
 
 local Context = {}; Context.__index = Context
+local Transform = require('graphics.transform')
 
 -- Creates a rendering context, which tracks/caches graphics pipeline state.
 function Context.new(camera)
@@ -31,8 +32,30 @@ function Context.new(camera)
   self.world = vec.Mat4.identity()
   self.program = 0
   self.enabled = {}
-  self.gen = 0 -- Generation; used to track rendering state changes
+  self.op = {} -- array of objects submitted for rendering in this frame
+  self.gen = 0 -- generation; used to track rendering state changes
   return self
+end
+
+-- Submit a node to the rendering pipline using the given model transform. 
+-- If a Transform object is submitted, then propagate its transform to all of
+-- its children.
+function Context:submit(node, transform)
+  local transform = transform or vec.Transform.identity()
+  if Transform == node.new then
+    local tx = transform * vec.Transform.new(node.origin, node.rotation)
+    for _, c in ipairs(node.component) do
+      self:submit(c, tx)
+    end
+  else
+    local op = { transform=transform, node=node }
+    table.insert(self.op, op)
+  end
+end
+
+-- Reset the rendering context to prepare for the next frame.
+function Context:finish()
+  self.op = {}
 end
 
 function Context:glUseProgram(program)

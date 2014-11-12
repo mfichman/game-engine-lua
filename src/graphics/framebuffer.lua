@@ -34,18 +34,19 @@ function FrameBuffer.new()
   self.drawBufferAttachmentCount = 0
 
   local id = ffi.new('GLint[1]')
-  gl.glGenTextures(1, id)
+  gl.glGenFramebuffers(1, id)
   self.id = id[0]
-  
+
   return self
 end
 
 function FrameBuffer:drawBufferEnq(target) 
+  assert((#self.drawBuffer+1) < MAXDRAWBUFFER)
   local attachment = gl.GL_COLOR_ATTACHMENT0 + #self.drawBuffer
   table.insert(self.drawBuffer, target)
   self.drawBufferAttachment[self.drawBufferAttachmentCount] = attachment
   self.drawBufferAttachmentCount = self.drawBufferAttachmentCount + 1
-  
+
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.id)
   gl.glFramebufferTexture2D(gl.GL_FRAMEBUFFER, attachment, gl.GL_TEXTURE_2D, target.id, 0)
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0)
@@ -65,32 +66,32 @@ function FrameBuffer:stencilBufferIs(target)
   self.stencilBuffer = target
 
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.id)
-  gl.glFramebufferTexture2D(gl.GL_FRAMEBUFFER, gl.GL_STENCIL_ATTACHMENT, gl.GL_TEXTURE_2D,  self.id)
+  gl.glFramebufferTexture2D(gl.GL_FRAMEBUFFER, gl.GL_STENCIL_ATTACHMENT, gl.GL_TEXTURE_2D,  target.id, 0)
   gl.glBindFramebuffer(gl.GL_FRAEMEBUFFER, 0) 
 end
 
 function FrameBuffer:check() 
-  self:statusIs('enabled')
-  assert(gl.GL_FRAMEBUFFER_COMPLETE ~= gl.glCheckFramebufferStatus(gl.GL_FRAMEBUFFER))
-  self:statusIs('disabled')
+  self:enable()
+  assert(gl.GL_FRAMEBUFFER_COMPLETE == gl.glCheckFramebufferStatus(gl.GL_FRAMEBUFFER))
+  self:disable()
 end
 
-function FrameBuffer:statusIs(status)
-  if self.status == status then return end
-  self.status = status
-  if status == 'enabled' then
-    gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.id) 
-    gl.glDrawBuffers(self.drawBufferAttachmentCount, self.drawBufferAttachment)
-  elseif status == 'disabled' then
-    gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0)
-  else
-    assert(not 'invalid enum')    
-  end
+function FrameBuffer:enable()
+  if self.status == 'enabled' then return end
+  self.status = 'enabled'
+  gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.id) 
+  gl.glDrawBuffers(self.drawBufferAttachmentCount, self.drawBufferAttachment)
+end
+
+function FrameBuffer:disable()
+  if self.status == 'disabled' then return end
+  self.status = 'disabled'
+  gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0)
 end
 
 function FrameBuffer:del()
   local id = ffi.new('GLint[1]', self.id) 
-  gl.glDeleteTextures(1, id)
+  gl.glDeleteFramebuffers(1, id)
   self.id = 0
 end
 

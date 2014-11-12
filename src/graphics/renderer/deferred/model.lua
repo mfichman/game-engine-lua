@@ -22,9 +22,6 @@
 
 local ffi = require('ffi')
 local gl = require('gl')
-local graphics = require('graphics')
-local asset = require('asset')
-local program = asset.open('shader/model.prog')
 
 -- Render a mesh, using the current bindings for the material and texture
 local function mesh(g, mesh)
@@ -46,8 +43,8 @@ local function mesh(g, mesh)
   local transform = camera.transform * g.world
 
   -- Pass the model matrix to the vertex shader
-  g:glUniformMatrix3fv(program.normalMatrix, 1, 0, temp)
-  g:glUniformMatrix4fv(program.transform, 1, 0, transform.data) 
+  g:glUniformMatrix3fv(g.program.normalMatrix, 1, 0, temp)
+  g:glUniformMatrix4fv(g.program.transform, 1, 0, transform.data) 
 
   gl.glBindVertexArray(mesh.id)
   gl.glDrawElements(gl.GL_TRIANGLES, mesh.index.count, gl.GL_UNSIGNED_INT, nil)
@@ -63,11 +60,11 @@ end
 
 -- Pass the material data to the shader
 local function material(g, material)
-  g:glUniform3fv(program.ambientColor, 1, material.ambientColor.data)
-  g:glUniform3fv(program.diffuseColor, 1, material.diffuseColor.data)
-  g:glUniform3fv(program.specularColor, 1, material.specularColor.data)
-  g:glUniform3fv(program.emissiveColor, 1, material.emissiveColor.data)
-  g:glUniform1f(program.hardness, material.hardness)
+  g:glUniform3fv(g.program.ambientColor, 1, material.ambientColor.data)
+  g:glUniform3fv(g.program.diffuseColor, 1, material.diffuseColor.data)
+  g:glUniform3fv(g.program.specularColor, 1, material.specularColor.data)
+  g:glUniform3fv(g.program.emissiveColor, 1, material.emissiveColor.data)
+  g:glUniform1f(g.program.hardness, material.hardness)
 
   texture(g, material.diffuseMap, gl.GL_TEXTURE0)
   texture(g, material.specularMap, gl.GL_TEXTURE1)
@@ -84,7 +81,7 @@ local function render(g, model)
     return
   end
 
-  g:glUseProgram(program.id) -- Use cached program ID if already set
+  g:glUseProgram(g.program.id) -- Use cached program ID if already set
   g:glEnable(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST)
 
   material(g, model.material)

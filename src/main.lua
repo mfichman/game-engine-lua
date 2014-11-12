@@ -23,15 +23,7 @@ local graphics = require('graphics')
 local vec = require('vec')
 local game = require('game')
 
-local model = require('graphics.renderer.deferred.model')
-local quad = asset.open('mesh/quad.obj')
-
-local g = graphics.Context(graphics.Camera())
-g.camera.viewportWidth = game.config.display.width
-g.camera.viewportHeight = game.config.display.height
-g.camera.world = vec.Mat4.look(vec.Vec3(0, 2, -5), vec.Vec3(0, .3, 0), vec.Vec3(0, 1, 0))
-g.camera:update()
-
+--local quad = asset.open('mesh/quad.obj')
 
 game:run()
 --[[

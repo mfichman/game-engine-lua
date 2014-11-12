@@ -18,32 +18,34 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local vec = require('vec')
+local ffi = require('ffi')
+
+local Vec3 = require('vec.vec3')
+local Quat = require('vec.quat')
+
+ffi.cdef[[
+  typedef struct vec_Transform {
+    vec_Vec3 origin;
+    vec_Quat rotation;
+  } vec_Transform;
+]]
 
 local Transform = {}; Transform.__index = Transform
-
-function Transform.new()
-  local self = setmetatable({}, Transform)
-  self.component = {}
-  self.origin = vec.Vec3()
-  self.rotation = vec.Quat()
-  return self
+local TransformType = ffi.typeof('vec_Transform')
+  
+function Transform.new(...)
+  return TransformType(...)
 end
 
-function Transform:componentIs(comp)
-  assert(comp)
-  table.insert(self.component, comp)
-  return comp
+function Transform.identity()
+  return Transform.new(Vec3(), Quat(1, 0, 0, 0))
 end
 
-function Transform:componentDel(comp)
-  assert(comp)
-  for i, v in ipairs(self.component) do
-    if v == comp then
-      table.remove(self.component, i)
-      return
-    end
-  end
+function Transform:__mul(other)
+  return Transform.new(
+    self.rotation * other.origin + self.origin,
+    self.rotation * other.rotation)
 end
 
-return Transform.new
+ffi.metatype(TransformType, Transform)
+return Transform

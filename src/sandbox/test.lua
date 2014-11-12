@@ -18,32 +18,15 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local vec = require('vec')
+local sandbox = require('sandbox')
 
-local Transform = {}; Transform.__index = Transform
+local unsafe = [[
+  local string = require('string')
+  local io = require('io')
+  string.len('unsafe')
+]]
 
-function Transform.new()
-  local self = setmetatable({}, Transform)
-  self.component = {}
-  self.origin = vec.Vec3()
-  self.rotation = vec.Quat()
-  return self
-end
+local fn = sandbox.load(unsafe)
+fn()
 
-function Transform:componentIs(comp)
-  assert(comp)
-  table.insert(self.component, comp)
-  return comp
-end
 
-function Transform:componentDel(comp)
-  assert(comp)
-  for i, v in ipairs(self.component) do
-    if v == comp then
-      table.remove(self.component, i)
-      return
-    end
-  end
-end
-
-return Transform.new

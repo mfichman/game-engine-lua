@@ -20,9 +20,11 @@
 
 local sfml = require('sfml')
 local config = require('game.config')
+local graphics = require('graphics')
 local db = require('db')
 local gl = require('gl')
 local bit = require('bit')
+local vec = require('vec')
 
 local Game = {}; Game.__index = Game
 
@@ -63,6 +65,11 @@ function Game.new()
   self.window = window()
   self.db = db.Database()
   self.config = config
+  self.camera = graphics.Camera()
+  self.camera.viewportWidth = config.display.width
+  self.camera.viewportHeight = config.display.height
+  self.renderer = graphics.DeferredRenderer(self.camera)
+
   return self
 end
 
@@ -71,6 +78,15 @@ end
 
 function Game:render()
   gl.glClear(bit.bor(gl.GL_COLOR_BUFFER_BIT, gl.GL_DEPTH_BUFFER_BIT)) 
+
+  local eye = vec.Vec3(0, 0, -10)
+  local at = vec.Vec3(0, 0, 0)
+  local up = vec.Vec3(0, 1, 0)
+  self.camera.world = vec.Mat4.look(eye, at, up)
+  self.camera:update()
+  self.renderer:render(scene) 
+
+  assert(gl.glGetError() == 0)
 end
 
 function Game:poll()
@@ -94,5 +110,5 @@ function Game:del()
   self.window = nil
 end
 
-return Game.new()
+return Game.new() -- singleton
 

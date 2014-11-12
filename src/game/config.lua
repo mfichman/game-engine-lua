@@ -22,15 +22,14 @@ local io = require('io')
 local os = require('os')
 
 local config = io.open('config.lua'):read('*all')
-local fn, err = load(config..'\nreturn config', 'config.lua')
+local env = {}
+local fn, err = load(config, 'config.lua', bd, env)
 if err then 
   io.write(err, '\n') 
   os.exit(1)
 end
 
-local config = {}
-setfenv(fn, config)
 fn()
 
-return config
+return env
 

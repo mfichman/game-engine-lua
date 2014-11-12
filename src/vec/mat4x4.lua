@@ -30,7 +30,7 @@ ffi.cdef[[
   } vec_Mat4x4;
 ]]
 
-local Mat4x4 = {}; Mat4x4.__index = Mat4x4;
+local Mat4x4 = {}; Mat4x4.__index = Mat4x4
 local Mat4x4Type = ffi.typeof('vec_Mat4x4')
 
 function Mat4x4.new(...)
@@ -267,6 +267,8 @@ function Mat4x4:__mul(other)
     return mulvec4(self, other)
   elseif other.new == Vec3 then
     return mulvec3(self, other)
+  else
+    assert(false, 'invalid multiplicand')
   end
 end
 

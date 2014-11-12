@@ -22,7 +22,7 @@ local RenderOp = {}; RenderOp.__index = RenderOp
 
 -- A render op encapsulates everything needed for a single draw command: the
 -- object to be rendered, the complete transform set and the Z value.
-function RenderOp.new(node, transform)
+function RenderOp.new(node, modelTransform, )
   local self = setmetatable({}, RenderOp)
   local args = args or self
   assert(node, 'node is nil')

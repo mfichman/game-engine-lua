@@ -19,11 +19,12 @@
 -- IN THE SOFTWARE.
 
 return {
+  Buffer=require('graphics.buffer'),
   Camera=require('graphics.camera'),
   Context=require('graphics.context'),
   DeferredRenderer=require('graphics.renderer.deferredrenderer'),
-  Buffer=require('graphics.buffer'),
   FrameBuffer=require('graphics.framebuffer'),
+  HemiLight=require('graphics.hemilight'),
   Material=require('graphics.material'),
   Mesh=require('graphics.mesh'),
   Model=require('graphics.model'),

@@ -67,7 +67,7 @@ function FrameBuffer:stencilBufferIs(target)
 
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.id)
   gl.glFramebufferTexture2D(gl.GL_FRAMEBUFFER, gl.GL_STENCIL_ATTACHMENT, gl.GL_TEXTURE_2D,  target.id, 0)
-  gl.glBindFramebuffer(gl.GL_FRAEMEBUFFER, 0) 
+  gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0) 
 end
 
 function FrameBuffer:check() 

@@ -19,32 +19,35 @@
 -- IN THE SOFTWARE.
 
 local ffi = require('ffi')
-local package = require('package')
-local path = require('path')
+local gl = require('gl')
 
-ffi.cdef(path.open('gl/gl.h'):read('*all'))
-ffi.cdef(path.open('gl/glenum.h'):read('*all'))
+local program
 
--- Look up the OpenGL function in the current executable first. If it's not
--- found, then look in libglew instead for the glew binding.
-local function index(t, k)
-    local ok, fn = pcall(function()
-        return ffi.C[k]
-    end)
-    if ok then
-        return fn
-    else
-      error('symbol not found: gl'..name)
-        --local name = k:gsub('^gl', '__glew')
-        --return gl[name]
-    end
+local function render(g, light)
+  assert(g, 'graphics context is nil')
+  assert(light, 'light is nil')
+  
+  if not program then
+    local asset = require('asset')
+    program = asset.open('shader/hemilight.prog')
+  end
+
+  g:glUseProgram(program.id)
+  g:glEnable(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST, gl.GL_BLEND, gl.GL_DEPTH_CLAMP)
+  -- Blend lights together with alpha blending.
+  -- Use GL_DEPTH_CLAMP to ensures that if the light volume fragment would be
+  -- normally clipped by the positive Z, the fragment is still rendered anyway.
+  -- Otherwise, you can get "holes" where the light volume intersects the far
+  -- clipping plane.   
+  
+  g:glCullFace(gl.GL_FRONT) 
+  -- Render the face of the light volume that's farthest from the camera
+  g:glDepthFunc(gl.GL_ALWAYS)
+  -- Always render light volume fragments, regardless of depth fail/pass
+  g:glBlendFunc(gl.GL_ONE, gl.GL_ONE)
+  g:commit()
 end
 
---local glew = ffi.load('glew')
---local m = {}
---m.glewInit = glew.glewInit()
---ffi.cdef[[
---  int glewInit(void);
---]]
-
-return setmetatable({}, {__index=index})
+return {
+  render=render
+}

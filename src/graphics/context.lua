@@ -31,9 +31,10 @@ function Context.new(camera)
   self.camera = camera
   self.world = vec.Mat4.identity()
   self.program = 0
-  self.enabled = {}
   self.op = {} -- array of objects submitted for rendering in this frame
-  self.gen = 0 -- generation; used to track rendering state changes
+
+  self.state = {enabled={}}
+  self.committed = {enabled={}}
   return self
 end
 
@@ -58,28 +59,55 @@ function Context:finish()
   self.op = {}
 end
 
-function Context:glUseProgram(program)
-  if program ~= self.program then
-    self.program = program
-    gl.glUseProgram(program)
+-- Commit the OpenGL context changes
+function Context:commit()
+  if self.state.cullFace ~= self.committed.cullFace then
+    gl.glCullFace(self.state.cullFace)
   end
+  if self.state.depthFunc ~= self.committed.depthFunc then
+    gl.glDepthFunc(self.state.depthFunc)
+  end
+  if self.state.blendFuncSrc ~= self.committed.blendFuncSrc or
+     self.state.blendFuncDst ~= self.committed.blendFuncDst then
+    gl.glBlendFunc(self.state.blendFuncSrc, self.state.blendFuncDst)
+  end
+  for enum, _ in pairs(self.state.enabled) do
+    if not self.committed.enabled[enum] then
+      gl.glEnable(enum)
+    end
+  end
+  for enum, _ in pairs(self.committed.enabled) do
+    if not self.state.enabled[enum] then
+      gl.glDisable(enum)
+    end
+  end
+
+  self.committed = self.state
+  self.state = {enabled={}}
+end
+
+function Context:glUseProgram(program)
+  self.state.program = program
 end
 
 -- Update the enabled OpenGL context flags
 function Context:glEnable(...)
   for i, enum in ipairs({...}) do
-    if not self.enabled[enum] then
-      gl.glEnable(enum) 
-    end
-    self.enabled[enum] = self.gen
+    self.state.enabled[enum] = true
   end  
-  for enum, gen in pairs(self.enabled) do
-    if gen ~= self.gen then
-      gl.glDisable(enum)
-      self.enabled[enum] = nil
-    end
-  end
-  self.gen = self.gen+1
+end
+
+function Context:glCullFace(val)
+  self.state.cullFace = val
+end
+
+function Context:glDepthFunc(val)
+  self.state.depthFunc = val
+end
+
+function Context:glBlendFunc(src, dst)
+  self.state.blendFuncSrc = src
+  self.state.blendFuncDst = dst
 end
 
 function Context:glUniform3fv(index, count, data)

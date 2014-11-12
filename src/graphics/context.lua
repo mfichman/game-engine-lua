@@ -23,6 +23,7 @@ local vec = require('vec')
 
 local Context = {}; Context.__index = Context
 local Transform = require('graphics.transform')
+local RenderOp = require('graphics.renderop')
 
 -- Creates a rendering context, which tracks/caches graphics pipeline state.
 function Context.new(camera)
@@ -49,8 +50,7 @@ function Context:submit(node, transform)
       self:submit(c, tx)
     end
   else
-    local op = { transform=transform, node=node }
-    table.insert(self.op, op)
+    table.insert(self.op, RenderOp(node, transform))
   end
 end
 

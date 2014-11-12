@@ -18,21 +18,18 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local ffi = require('ffi')
-local gl = require('gl')
+local RenderOp = {}; RenderOp.__index = RenderOp
 
-local GLfloat = ffi.typeof('GLfloat')
-local VoidPtr = ffi.typeof('void*')
-
--- Binds the vertex attribute with the given name to the given attribute index.
-local function defAttribute(struct, id, name)
-  local stride = ffi.sizeof(struct)
-  local offset = ffi.cast(VoidPtr, ffi.offsetof(struct, name))
-  local size = ffi.sizeof(ffi.cast(struct..'*', nil)[name])
-  gl.glEnableVertexAttribArray(id)
-  gl.glVertexAttribPointer(id, size/ffi.sizeof(GLfloat), gl.GL_FLOAT, 0, stride, offset)
+-- A render op encapsulates everything needed for a single draw command: the
+-- object to be rendered, the complete transform set and the Z value.
+function RenderOp.new(node, transform)
+  local self = setmetatable({}, RenderOp)
+  local args = args or self
+  assert(node, 'node is nil')
+  assert(transform, 'transform is nil')
+  self.node = node
+  self.transform = transform -- model, view, projection transform
+  return self
 end
 
-return {
-  defAttribute=defAttribute,
-}
+return RenderOp.new

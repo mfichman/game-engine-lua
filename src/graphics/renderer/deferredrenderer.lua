@@ -32,11 +32,17 @@ local hemilight = require('graphics.renderer.deferred.hemilight')
 --[[
 local spotlight = require('graphics.renderer.deferred.spotlight')
 local pointlight = require('graphics.renderer.deferred.pointlight')
+local decal = require('graphics.renderer.deferred.decal')
 local shadow = require('graphics.renderer.shadow')
-local alpha = require('graphics.renderer.alpha')
-local skybox = require('graphics.renderer.skybox')
-local ui = require('graphics.renderer.ui')
-local decal = require('graphics.renderer.decal')
+
+local skybox = require('graphics.renderer.forward.skybox')
+local transparent = require('graphics.renderer.forward.transparent')
+local particles = require('graphics.renderer.forward.particles')
+local ribbon = require('graphics.renderer.forward.ribbon')
+local billboards = require('graphics.renderer.forward.billboards')
+local quad = require('graphics.renderer.forward.quad')
+local text = require('graphics.renderer.forward.text')
+local ui = require('graphics.renderer.forward.ui')
 ]]
 
 function DeferredRenderer.new(camera)
@@ -110,7 +116,7 @@ function DeferredRenderer:render(scene)
   gl.glStencilMask(0) -- do not update the stencil
 
   -- Pass 1b: Project decals into diffuse buffer
---[[
+--[[ FIXME
   self.decalFrameBuffer:enable()
   gl.glActiveTexture(gl.GL_TEXTURE4)
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.depthBuffer.id)
@@ -133,21 +139,27 @@ function DeferredRenderer:render(scene)
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.emissiveBuffer.id)
   gl.glActiveTexture(gl.GL_TEXTURE4)
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.depthBuffer.id)
-  --self:apply(spotlight.render, scene, SpotLight)
   self:apply(hemilight.render, scene, HemiLight)
-  --self:apply(pointlight.render, scene, PointLight)
+  --self:apply(spotlight.render, scene, SpotLight) FIXME
+  --self:apply(pointlight.render, scene, PointLight) FIXME
 
   -- Pass 3: Skybox
   gl.glStencilFunc(gl.GL_EQUAL, 0, 0xff) -- pass fragments with zero stencil value
-  --skyboxPass_->operator()(scene)
+  --self:apply(skybox.render, scene, Skybox) FIXME
 
   gl.glDisable(gl.GL_STENCIL_TEST) -- ignore stencil for UI/particles
 
   -- Pass 4: Render transparent objects
+  --self:apply(transparent.render, scene, Model) FIXME
+  --self:apply(particles.render, scene, Particles)
+  --self:apply(ribbon.render, scene, Ribbon)
+  --self:apply(billboards.render, scene, Billboards)
+  --self:apply(quad.render, scene, Quad)
+  --self:apply(text.render, scene, Text)
   --alphaPass_->operator()(scene)
 
-  -- Pass 5: Text/UI rendering
-  --uiPass_->operator()(scene)
+  -- Pass 5: Text/UI rendering...?
+  --self:apply(ui.render, scene, Ui) FIXME
 
   self.finalFrameBuffer:disable()
   gl.glDepthMask(gl.GL_TRUE)

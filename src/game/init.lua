@@ -65,10 +65,9 @@ function Game.new()
   self.window = window()
   self.db = db.Database()
   self.config = config
-  self.camera = graphics.Camera()
-  self.camera.viewportWidth = config.display.width
-  self.camera.viewportHeight = config.display.height
-  self.renderer = graphics.DeferredRenderer(self.camera)
+
+  self.context = graphics.Context(config.display.width, config.display.height)
+  self.renderer = graphics.DeferredRenderer(self.context)
 
   return self
 end
@@ -76,16 +75,21 @@ end
 function Game:tick()
 end
 
+
 function Game:render()
   gl.glClear(bit.bor(gl.GL_COLOR_BUFFER_BIT, gl.GL_DEPTH_BUFFER_BIT)) 
 
-  local eye = vec.Vec3(0, 0, -10)
+  local asset = require('asset') -- FIXME
+  local quad = asset.open('mesh/quad.obj')
+  self.context:submit(quad)
+
+  local eye = vec.Vec3(0, 0, -10) -- FIXME
   local at = vec.Vec3(0, 0, 0)
   local up = vec.Vec3(0, 1, 0)
-  self.camera.world = vec.Mat4.look(eye, at, up)
-  self.camera:update()
-  self.renderer:render(scene) 
+  self.context.camera.world = vec.Mat4.look(eye, at, up)
+  self.context.camera:update()
 
+  self.renderer:render() 
   assert(gl.glGetError() == 0)
 end
 

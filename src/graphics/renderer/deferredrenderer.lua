@@ -45,11 +45,12 @@ local text = require('graphics.renderer.forward.text')
 local ui = require('graphics.renderer.forward.ui')
 ]]
 
-function DeferredRenderer.new(camera)
-  assert(camera, 'no camera set')
+function DeferredRenderer.new(context)
+  assert(context, 'no context set')
   local self = setmetatable({}, DeferredRenderer)
+  self.context = context
 
-  local width, height = camera.viewportWidth, camera.viewportHeight
+  local width, height = context.camera.viewportWidth, context.camera.viewportHeight
   self.diffuseBuffer = RenderTarget(width, height, gl.GL_RGB)
   self.specularBuffer = RenderTarget(width, height, gl.GL_RGBA)
   self.normalBuffer = RenderTarget(width, height, gl.GL_RGB16F)
@@ -80,18 +81,22 @@ function DeferredRenderer.new(camera)
   self.finalFrameBuffer:stencilBufferIs(self.depthBuffer)
   self.finalFrameBuffer:check()
 
-  self.context = Context(camera)
-  
   return self
 end
 
-function DeferredRenderer:apply(render, kind, scene)
+function DeferredRenderer:apply(render, kind)
+  for i, op in ipairs(self.context.op) do
+    if op.node.new == kind then
+      self.context.worldTransform = op.worldTransform
+      render(self.context, op.node)
+    end
+  end
 end
 
-function DeferredRenderer:render(scene)
+function DeferredRenderer:render()
   -- Pass 0: Render shadow maps
 --[[
-  shadow.render(scene)
+  self:apply(shadow.render, Model)
 ]]
 
   -- Pass 1: Write material properties into the material G-Buffers
@@ -106,7 +111,7 @@ function DeferredRenderer:render(scene)
   -- Pass 1a: Write material properties in to the material G-Buffers
   self.frameBuffer:enable()
   gl.glClear(bit.bor(gl.GL_COLOR_BUFFER_BIT, gl.GL_DEPTH_BUFFER_BIT, gl.GL_STENCIL_BUFFER_BIT))
-  self:apply(model.render, scene, Model)
+  self:apply(model.render, Model)
   self.frameBuffer:disable()
 
   -- In passes 1b/2, only write to pixels that were previously written to in
@@ -120,7 +125,7 @@ function DeferredRenderer:render(scene)
   self.decalFrameBuffer:enable()
   gl.glActiveTexture(gl.GL_TEXTURE4)
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.depthBuffer.id)
-  self:apply(decal.render, scene, Decals)
+  self:apply(decal.render, Decals)
   self.decalFrameBuffer:disable()
 ]]
 
@@ -139,27 +144,26 @@ function DeferredRenderer:render(scene)
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.emissiveBuffer.id)
   gl.glActiveTexture(gl.GL_TEXTURE4)
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.depthBuffer.id)
-  self:apply(hemilight.render, scene, HemiLight)
-  --self:apply(spotlight.render, scene, SpotLight) FIXME
-  --self:apply(pointlight.render, scene, PointLight) FIXME
+  self:apply(hemilight.render, HemiLight)
+  --self:apply(spotlight.render, SpotLight) FIXME
+  --self:apply(pointlight.render, PointLight) FIXME
 
   -- Pass 3: Skybox
   gl.glStencilFunc(gl.GL_EQUAL, 0, 0xff) -- pass fragments with zero stencil value
-  --self:apply(skybox.render, scene, Skybox) FIXME
+  --self:apply(skybox.render, Skybox) FIXME
 
   gl.glDisable(gl.GL_STENCIL_TEST) -- ignore stencil for UI/particles
 
   -- Pass 4: Render transparent objects
-  --self:apply(transparent.render, scene, Model) FIXME
-  --self:apply(particles.render, scene, Particles)
-  --self:apply(ribbon.render, scene, Ribbon)
-  --self:apply(billboards.render, scene, Billboards)
-  --self:apply(quad.render, scene, Quad)
-  --self:apply(text.render, scene, Text)
-  --alphaPass_->operator()(scene)
+  --self:apply(transparent.render, Model) FIXME
+  --self:apply(particles.render, Particles)
+  --self:apply(ribbon.render, Ribbon)
+  --self:apply(billboards.render, Billboards)
+  --self:apply(quad.render, Quad)
+  --self:apply(text.render, Text)
 
   -- Pass 5: Text/UI rendering...?
-  --self:apply(ui.render, scene, Ui) FIXME
+  --self:apply(ui.render, Ui) FIXME
 
   self.finalFrameBuffer:disable()
   gl.glDepthMask(gl.GL_TRUE)

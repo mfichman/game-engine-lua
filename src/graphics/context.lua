@@ -24,13 +24,17 @@ local vec = require('vec')
 local Context = {}; Context.__index = Context
 local Transform = require('graphics.transform')
 local RenderOp = require('graphics.renderop')
+local Camera = require('graphics.camera')
 
 -- Creates a rendering context, which tracks/caches graphics pipeline state.
-function Context.new(camera)
-  assert(camera, 'camera is missing from context')
+function Context.new(width, height)
+  assert(width, 'width is nil')
+  assert(height, 'height is nil')
   local self = setmetatable({}, Context) 
-  self.camera = camera
-  self.world = vec.Mat4.identity()
+  self.camera = Camera()
+  self.camera.viewportWidth = width
+  self.camera.viewportHeight = height
+  self.worldTransform = vec.Mat4.identity()
   self.program = 0
   self.op = {} -- array of objects submitted for rendering in this frame
 
@@ -42,15 +46,16 @@ end
 -- Submit a node to the rendering pipline using the given model transform. 
 -- If a Transform object is submitted, then propagate its transform to all of
 -- its children.
-function Context:submit(node, transform)
-  local transform = transform or vec.Transform.identity()
+function Context:submit(node, worldTransform)
+  local worldTransform = worldTransform or vec.Transform.identity()
   if Transform == node.new then
-    local tx = transform * vec.Transform.new(node.origin, node.rotation)
+    local tx = worldTransform * vec.Transform.new(node.origin, node.rotation)
     for _, c in ipairs(node.component) do
       self:submit(c, tx)
     end
   else
-    table.insert(self.op, RenderOp(node, transform))
+    local tx = worldTransform
+    table.insert(self.op, RenderOp(node, vec.Mat4.transform(tx.rotation, tx.origin)))
   end
 end
 
@@ -61,6 +66,9 @@ end
 
 -- Commit the OpenGL context changes
 function Context:commit()
+  if self.state.program ~= self.committed.program then
+    gl.glUseProgram(self.state.program)
+  end
   if self.state.cullFace ~= self.committed.cullFace then
     gl.glCullFace(self.state.cullFace)
   end
@@ -71,6 +79,7 @@ function Context:commit()
      self.state.blendFuncDst ~= self.committed.blendFuncDst then
     gl.glBlendFunc(self.state.blendFuncSrc, self.state.blendFuncDst)
   end
+
   for enum, _ in pairs(self.state.enabled) do
     if not self.committed.enabled[enum] then
       gl.glEnable(enum)

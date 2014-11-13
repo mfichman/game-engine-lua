@@ -66,6 +66,10 @@ local g = graphics.Shader(gl.GL_GEOMETRY_SHADER, '#version 330\nvoid main() {}')
 local p = graphics.Program(f, v, nil)
 assert(p.position)
 assert(p.rotation)
+gl.glUseProgram(p.id)
+local x = ffi.new('GLfloat[3]')
+gl.glUniform3fv(p.position, 1, x)
+assert(gl.glGetError()==0)
 
 -- Mesh
 local m = graphics.Mesh()
@@ -79,7 +83,7 @@ c.mode = 'ortho'
 c:update()
 
 -- Context
-local ctx = graphics.Context(c)
+local ctx = graphics.Context(800, 600)
 ctx:glEnable(gl.GL_DEPTH_TEST)
 ctx:glEnable(gl.GL_DEPTH_TEST)
 ctx:glEnable(gl.GL_CULL_FACE)
@@ -113,8 +117,14 @@ ctx:submit(node)
 assert(#ctx.op == 1)
 assert(ctx.op[1])
 assert(ctx.op[1].node.new == graphics.Model)
-assert(ctx.op[1].transform.origin.x == 3)
-assert(ctx.op[1].transform.origin.y == 6)
-assert(ctx.op[1].transform.origin.z == 9)
+--assert(ctx.op[1].worldTransform.origin.x == 3)
+--assert(ctx.op[1].worldTransform.origin.y == 6)
+--assert(ctx.op[1].worldTransform.origin.z == 9)
 
+local asset = require('asset')
+local p = asset.open('shader/deferred/model.prog')
+local arr = ffi.new('GLfloat[3]')
 
+gl.glUseProgram(p.id)
+gl.glUniform3fv(p.ambientColor, 1, arr)
+assert(gl.glGetError() == 0)

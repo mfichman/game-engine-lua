@@ -34,15 +34,14 @@ local function mesh(g, mesh)
   mesh:sync()
   
   -- Calculate the normal matrix and pass it to the vertex shader
-  local camera = g.camera
-  local normalMatrix = (camera.view * g.world):inverse():transpose()
+  local normalMatrix = (g.camera.viewTransform * g.worldTransform):inverse():transpose()
   local temp = ffi.new('GLfloat[9]', {
     normalMatrix.data[0], normalMatrix.data[1], normalMatrix.data[2], 
     normalMatrix.data[4], normalMatrix.data[5], normalMatrix.data[6], 
     normalMatrix.data[8], normalMatrix.data[9], normalMatrix.data[10], 
   })
 
-  local transform = camera.transform * g.world
+  local transform = g.camera.transform * g.worldTransform
 
   -- Pass the model matrix to the vertex shader
   g:glUniformMatrix3fv(program.normalMatrix, 1, 0, temp)
@@ -62,8 +61,8 @@ end
 
 -- Pass the material data to the shader
 local function material(g, material)
-  g:glUniform3fv(program.ambientColor, 1, material.ambientColor.data)
   g:glUniform3fv(program.diffuseColor, 1, material.diffuseColor.data)
+  g:glUniform3fv(program.ambientColor, 1, material.ambientColor.data)
   g:glUniform3fv(program.specularColor, 1, material.specularColor.data)
   g:glUniform3fv(program.emissiveColor, 1, material.emissiveColor.data)
   g:glUniform1f(program.hardness, material.hardness)

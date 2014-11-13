@@ -22,10 +22,11 @@ local asset = require('asset')
 local graphics = require('graphics')
 local vec = require('vec')
 local game = require('game')
+local dbg = require('dbg')
 
 --local quad = asset.open('mesh/quad.obj')
 
-game:run()
+xpcall(function() game:run() end, dbg.start)
 --[[
 while true do
   local event = sfml.Event()

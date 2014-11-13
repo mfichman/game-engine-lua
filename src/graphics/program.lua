@@ -85,7 +85,7 @@ function Program:link()
   for i=0,uniforms[0]-1 do
     gl.glGetActiveUniform(self.id, i, maxlen[0], nil, nil, nil, buf)
     local name = ffi.string(buf)
-    self[name] = i
+    self[name] = gl.glGetUniformLocation(self.id, buf)
   end
 end
 

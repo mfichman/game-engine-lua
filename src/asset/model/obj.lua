@@ -56,6 +56,7 @@ local function line(context, str)
     context.model = graphics.Model()
     context.model.mesh = graphics.Mesh()
     context.model.material = graphics.Material()
+    context.model.name = rest
     context.transform:componentIs(context.model)
     context.position = {}
     context.texcoord = {}

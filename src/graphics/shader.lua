@@ -45,7 +45,7 @@ function Shader:compile()
   local status = ffi.new('GLint[1]')
   gl.glGetShaderiv(self.id, gl.GL_COMPILE_STATUS, status)
   if status[0] == 0 then
-    io:write(self:log())
+    io.write(self:log())
   end
 end
 

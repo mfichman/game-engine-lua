@@ -36,10 +36,10 @@ function Camera.new()
   self.fieldOfView = 45
   self.mode = 'perspective'
   self.transform = vec.Mat4.identity()
-  self.projection = vec.Mat4.identity()
-  self.view = vec.Mat4.identity()
-  self.inverseView = vec.Mat4.identity()
-  self.world = vec.Mat4.identity()
+  self.projectionTransform = vec.Mat4.identity()
+  self.viewTransform = vec.Mat4.identity()
+  self.inverseViewTransform = vec.Mat4.identity()
+  self.worldTransform = vec.Mat4.identity()
 
   return self
 end
@@ -48,17 +48,17 @@ end
 -- transform values.
 function Camera:update()
   if self.mode == 'ortho' then
-    self.projection = vec.Mat4.ortho(self.left, self.right, self.bottom, self.top, self.near, self.far)
+    self.projectionTransform = vec.Mat4.ortho(self.left, self.right, self.bottom, self.top, self.near, self.far)
   elseif self.mode == 'perspective' then
     local aspectRatio = self.viewportWidth/self.viewportHeight
-    self.projection = vec.Mat4.perspective(self.fieldOfView, aspectRatio, self.near, self.far)
+    self.projectionTransform = vec.Mat4.perspective(self.fieldOfView, aspectRatio, self.near, self.far)
   else
     error('invalid camera mode')
   end
 
-  self.view = self.world:inverse()
-  self.inverseView = self.world
-  self.transform = self.projection * self.view
+  self.viewTransform = self.worldTransform:inverse()
+  self.inverseViewTransform = self.worldTransform
+  self.transform = self.projectionTransform * self.viewTransform
 end
 
 return Camera.new

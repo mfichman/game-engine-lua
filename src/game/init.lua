@@ -67,6 +67,21 @@ function Game.new()
   self.config = config
 
   self.context = graphics.Context(config.display.width, config.display.height)
+--[[
+  self.context.camera.mode = 'ortho' -- FIXME
+
+  self.context.camera.left = -2
+  self.context.camera.right = 2
+
+  self.context.camera.bottom = 2 -- ???
+  self.context.camera.top = -2 -- ???
+
+  self.context.camera.near = -2
+  self.context.camera.far = 2
+
+  self.context.camera:update()
+
+--]]
   self.renderer = graphics.DeferredRenderer(self.context)
 
   return self
@@ -75,10 +90,7 @@ end
 function Game:tick()
 end
 
-
 function Game:render()
-  gl.glClear(bit.bor(gl.GL_COLOR_BUFFER_BIT, gl.GL_DEPTH_BUFFER_BIT)) 
-
   local asset = require('asset') -- FIXME
   local quad = asset.open('mesh/quad.obj')
   self.context:submit(quad)
@@ -86,9 +98,9 @@ function Game:render()
   local eye = vec.Vec3(0, 0, -10) -- FIXME
   local at = vec.Vec3(0, 0, 0)
   local up = vec.Vec3(0, 1, 0)
-  self.context.camera.world = vec.Mat4.look(eye, at, up)
+  self.context.camera.worldTransform = vec.Mat4.look(eye, at, up)
+  --self.context.camera.world = vec.Mat4.identity()
   self.context.camera:update()
-
   self.renderer:render() 
   assert(gl.glGetError() == 0)
 end

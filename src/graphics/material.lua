@@ -29,10 +29,10 @@ function Material.new(args)
   self.specularMap = args.specularMap
   self.normalMap = args.normalMap
   self.emissiveMap = args.emissiveMap
-  self.ambientColor = args.ambientColor or vec.Vec4()
-  self.diffuseColor = args.diffuseColor or vec.Vec4()
-  self.specularColor = args.specularColor or vec.Vec4()
-  self.emissiveColor = args.emissiveColor or vec.Vec4()
+  self.ambientColor = args.ambientColor or vec.Vec4(0, 0, 0, 1)
+  self.diffuseColor = args.diffuseColor or vec.Vec4(1, 1, 1, 1)
+  self.specularColor = args.specularColor or vec.Vec4(1, 1, 1, 1)
+  self.emissiveColor = args.emissiveColor or vec.Vec4(0, 0, 0, 1)
   self.hardness = args.hardnesss or 40
   self.opacity = args.opacity or 1
   self.blendMode = args.blendMode or 'alpha'

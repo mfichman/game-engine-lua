@@ -32,6 +32,7 @@ local function index(t, k)
         return ffi.C[k]
     end)
     if ok then
+        rawset(t, k, fn)
         return fn
     else
       error('symbol not found: gl'..name)

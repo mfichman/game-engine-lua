@@ -61,10 +61,12 @@ function Mesh:sync()
 
   gl.glBindVertexArray(self.id)
   gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vertex.id)
+
   struct.defAttribute('graphics_MeshVertex', 0, 'position')
   struct.defAttribute('graphics_MeshVertex', 1, 'normal')
   struct.defAttribute('graphics_MeshVertex', 2, 'tangent')
   struct.defAttribute('graphics_MeshVertex', 3, 'texcoord')
+
   gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, self.index.id)
   gl.glBindVertexArray(0)
   self.status = 'synced'

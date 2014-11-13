@@ -53,9 +53,17 @@ local function line(context, str)
       context.model.material = asset.open(rest)
     end
   elseif 'o' == cmd then
+    local asset = require('asset')
+    local white = asset.open('texture/white.png')
+    local blue = asset.open('texture/blue.png')
     context.model = graphics.Model()
     context.model.mesh = graphics.Mesh()
-    context.model.material = graphics.Material()
+    context.model.material = graphics.Material {
+      diffuseMap=white,
+      specularMap=white,
+      emissiveMap=white,
+      normalMap=blue,
+    }
     context.model.name = rest
     context.transform:componentIs(context.model)
     context.position = {}
@@ -73,7 +81,6 @@ local function line(context, str)
     table.insert(context.normal, vec.Vec3(tonumber(x), tonumber(y), tonumber(z)))
   elseif 'f' == cmd then
     local i, j, k = rest:match('(.+)%s+(.+)%s+(.+)')
-
     context.model.mesh.index:push(vertex(context, i))
     context.model.mesh.index:push(vertex(context, j))
     context.model.mesh.index:push(vertex(context, k))

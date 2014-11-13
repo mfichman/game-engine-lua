@@ -26,7 +26,7 @@ local Camera = {}; Camera.__index = Camera
 function Camera.new()
   local self = setmetatable({}, Camera)
   self.far = 1000
-  self.near = 1
+  self.near = .1
   self.left = 0
   self.right = 0
   self.top = 0

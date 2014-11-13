@@ -32,7 +32,7 @@ local function mesh(g, mesh)
   assert(g.camera, 'no camera!')
 
   mesh:sync()
-  
+
   -- Calculate the normal matrix and pass it to the vertex shader
   local normalMatrix = (g.camera.viewTransform * g.worldTransform):inverse():transpose()
   local temp = ffi.new('GLfloat[9]', {
@@ -67,10 +67,10 @@ local function material(g, material)
   g:glUniform3fv(program.emissiveColor, 1, material.emissiveColor.data)
   g:glUniform1f(program.hardness, material.hardness)
 
-  texture(g, material.diffuseMap, gl.GL_TEXTURE0)
-  texture(g, material.specularMap, gl.GL_TEXTURE1)
-  texture(g, material.normalMap, gl.GL_TEXTURE2)
-  texture(g, material.emissiveMap, gl.GL_TEXTURE3)
+  texture(g, material.diffuseMap, gl.GL_TEXTURE0+0)
+  texture(g, material.specularMap, gl.GL_TEXTURE0+1)
+  texture(g, material.normalMap, gl.GL_TEXTURE0+2)
+  texture(g, material.emissiveMap, gl.GL_TEXTURE0+3)
 end
 
 -- Render a model (a mesh with an attached texture and material)
@@ -81,13 +81,20 @@ local function render(g, model)
   if model.material.opacity < 1 then
     return
   end
-  if not program then
+  if program then
+    g:glUseProgram(program.id) -- Use cached program ID if already set
+  else
     local asset = require('asset')
-    program = asset.open('shader/deferred/model.prog')
+    program = asset.open('shader/deferred/model.prog') 
+    gl.glUseProgram(program.id)
+    gl.glUniform1i(program.diffuseMap, 0)
+    gl.glUniform1i(program.specularMap, 1)
+    gl.glUniform1i(program.normalMap, 2)
+    gl.glUniform1i(program.emissiveMap, 3)
   end
 
-  g:glUseProgram(program.id) -- Use cached program ID if already set
-  g:glEnable(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST)
+  gl.glEnable(gl.GL_CULL_FACE)
+  gl.glEnable(gl.GL_DEPTH_TEST)
   g:commit()
 
   material(g, model.material)

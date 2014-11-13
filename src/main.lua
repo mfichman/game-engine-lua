@@ -18,26 +18,7 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local asset = require('asset')
-local graphics = require('graphics')
-local vec = require('vec')
 local game = require('game')
 local dbg = require('dbg')
 
---local quad = asset.open('mesh/quad.obj')
-
 xpcall(function() game:run() end, dbg.start)
---[[
-while true do
-  local event = sfml.Event()
-  while window:pollEvent(event) == 1 do
-    if event.type == sfml.EvtClosed then os.exit(0) end
-  end
-
-  model.render(g, quad.component[1]) 
-  local m = quad.component[1]
-
-  window:display()
-end
-
-]]

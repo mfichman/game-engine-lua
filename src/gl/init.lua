@@ -25,20 +25,27 @@ local path = require('path')
 ffi.cdef(path.open('gl/gl.h'):read('*all'))
 ffi.cdef(path.open('gl/glenum.h'):read('*all'))
 
+local glew
+
+if ffi.os == 'Windows' then
+  ffi.load('glew', true)
+end
+
+local function symbol(name)
+  local ok, ret = pcall(function() return ffi.C[name] end)
+  if ok then return ret end
+  local name = k:gsub('^gl', '__glew')
+  local ok, ret = pcall(function() return ffi.C[name] end)
+  if ok then return ret end
+  error('symbol not found: '..name)
+end
+
 -- Look up the OpenGL function in the current executable first. If it's not
 -- found, then look in libglew instead for the glew binding.
 local function index(t, k)
-    local ok, fn = pcall(function()
-        return ffi.C[k]
-    end)
-    if ok then
-        rawset(t, k, fn)
-        return fn
-    else
-      error('symbol not found: gl'..name)
-        --local name = k:gsub('^gl', '__glew')
-        --return gl[name]
-    end
+    local fn = symbol(k)
+    rawset(t, k, fn)
+    return fn
 end
 
 --local glew = ffi.load('glew')

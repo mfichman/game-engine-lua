@@ -1,15 +1,19 @@
 local ffi = require('ffi')
 local path = require('path')
-local window = ffi.load('csfml-window')
-local graphics = ffi.load('csfml-graphics')
+
+if ffi.os == 'Windows' then
+  ffi.load('csfml-window-2', true)
+  ffi.load('csfml-graphics-2', true)
+else
+  ffi.load('csfml-window', true)
+  ffi.load('csfml-graphics', true)
+end
 
 ffi.cdef(path.open('sfml/sfml-window.h'):read('*all'))
 ffi.cdef(path.open('sfml/sfml-graphics.h'):read('*all'))
 
 local function symbol(name)
-  local ok, ret = pcall(function() return window[name] end)
-  if ok then return ret end
-  local ok, ret = pcall(function() return graphics[name] end)
+  local ok, ret = pcall(function() return ffi.C[name] end)
   if ok then return ret end
   error('symbol not found: '..name)
 end

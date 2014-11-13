@@ -78,15 +78,15 @@ local function render(g, model)
   assert(g, 'graphics context is nil')
   assert(model, 'model is nil')
   assert(model.material, 'model has no material!')
-  if model.material.opacity < 1 then
-    return
-  end
+
+  if model.material.opacity < 1 then return end
+
   if program then
     g:glUseProgram(program.id) -- Use cached program ID if already set
   else
     local asset = require('asset')
     program = asset.open('shader/deferred/model.prog') 
-    gl.glUseProgram(program.id)
+    g:glUseProgram(program.id)
     gl.glUniform1i(program.diffuseMap, 0)
     gl.glUniform1i(program.specularMap, 1)
     gl.glUniform1i(program.normalMap, 2)

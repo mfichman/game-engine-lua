@@ -273,6 +273,7 @@ local function mulvec4(self, v)
     m[3]*v.x + m[7]*v.y + m[11]*v.z + m[15]*v.w)
 end
 
+-- Transform a vector & do the perspective divide
 local function mulvec3(self, v)
     local m = self.data
     local invw = 1 / (m[3]*v.x + m[7]*v.y + m[11]*v.z + m[15]);
@@ -281,6 +282,14 @@ local function mulvec3(self, v)
       (m[0]*v.x + m[4]*v.y + m[8]*v.z + m[12])*invw,
       (m[1]*v.x + m[5]*v.y + m[9]*v.z + m[13])*invw,
       (m[2]*v.x + m[6]*v.y + m[10]*v.z + m[14])*invw)
+end
+
+function Mat4x4:mulnormal(v)
+  local m = self.data
+  return Vec3(
+    m[0]*v.x + m[4]*v.y + m[8]*v.z,
+    m[1]*v.x + m[5]*v.y + m[9]*v.z,
+    m[2]*v.x + m[6]*v.y + m[10]*v.z)
 end
 
 function Mat4x4:__mul(other)

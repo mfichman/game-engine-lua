@@ -86,7 +86,7 @@ local function render(g, model)
   else
     local asset = require('asset')
     program = asset.open('shader/deferred/model.prog') 
-    g:glUseProgram(program.id)
+    gl.glUseProgram(program.id)
     gl.glUniform1i(program.diffuseMap, 0)
     gl.glUniform1i(program.specularMap, 1)
     gl.glUniform1i(program.normalMap, 2)

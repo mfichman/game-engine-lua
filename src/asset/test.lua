@@ -45,5 +45,21 @@ assert(m.mesh.vertex)
 assert(m.mesh.index)
 
 
+local m = asset.open('mesh/quad.obj')
+assert(m)
+assert(m.new == graphics.Transform)
+
+local m = m.component[1]
+assert(m)
+assert(m.new == graphics.Model)
+assert(m.material)
+assert(m.mesh)
+assert(m.mesh.vertex)
+assert(m.mesh.index)
+
+
+
+
+
 
 

@@ -23,13 +23,14 @@ local loaders = {
   ['%.jpg$']=require('asset.texture'),
   ['%.gif$']=require('asset.texture'),
   ['%.obj$']=require('asset.model.obj'),
-  ['%.prog']=require('asset.program'),
-  ['%.vert']=require('asset.shader'),
-  ['%.geom']=require('asset.shader'),
-  ['%.frag']=require('asset.shader'),
+  ['%.mtl$']=require('asset.material.mtl'),
+  ['%.prog$']=require('asset.program'),
+  ['%.vert$']=require('asset.shader'),
+  ['%.geom$']=require('asset.shader'),
+  ['%.frag$']=require('asset.shader'),
 }
 
-local loaded = {}
+local loaded = require('asset.loaded')
 
 local function open(k)
   if loaded[k] then return loaded[k] end

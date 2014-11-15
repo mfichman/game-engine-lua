@@ -66,42 +66,57 @@ function Game.new()
   self.db = db.Database()
   self.config = config
 
-  self.context = graphics.Context(config.display.width, config.display.height)
+  self.graphics = graphics.Context(config.display.width, config.display.height)
 --[[
-  self.context.camera.mode = 'ortho' -- FIXME
+  self.graphics.camera.mode = 'ortho' -- FIXME
 
-  self.context.camera.left = -2
-  self.context.camera.right = 2
+  self.graphics.camera.left = -2
+  self.graphics.camera.right = 2
 
-  self.context.camera.bottom = 2 -- ???
-  self.context.camera.top = -2 -- ???
+  self.graphics.camera.bottom = 2 -- ???
+  self.graphics.camera.top = -2 -- ???
 
-  self.context.camera.near = -2
-  self.context.camera.far = 2
+  self.graphics.camera.near = -2
+  self.graphics.camera.far = 2
 
-  self.context.camera:update()
+  self.graphics.camera:update()
 
 --]]
-  self.renderer = graphics.DeferredRenderer(self.context)
+  self.renderer = graphics.DeferredRenderer(self.graphics)
 
   return self
 end
 
+local function processTable(table, event)
+  for id, component in pairs(table.component) do
+    if not component[event] then return end
+    component[event](component, id)
+  end 
+end
+
+local function processDb(db, event)
+  for kind, table in pairs(db.table) do
+    processTable(table, event)
+  end
+end
+
+function Game:apply(event)
+  processDb(self.db, event)
+end
+
 function Game:tick()
+  self:apply('tick')
 end
 
 function Game:render()
-  local asset = require('asset') -- FIXME
-  local quad = asset.open('mesh/quad.obj')
-  self.context:submit(quad)
-
   local eye = vec.Vec3(0, 0, -10) -- FIXME
   local at = vec.Vec3(0, 0, 0)
   local up = vec.Vec3(0, 1, 0)
-  self.context.camera.worldTransform = vec.Mat4.look(eye, at, up)
-  --self.context.camera.world = vec.Mat4.identity()
-  self.context.camera:update()
+  self.graphics.camera.worldTransform = vec.Mat4.look(eye, at, up)
+  self.graphics.camera:update()
+  self:apply('render')
   self.renderer:render() 
+  self.graphics:finish()
   assert(gl.glGetError() == 0)
 end
 

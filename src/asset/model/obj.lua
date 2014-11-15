@@ -20,6 +20,7 @@
 
 local graphics = require('graphics')
 local vec = require('vec')
+local loaded = require('asset.loaded')
 
 -- Returns a vertex from the cache, if it exists in the cache. Otherwise, inserts
 -- a new vertex into the vertex buffer and returns its index.
@@ -49,22 +50,15 @@ local function line(context, str)
 
   if 'usemtl' == cmd then
     if rest ~= 'None' then
-      local asset = require('asset')
-      context.model.material = asset.open(rest)
+      local path = string.format('model/%s/%s', context.mtllib, rest)
+      context.model.material = loaded[path]
+      assert(context.model.material, 'material not found: '..path)
     end
   elseif 'o' == cmd then
-    local asset = require('asset')
-    local white = asset.open('texture/white.png')
-    local blue = asset.open('texture/blue.png')
     context.model = graphics.Model()
     context.model.mesh = graphics.Mesh()
-    context.model.material = graphics.Material {
-      diffuseMap=white,
-      specularMap=white,
-      emissiveMap=white,
-      normalMap=blue,
-    }
     context.model.name = rest
+    context.model.material = graphics.Material()
     context.transform:componentIs(context.model)
     context.position = {}
     context.texcoord = {}
@@ -84,9 +78,11 @@ local function line(context, str)
     context.model.mesh.index:push(vertex(context, i))
     context.model.mesh.index:push(vertex(context, j))
     context.model.mesh.index:push(vertex(context, k))
-  elseif 'mttlib' == cmd then
+  elseif 'mtllib' == cmd then
     local asset = require('asset')
-    asset.open(rest)
+    local path = context.path:gsub('([^/]+)$', rest)
+    asset.open(path)
+    context.mtllib = rest
   else
     -- Unsupported command; skip
   end
@@ -97,7 +93,7 @@ local function open(path)
   local fd = io.open(path)
   if not fd then error('file not found: '..path) end
 
-  local context = { transform=graphics.Transform() } 
+  local context = { transform=graphics.Transform(), path=path } 
   for str in fd:lines() do
     line(context, str)
   end
@@ -105,5 +101,5 @@ local function open(path)
 end
 
 return {
-  open=open
+  open=open,
 }

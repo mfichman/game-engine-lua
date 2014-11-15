@@ -52,6 +52,7 @@ assert(v3.data[1] == 4)
 assert(v3.data[2] == 6)
 assert(v3.data[3] == 8)
 assert(ffi.sizeof(v3) == ffi.sizeof('vec_Scalar')*4)
+assert(v3 == vec.Vec4(2, 4, 6, 8))
 
 
 -- Vec3
@@ -78,6 +79,7 @@ assert(v3.data[0] == 2)
 assert(v3.data[1] == 4)
 assert(v3.data[2] == 6)
 assert(ffi.sizeof(v3) == ffi.sizeof('vec_Scalar')*3)
+assert(v3 == vec.Vec3(2, 4, 6))
 
 
 -- Vec2
@@ -101,6 +103,8 @@ assert(v3.data[0] == 2)
 assert(v3.data[1] == 4)
 assert(ffi.sizeof(v3) == ffi.sizeof('vec_Scalar')*2)
 
+assert(v3 == vec.Vec2(2, 4))
+
 -- Matrix
 local m = vec.Mat4.frustum(-10, 10, -10, 10, -10, 10)
 local m = vec.Mat4.perspective(90, 1, 1, 100)
@@ -109,7 +113,7 @@ local m = vec.Mat4.ortho(-10, 100, -10, 10, -10, 10)
 local m = vec.Mat4.identity()
 local m = vec.Mat4.translate(vec.Vec3(1, 2, 3))
 local m = vec.Mat4.scale(1, 2, 3)
-local m = vec.Mat4.rotate(vec.Quat.new(1, 2, 3, 8))
+local m = vec.Mat4.rotate(vec.Quat(1, 2, 3, 8))
 local m = vec.Mat4.perspective(90, 1, 1, 100):inverse()
 
 local a = vec.Mat4.translate(vec.Vec3(1, 2, 3))
@@ -118,14 +122,23 @@ local m = a * b
 
 local v3 = m * vec.Vec4(1, 2, 3, 4)
 
+local m = vec.Mat4.look(vec.Vec3(0, -15, 30), vec.Vec3(0, 0, 0), vec.Vec3(0, 1, 0))
+local v4 = m * vec.Vec4(0, 0, 0, 1)
+assert(v4.x == 0)
+assert(v4.y == 0)
+assert((v4.z - (-33.541019)) < 0.00001)
+local v4 = m:inverse() * vec.Vec4(0, 0, 0, 1)
+assert(v4.x == 0)
+assert(v4.y == -15)
+assert(v4.z == 30)
 
 -- Quaternion
-local q = vec.Quat.new(1, 2, 3, 4)
+local q = vec.Quat(1, 2, 3, 4)
 local v = q * vec.Vec3(1, 2, 3)
 assert(v.x == 25)
 assert(v.y == 2)
 assert(v.z == -9)
-local p = vec.Quat.new(2, 2, 0, 0)
+local p = vec.Quat(2, 2, 0, 0)
 local d = p * q
 assert(d.w == -2)
 assert(d.x == 6)
@@ -134,8 +147,8 @@ assert(d.z == 14)
 
 
 -- Transform
-local t = vec.Transform(v, vec.Quat.identity())
-local r = vec.Transform(vec.Vec3(), vec.Quat.identity())
+local t = vec.Transform.new(v, vec.Quat())
+local r = vec.Transform.new(vec.Vec3(), vec.Quat())
 
 local result = t * r
 assert(result.origin.x == 25)

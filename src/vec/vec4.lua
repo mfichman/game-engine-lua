@@ -78,6 +78,10 @@ function Vec4:__tostring()
   return string.format('%f, %f, %f, %f', self.x, self.y, self.z, self.w)
 end
 
+function Vec4:__eq(other)
+  return self.x == other.x and self.y == other.y and self.z == other.z and self.w == other.w
+end
+
 ffi.metatype(Vec4Type, Vec4)
 return Vec4.new
 

@@ -52,16 +52,16 @@ end
 -- Link the program
 function Program:link()
   if self.fragment then 
-    gl.glAttachShader(self.id, self.fragment.id) 
     self.fragment:compile()
+    gl.glAttachShader(self.id, self.fragment.id) 
   end
   if self.vertex then 
-    gl.glAttachShader(self.id, self.vertex.id) 
     self.vertex:compile()
+    gl.glAttachShader(self.id, self.vertex.id) 
   end
   if self.geometry then 
-    gl.glAttachShader(self.id, self.geometry.id) 
     self.geometry:compile()
+    gl.glAttachShader(self.id, self.geometry.id) 
   end
   gl.glLinkProgram(self.id)
 

@@ -27,13 +27,16 @@ local Shader = {}; Shader.__index = Shader
 -- Create a new OpenGL shader 
 function Shader.new(kind, source)
   local self = setmetatable({}, Shader)
-  self.id = gl.glCreateShader(kind)
   self.source = source
+  self.kind = kind
   return self
 end
 
 -- Compile the shader
 function Shader:compile()
+  if self.id then return end
+  self.id = gl.glCreateShader(self.kind)
+
   local cstr = ffi.new('GLchar[?]', self.source:len()+1)
   ffi.copy(cstr, self.source)
 

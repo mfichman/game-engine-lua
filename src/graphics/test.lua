@@ -122,7 +122,7 @@ assert(ctx.op[1].node.new == graphics.Model)
 --assert(ctx.op[1].worldTransform.origin.z == 9)
 
 local asset = require('asset')
-local p = asset.open('shader/deferred/model.prog')
+local p = asset.open('shader/deferred/Model.prog')
 local arr = ffi.new('GLfloat[3]')
 
 gl.glUseProgram(p.id)

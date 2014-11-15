@@ -22,8 +22,9 @@
 
 local ffi = require('ffi')
 local gl = require('gl')
+local asset = require('asset')
 
-local program
+local program, white, blue
 
 -- Render a mesh, using the current bindings for the material and texture
 local function mesh(g, mesh)
@@ -54,7 +55,7 @@ end
 
 -- Pass the texture data to the shader
 local function texture(g, texture, index)
-  if not texture then return end
+  assert(texture, 'texture is nil')
   gl.glActiveTexture(index)
   gl.glBindTexture(gl.GL_TEXTURE_2D, texture.id) 
 end
@@ -67,10 +68,10 @@ local function material(g, material)
   g:glUniform3fv(program.emissiveColor, 1, material.emissiveColor.data)
   g:glUniform1f(program.hardness, material.hardness)
 
-  texture(g, material.diffuseMap, gl.GL_TEXTURE0+0)
-  texture(g, material.specularMap, gl.GL_TEXTURE0+1)
-  texture(g, material.normalMap, gl.GL_TEXTURE0+2)
-  texture(g, material.emissiveMap, gl.GL_TEXTURE0+3)
+  texture(g, material.diffuseMap or white, gl.GL_TEXTURE0+0)
+  texture(g, material.specularMap or white, gl.GL_TEXTURE0+1)
+  texture(g, material.normalMap or blue, gl.GL_TEXTURE0+2)
+  texture(g, material.emissiveMap or white, gl.GL_TEXTURE0+3)
 end
 
 -- Render a model (a mesh with an attached texture and material)
@@ -80,22 +81,17 @@ local function render(g, model)
   assert(model.material, 'model has no material!')
 
   if model.material.opacity < 1 then return end
+  program = program or asset.open('shader/deferred/Model.prog') 
+  white = white or asset.open('texture/White.png')
+  blue = blue or asset.open('texture/Blue.png')
 
-  if program then
-    g:glUseProgram(program.id) -- Use cached program ID if already set
-  else
-    local asset = require('asset')
-    program = asset.open('shader/deferred/model.prog') 
-    gl.glUseProgram(program.id)
-    gl.glUniform1i(program.diffuseMap, 0)
-    gl.glUniform1i(program.specularMap, 1)
-    gl.glUniform1i(program.normalMap, 2)
-    gl.glUniform1i(program.emissiveMap, 3)
-  end
-
-  gl.glEnable(gl.GL_CULL_FACE)
-  gl.glEnable(gl.GL_DEPTH_TEST)
+  g:glUseProgram(program.id)
+  g:glEnable(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST)
   g:commit()
+  gl.glUniform1i(program.diffuseMap, 0)
+  gl.glUniform1i(program.specularMap, 1)
+  gl.glUniform1i(program.normalMap, 2)
+  gl.glUniform1i(program.emissiveMap, 3)
 
   material(g, model.material)
   mesh(g, model.mesh)

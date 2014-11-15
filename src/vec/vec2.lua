@@ -72,6 +72,15 @@ function Vec2:unit()
   return Vec2.new(self.x/norm, self.y/norm)
 end
 
+function Vec2:__eq(other)
+  return self.x == other.x and self.y == other.y
+end
+
+function Vec2:__tostring()
+  return string.format('%f, %f', self.x, self.y)
+end
+
+
 ffi.metatype(Vec2Type, Vec2)
 return Vec2.new
 

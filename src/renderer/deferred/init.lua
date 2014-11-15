@@ -20,15 +20,12 @@
 
 local gl = require('gl')
 local bit = require('bit')
+local graphics = require('graphics')
 
-local DeferredRenderer = {}; DeferredRenderer.__index = DeferredRenderer
-local FrameBuffer = require('graphics.framebuffer')
-local RenderTarget = require('graphics.rendertarget')
-local Context = require('graphics.context')
-local Model = require('graphics.model')
+local Deferred = {}; Deferred.__index = Deferred
 
-local model = require('graphics.renderer.deferred.model')
-local hemilight = require('graphics.renderer.deferred.hemilight')
+local model = require('renderer.deferred.model')
+local hemilight = require('renderer.deferred.hemilight')
 --[[
 local spotlight = require('graphics.renderer.deferred.spotlight')
 local pointlight = require('graphics.renderer.deferred.pointlight')
@@ -45,23 +42,23 @@ local text = require('graphics.renderer.forward.text')
 local ui = require('graphics.renderer.forward.ui')
 ]]
 
-function DeferredRenderer.new(context)
+function Deferred.new(context)
   assert(context, 'no context set')
-  local self = setmetatable({}, DeferredRenderer)
+  local self = setmetatable({}, Deferred)
   self.context = context
 
   local width, height = context.camera.viewportWidth, context.camera.viewportHeight
-  self.diffuseBuffer = RenderTarget(width, height, gl.GL_RGB)
-  self.specularBuffer = RenderTarget(width, height, gl.GL_RGBA)
-  self.normalBuffer = RenderTarget(width, height, gl.GL_RGB16F)
-  self.emissiveBuffer = RenderTarget(width, height, gl.GL_RGB)
-  self.depthBuffer = RenderTarget(width, height, gl.GL_DEPTH24_STENCIL8)
-  self.finalBuffer = RenderTarget(width, height, gl.GL_RGBA)
+  self.diffuseBuffer = graphics.RenderTarget(width, height, gl.GL_RGB)
+  self.specularBuffer = graphics.RenderTarget(width, height, gl.GL_RGBA)
+  self.normalBuffer = graphics.RenderTarget(width, height, gl.GL_RGB16F)
+  self.emissiveBuffer = graphics.RenderTarget(width, height, gl.GL_RGB)
+  self.depthBuffer = graphics.RenderTarget(width, height, gl.GL_DEPTH24_STENCIL8)
+  self.finalBuffer = graphics.RenderTarget(width, height, gl.GL_RGBA)
 
   -- Buffer order is important below! The 0th draw buffer corresponds to the
   -- 1st texture in the lighting pass, and to the 0th output of the pixel 
   -- shaders in the material pass. 
-  self.frameBuffer = FrameBuffer()
+  self.frameBuffer = graphics.FrameBuffer()
   self.frameBuffer:drawBufferEnq(self.diffuseBuffer)
   self.frameBuffer:drawBufferEnq(self.specularBuffer)
   self.frameBuffer:drawBufferEnq(self.normalBuffer)
@@ -70,12 +67,12 @@ function DeferredRenderer.new(context)
   self.frameBuffer:stencilBufferIs(self.depthBuffer)
   self.frameBuffer:check() 
 
-  self.decalFrameBuffer = FrameBuffer()
+  self.decalFrameBuffer = graphics.FrameBuffer()
   self.decalFrameBuffer:drawBufferEnq(self.diffuseBuffer)
   self.decalFrameBuffer:depthBufferIs(self.depthBuffer)
   self.decalFrameBuffer:check()
 
-  self.finalFrameBuffer = FrameBuffer()
+  self.finalFrameBuffer = graphics.FrameBuffer()
   self.finalFrameBuffer:drawBufferEnq(self.finalBuffer)
   self.finalFrameBuffer:depthBufferIs(self.depthBuffer)
   self.finalFrameBuffer:stencilBufferIs(self.depthBuffer)
@@ -84,7 +81,7 @@ function DeferredRenderer.new(context)
   return self
 end
 
-function DeferredRenderer:apply(render, kind)
+function Deferred:apply(render, kind)
   for i, op in ipairs(self.context.op) do
     if op.node.new == kind then
       self.context.worldTransform = op.worldTransform
@@ -93,7 +90,7 @@ function DeferredRenderer:apply(render, kind)
   end
 end
 
-function DeferredRenderer:render()
+function Deferred:render()
   -- Pass 0: Render shadow maps
 --[[
   self:apply(shadow.render, Model)
@@ -111,7 +108,7 @@ function DeferredRenderer:render()
   -- Pass 1a: Write material properties in to the material G-Buffers
   self.frameBuffer:enable()
   gl.glClear(bit.bor(gl.GL_COLOR_BUFFER_BIT, gl.GL_DEPTH_BUFFER_BIT, gl.GL_STENCIL_BUFFER_BIT))
-  self:apply(model.render, Model)
+  self:apply(model.render, graphics.Model)
   self.frameBuffer:disable()
 
   -- In passes 1b/2, only write to pixels that were previously written to in
@@ -144,7 +141,7 @@ function DeferredRenderer:render()
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.emissiveBuffer.id)
   gl.glActiveTexture(gl.GL_TEXTURE4)
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.depthBuffer.id)
-  self:apply(hemilight.render, HemiLight)
+  self:apply(hemilight.render, graphics.HemiLight)
   --self:apply(spotlight.render, SpotLight) FIXME
   --self:apply(pointlight.render, PointLight) FIXME
 
@@ -176,4 +173,4 @@ function DeferredRenderer:render()
   gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, 0)
 end
 
-return DeferredRenderer.new
+return Deferred.new

@@ -240,14 +240,20 @@ end
 -- the chunk in a special environment that exposes debug primitives.
 function start(e, line)
   if e == 'line' then
-    local info = debug.getinfo(2, 'Sf')
     if info.func == step then return end
     if info.func == start then return end
-    print(string.format('%s:%d', info.short_src, line), getline(info.short_src, line))
     debug.sethook()
+    local info = debug.getinfo(2, 'Slf')
+    local text = getline(info.short_src, line)
+    output:write(string.format('%s:%d', info.short_src, line, text))
   elseif e then
     output:write(debug.traceback(e))
     output:write('\n')
+  else 
+    local info = debug.getinfo(2, 'Slf')
+    local line = info.currentline
+    local text = getline(info.short_src, line)
+    output:write(string.format('%s:%d: breakpoint\n', info.short_src, line, text))
   end
 
   level = 0
@@ -257,6 +263,10 @@ function start(e, line)
     output:flush()
 
     local line = input:read('*line')
+    if not line then 
+      output:write('\n')
+      os.exit() 
+    end
     if line == '' then line = lastcmd end
     lastcmd = line
     

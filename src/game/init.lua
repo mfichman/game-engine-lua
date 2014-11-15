@@ -19,8 +19,9 @@
 -- IN THE SOFTWARE.
 
 local sfml = require('sfml')
-local config = require('game.config')
+local config = require('config')
 local graphics = require('graphics')
+local renderer = require('renderer')
 local db = require('db')
 local gl = require('gl')
 local bit = require('bit')
@@ -28,6 +29,7 @@ local vec = require('vec')
 
 local Game = {}; Game.__index = Game
 
+-- Create a new window from the current config
 local function window()
   local mode = sfml.VideoMode()
   mode.bitsPerPixel = 32
@@ -50,7 +52,8 @@ local function window()
   local window = sfml.Window(mode, "quadrant", style, settings)
   window:setVerticalSyncEnabled(config.display.vsync)
   local settings = window:getSettings()
-  if settings.majorVersion < 3 or (settings.majorVersion == 3 and settings.minorVersion < 2) then
+  if settings.majorVersion < 3 
+     or (settings.majorVersion == 3 and settings.minorVersion < 2) then
     error('this program requires OpenGL 3.2')
   end
 
@@ -60,68 +63,56 @@ local function window()
   return window
 end
 
-function Game.new()
-  local self = setmetatable({}, Game)
-  self.window = window()
-  self.db = db.Database()
-  self.config = config
-
-  self.graphics = graphics.Context(config.display.width, config.display.height)
---[[
-  self.graphics.camera.mode = 'ortho' -- FIXME
-
-  self.graphics.camera.left = -2
-  self.graphics.camera.right = 2
-
-  self.graphics.camera.bottom = 2 -- ???
-  self.graphics.camera.top = -2 -- ???
-
-  self.graphics.camera.near = -2
-  self.graphics.camera.far = 2
-
-  self.graphics.camera:update()
-
---]]
-  self.renderer = graphics.DeferredRenderer(self.graphics)
-
-  return self
-end
-
+-- Call 'event' on each row in the table. If the first row in the table does 
+-- not have 'event' as a member, then skip all other components in the table as
+-- an optimization, to avoid iterating through the entire table without 
+-- actually updating anything.
 local function processTable(table, event)
   for id, component in pairs(table.component) do
+    if type(component) == 'cdata' then return end
     if not component[event] then return end
     component[event](component, id)
   end 
 end
 
+-- Call 'event' on each table in the database.
 local function processDb(db, event)
   for kind, table in pairs(db.table) do
     processTable(table, event)
   end
 end
 
+-- Create a new game object
+function Game.new()
+  local self = setmetatable({}, Game)
+  self.window = window()
+  self.db = db.Database()
+  self.config = config
+  self.graphics = graphics.Context(config.display.width, config.display.height)
+  self.renderer = renderer.Deferred(self.graphics)
+  return self
+end
+
+-- Call 'event' on each component in the game database.
 function Game:apply(event)
   processDb(self.db, event)
 end
 
+-- Increment the game by one tick (send the 'tick' event to all components)
 function Game:tick()
   self:apply('tick')
 end
 
+-- Render a single frame. 
 function Game:render()
-  local eye = vec.Vec3(0, 0, -10) -- FIXME
-  local at = vec.Vec3(0, 0, 0)
-  local up = vec.Vec3(0, 1, 0)
-  self.graphics.camera.worldTransform = vec.Mat4.look(eye, at, up)
-  self.graphics.camera:update()
   self:apply('render')
   self.renderer:render() 
   self.graphics:finish()
   assert(gl.glGetError() == 0)
 end
 
+-- Handle input and step the simulation as necessary
 function Game:poll()
-  -- step simulation a few times
   local event = sfml.Event()
   while self.window:pollEvent(event) == 1 do
     if event.type == sfml.EvtClosed then os.exit(0) end
@@ -130,6 +121,7 @@ function Game:poll()
   self.window:display()
 end
 
+-- Run the game
 function Game:run()
   while self.window:isOpen() do
     self:poll()
@@ -140,6 +132,8 @@ function Game:del()
   sfml.Window_destroy(self.window)  
   self.window = nil
 end
+
+Game.__gc = Game.del
 
 return Game.new() -- singleton
 

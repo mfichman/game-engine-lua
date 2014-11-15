@@ -70,14 +70,16 @@ function Context:commit()
     gl.glUseProgram(self.state.program)
   end
   if self.state.cullFace ~= self.committed.cullFace then
-    gl.glCullFace(self.state.cullFace)
+    gl.glCullFace(self.state.cullFace or gl.GL_BACK)
   end
   if self.state.depthFunc ~= self.committed.depthFunc then
-    gl.glDepthFunc(self.state.depthFunc)
+    gl.glDepthFunc(self.state.depthFunc or gl.GL_LESS)
   end
+
   if self.state.blendFuncSrc ~= self.committed.blendFuncSrc or
      self.state.blendFuncDst ~= self.committed.blendFuncDst then
-    gl.glBlendFunc(self.state.blendFuncSrc, self.state.blendFuncDst)
+    gl.glBlendFunc(self.state.blendFuncSrc or gl.GL_ONE,
+                   self.state.blendFuncDst or gl.GL_ZERO)
   end
 
   for enum, _ in pairs(self.state.enabled) do

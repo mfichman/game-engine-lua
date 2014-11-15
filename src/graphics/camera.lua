@@ -39,12 +39,11 @@ function Camera.new()
   self.projectionTransform = vec.Mat4.identity()
   self.viewTransform = vec.Mat4.identity()
   self.inverseViewTransform = vec.Mat4.identity()
-  self.worldTransform = vec.Mat4.identity()
 
   return self
 end
 
--- Update the computed transforms from the 'world' transform and projection
+-- Update the computed transforms from the view transform and projection 
 -- transform values.
 function Camera:update()
   if self.mode == 'ortho' then
@@ -56,8 +55,7 @@ function Camera:update()
     error('invalid camera mode')
   end
 
-  self.viewTransform = self.worldTransform:inverse()
-  self.inverseViewTransform = self.worldTransform
+  self.inverseViewTransform = self.viewTransform:inverse()
   self.transform = self.projectionTransform * self.viewTransform
 end
 

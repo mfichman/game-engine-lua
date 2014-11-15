@@ -20,6 +20,7 @@
 
 local graphics = require('graphics')
 local vec = require('vec')
+local path = require('path')
 local loaded = require('asset.loaded')
 
 -- Returns a vertex from the cache, if it exists in the cache. Otherwise, inserts
@@ -50,7 +51,7 @@ local function line(context, str)
 
   if 'usemtl' == cmd then
     if rest ~= 'None' then
-      local path = string.format('model/%s/%s', context.mtllib, rest)
+      local path = path.join('material', context.mtllib, rest)
       context.model.material = loaded[path]
       assert(context.model.material, 'material not found: '..path)
     end
@@ -60,18 +61,16 @@ local function line(context, str)
     context.model.name = rest
     context.model.material = graphics.Material()
     context.transform:componentIs(context.model)
-    context.position = {}
-    context.texcoord = {}
-    context.normal = {}
     context.cache = {}
+    loaded[path.join(context.path, rest)] = context.model.mesh
   elseif 'v' == cmd then
-    local x, y, z = rest:match('(-?%d+%.%d*)%s+(-?%d+%.%d*)%s+(-?%d+%.%d*)')
+    local x, y, z = rest:match('(-?%d+%.?%d*)%s+(-?%d+%.?%d*)%s+(-?%d+%.?%d*)')
     table.insert(context.position, vec.Vec3(tonumber(x), tonumber(y), tonumber(z)))
   elseif 'vt' == cmd then
-    local u, v = rest:match('(-?%d+%.%d*)%s+(-?%d+%.%d*)')
+    local u, v = rest:match('(-?%d+%.?%d*)%s+(-?%d+%.?%d*)')
     table.insert(context.texcoord, vec.Vec2(tonumber(u), tonumber(v)))
   elseif 'vn' == cmd then
-    local x, y, z = rest:match('(-?%d+%.%d*)%s+(-?%d+%.%d*)%s+(-?%d+%.%d*)')
+    local x, y, z = rest:match('(-?%d+%.?%d*)%s+(-?%d+%.?%d*)%s+(-?%d+%.?%d*)')
     table.insert(context.normal, vec.Vec3(tonumber(x), tonumber(y), tonumber(z)))
   elseif 'f' == cmd then
     local i, j, k = rest:match('(.+)%s+(.+)%s+(.+)')
@@ -80,8 +79,7 @@ local function line(context, str)
     context.model.mesh.index:push(vertex(context, k))
   elseif 'mtllib' == cmd then
     local asset = require('asset')
-    local path = context.path:gsub('([^/]+)$', rest)
-    asset.open(path)
+    asset.open(path.join('material', rest))
     context.mtllib = rest
   else
     -- Unsupported command; skip
@@ -93,7 +91,13 @@ local function open(path)
   local fd = io.open(path)
   if not fd then error('file not found: '..path) end
 
-  local context = { transform=graphics.Transform(), path=path } 
+  local context = { 
+    transform=graphics.Transform(), 
+    path=path,
+    position={},
+    texcoord={},
+    normal={},
+  } 
   for str in fd:lines() do
     line(context, str)
   end

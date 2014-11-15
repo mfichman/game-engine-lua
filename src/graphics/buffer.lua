@@ -94,7 +94,6 @@ function Buffer:sync()
   end
   local size = self.stride * self.count
   gl.glBindBuffer(self.target, self.id)
-  gl.glBufferData(self.target, size, nil, self.usage)
   gl.glBufferData(self.target, size, self.element, self.usage)
   self.status = 'synced'
 end

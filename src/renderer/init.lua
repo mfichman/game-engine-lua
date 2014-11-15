@@ -18,17 +18,7 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-
-package.path = package.path..';./src/?.lua;./src/?/init.lua'
-
-local game = require('game')
-local dbg = require('dbg')
-local entity = require('entity')
-
-local function init()
-  entity.Fighter{}
-  entity.Rock{kind='rock0'}
-end
-
-xpcall(init, dbg.start)
-xpcall(function() game:run() end, dbg.start)
+return {
+  Deferred=require('renderer.deferred'),
+--  Forward=require('renderer.forward'),
+}

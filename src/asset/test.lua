@@ -30,9 +30,9 @@ settings.majorVersion = 3
 settings.minorVersion = 2
 local context = sfml.Context()
 
-assert(asset.open('texture/white.png'))
-assert(asset.open('shader/flat.frag'))
-local m = asset.open('mesh/quad.obj')
+assert(asset.open('texture/White.png'))
+assert(asset.open('shader/Flat.frag'))
+local m = asset.open('mesh/Quad.obj')
 assert(m)
 assert(m.new == graphics.Transform)
 
@@ -45,7 +45,7 @@ assert(m.mesh.vertex)
 assert(m.mesh.index)
 
 
-local m = asset.open('mesh/quad.obj')
+local m = asset.open('mesh/Quad.obj')
 assert(m)
 assert(m.new == graphics.Transform)
 
@@ -58,8 +58,17 @@ assert(m.mesh.vertex)
 assert(m.mesh.index)
 
 
+local m = asset.open('mesh/Rock0.obj')
+assert(m)
+assert(m.new == graphics.Transform)
 
-
-
+local m = m.component[1]
+assert(m)
+assert(m.new == graphics.Model)
+assert(m.material.hardness > 96)
+assert(m.material.ambientColor.red == 0)
+assert(m.material.diffuseColor.red > .32)
+assert(m.material.specularColor.red == 0)
+assert(m.material.opacity == 1)
 
 

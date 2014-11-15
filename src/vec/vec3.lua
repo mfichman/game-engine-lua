@@ -79,6 +79,10 @@ function Vec3:unit()
   return Vec3.new(self.x/norm, self.y/norm, self.z/norm)
 end
 
+function Vec3:__eq(other)
+  return self.x == other.x and self.y == other.y and self.z == other.z
+end
+
 function Vec3:__tostring()
   return string.format('%f, %f, %f', self.x, self.y, self.z)
 end

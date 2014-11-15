@@ -22,7 +22,6 @@ return {
   Buffer=require('graphics.buffer'),
   Camera=require('graphics.camera'),
   Context=require('graphics.context'),
-  DeferredRenderer=require('graphics.renderer.deferredrenderer'),
   FrameBuffer=require('graphics.framebuffer'),
   HemiLight=require('graphics.hemilight'),
   Material=require('graphics.material'),

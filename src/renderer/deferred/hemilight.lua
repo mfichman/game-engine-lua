@@ -18,8 +18,9 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local ffi = require('ffi')
+local asset = require('asset')
 local gl = require('gl')
+local vec = require('vec')
 
 local program, unitQuad, unitSphere
 
@@ -35,7 +36,7 @@ local function bindParams(g, light)
 
   -- Transform the light direction from world space into view space
   local transform = g.camera.transform * g.worldTransform
-  local direction = transform.mulnormal(light.direction):unit()
+  local direction = transform:mulnormal(light.direction):unit()
   g:glUniform3fv(program.direction, 1, direction.data)
 end
 
@@ -46,6 +47,7 @@ local function bindShadowMap(g, light)
     return
   end
 
+  gl.glActiveTexture(gl.GL_TEXTURE5)
   gl.glBindTexture(gl.GL_TEXTURE_2D, light.shadowMap.depthBuffer)
   g:glUniform1f(program.shadowMapSize, light.shadowMap.width)
 
@@ -56,9 +58,8 @@ local function bindShadowMap(g, light)
 end
 
 local function drawMesh(g, mesh)
-  mesh:sync()
   gl.glBindVertexArray(mesh.id)
-  gl.glDrawElements(gl.GL_TRIANGLES, mesh.index.count, gl.GL_UNSIGNED_INT, 0)
+  gl.glDrawElements(gl.GL_TRIANGLES, mesh.index.count, gl.GL_UNSIGNED_INT, nil)
   gl.glBindVertexArray(0)
 end
 
@@ -67,13 +68,13 @@ end
 -- has infinite radius; thus, all objects are always in the light.
 local function drawQuad(g, light)
   local identity = vec.Mat4.identity()
-  local inverseProjection = camera.projectionTransform:inverse()
+  local inverseProjection = g.camera.projectionTransform:inverse()
   g:glUniformMatrix4fv(program.transform, 1, 0, identity.data)
-  g:glUniformMatrix4fv(program.modelView, 1, 0, identity.data)
+  g:glUniformMatrix4fv(program.modelViewMatrix, 1, 0, identity.data)
   -- Use the identity transform for model/view, so that the specially-shaped
   -- unit quad maps to the whole screen as a fullscreen quad in clip-space, 
   -- that is, x=[-1,1] y=[-1,1]
-  g:glUniformMatrix4fv(program.unproject, 1, 0, inverseProjection.data)
+  g:glUniformMatrix4fv(program.unprojectMatrix, 1, 0, inverseProjection.data)
   
   drawMesh(g, unitQuad)
 end
@@ -102,16 +103,16 @@ local function render(g, light)
   assert(g, 'graphics context is nil')
   assert(light, 'light is nil')
 
-  local radius = light.radiusOfEffect
-  if not light:isVisible() or radius < 0 then return end
+  local radius = light:radiusOfEffect()
+  if radius < 0 then return end
   
-  if not program then
-    local asset = require('asset')
-    asset.open('shader/LightShapes.obj')
-    unitQuad = asset.open('shader/LightShapes.obj/Quad')
-    unitSphere = asset.open('shader/LightShapes.obj/Sphere')
-    program = asset.open('shader/HemiLight.prog')
-  end
+  if not program then asset.open('mesh/LightShapes.obj') end
+  unitQuad = unitQuad or asset.open('mesh/LightShapes.obj/Quad')
+  unitSphere = unitSphere or asset.open('mesh/LightShapes.obj/Sphere')
+  program = program or asset.open('shader/deferred/HemiLight.prog')
+  
+  unitQuad:sync()
+  unitSphere:sync()
 
   g:glUseProgram(program.id)
   g:glEnable(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST, gl.GL_BLEND, gl.GL_DEPTH_CLAMP)
@@ -126,6 +127,13 @@ local function render(g, light)
   -- Always render light volume fragments, regardless of depth fail/pass
   g:glBlendFunc(gl.GL_ONE, gl.GL_ONE)
   g:commit()
+
+  gl.glUniform1i(program.diffuseBuffer, 0)
+  gl.glUniform1i(program.specularBuffer, 1)
+  gl.glUniform1i(program.normalBuffer, 2)
+  gl.glUniform1i(program.emissiveBuffer, 3)
+  gl.glUniform1i(program.depthBuffer, 4)
+  gl.glUniform1i(program.shadowMap, 5)
 
   bindParams(g, light)
   bindShadowMap(g, light)

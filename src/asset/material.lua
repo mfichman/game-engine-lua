@@ -21,6 +21,7 @@
 local graphics = require('graphics')
 local vec = require('vec')
 local loaded = require('asset.loaded')
+local path = require('path')
 
 local function color(rest)
   local r, g, b = rest:match('(-?%d+%.%d*)%s+(-?%d+%.%d*)%s+(-?%d+%.%d*)')
@@ -37,7 +38,12 @@ local function line(context, str)
   if cmd == nil then error('invalid str: '..str) end
 
   if 'newmtl' == cmd then
+    if context.material then
+      local path = path.join(context.path, context.material.name)
+      loaded[path] = context.material
+    end
     context.material = graphics.Material()
+    context.material.name = rest
   elseif 'map_bump' == cmd or 'bump' == cmd then
     context.material.normalMap = asset.open(reset)
   elseif 'Ka' == cmd then
@@ -49,7 +55,7 @@ local function line(context, str)
   elseif 'Ks' == cmd then
     context.material.specularColor = color(rest)
   elseif 'Ns' == cmd then
-    context.material.shininess = rest:match('(-?%d+%.%d*)')
+    context.material.hardness = tonumber(rest)
   elseif 'map_Kd' == cmd then
     context.material.diffuseMap = asset.open(rest)
   elseif 'map_Ks' == cmd then 
@@ -57,7 +63,7 @@ local function line(context, str)
   elseif 'map_Ke' == cmd then
     context.material.emissiveMap = asset.open(rest)
   elseif 'd' == cmd then
-    context.material.opacity = rest:match('(-?%d+%.%d*)')
+    context.material.opacity = tonumber(rest)
   elseif 'shader' == cmd then
     context.material.program = asset.open(rest)
   else
@@ -67,13 +73,17 @@ end
    
 
 -- Opens a .mtl material lib file and parses it into a Material obj
-local function open(path)
-  local fd = io.open(path)
-  if not fd then error('file not found: '..path) end
+local function open(name)
+  local fd = io.open(name)
+  if not fd then error('file not found: '..name) end
 
-  local context = {}
+  local context = { path=name }
   for str in fd:lines() do
     line(context, str) 
+  end
+  if context.material then
+    local path = path.join(context.path, context.material.name)
+    loaded[path] = context.material
   end
 end
 

@@ -95,6 +95,10 @@ function Quat:__tostring()
   return string.format('%f, %f, %f, %f', self.w, self.x, self.y, self.z)
 end
 
+function Quat:__eq(other)
+  return self.x == other.x and self.y == other.y and self.z == other.z and self.w == other.w
+end
+
 ffi.metatype(QuatType, Quat)
 return Quat.new
 

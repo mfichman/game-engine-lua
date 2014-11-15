@@ -6,7 +6,7 @@
  *****************************************************************************/
  
 #version 330
-#pragma include "shader/mesh.vert"
+#pragma include "shader/Mesh.vert"
 
 uniform mat4 transform;
 uniform mat3 normalMatrix;

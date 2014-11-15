@@ -31,15 +31,15 @@ function HemiLight.new(args)
   self.specularColor = args.specularColor or vec.Vec4(1, 1, 1, 0)
   self.ambientColor = args.ambientColor or vec.Vec4(0, 0, 0, 0)
   self.direction = args.direction or vec.Vec3(-1, 0, 0)
-  self.constantAttenuation = 1
-  self.linearAttenuation = 1
-  self.quadraticAttenuation = 0
-  self.shadowViewDistance = 20
+  self.constantAttenuation = args.constantAttenuation or 1
+  self.linearAttenuation = args.linearAttenuation or 1
+  self.quadraticAttenuation = args.quadraticAttenuation or 0
+  self.shadowViewDistance = args.shadowViewDistance or 20
   return self
 end
 
 function HemiLight:radiusOfEffect()
-  local a = self.quadranticAttenuation
+  local a = self.quadraticAttenuation
   local b = self.linearAttenuation
   local c = self.constantAttenuation
   local minIntensity = 0.02

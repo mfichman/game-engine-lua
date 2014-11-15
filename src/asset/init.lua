@@ -22,8 +22,8 @@ local loaders = {
   ['%.png$']=require('asset.texture'),
   ['%.jpg$']=require('asset.texture'),
   ['%.gif$']=require('asset.texture'),
-  ['%.obj$']=require('asset.model.obj'),
-  ['%.mtl$']=require('asset.material.mtl'),
+  ['%.obj$']=require('asset.model'),
+  ['%.mtl$']=require('asset.material'),
   ['%.prog$']=require('asset.program'),
   ['%.vert$']=require('asset.shader'),
   ['%.geom$']=require('asset.shader'),
@@ -32,20 +32,24 @@ local loaders = {
 
 local loaded = require('asset.loaded')
 
-local function open(k)
-  if loaded[k] then return loaded[k] end
+local function open(name)
+  if loaded[name] then return loaded[name] end
   for pattern, loader in pairs(loaders) do
-    if k:match(pattern) then
-      local asset = loader.open(k)
-      loaded[k] = asset
+    if name:match(pattern) then
+      local asset = loader.open(name)
+      loaded[name] = asset
       return asset
     end
   end
-  error('no loader found for '..k)
+  error('no loader found for '..name)
 end
 
 return {
   open=open,
   texture=require('asset.texture'),
+  model=require('asset.model'),
+  material=require('asset.material'),
+  program=require('asset.program'),
+  shader=require('asset.shader'),
 }
 

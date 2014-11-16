@@ -63,6 +63,10 @@ local function line(context, str)
     context.transform:componentIs(context.model)
     context.cache = {}
     loaded[path.join(context.path, rest)] = context.model.mesh
+
+    if rest:match('^%.') then
+      context.model.renderMode = 'invisible'
+    end
   elseif 'v' == cmd then
     local x, y, z = rest:match('(-?%d+%.?%d*)%s+(-?%d+%.?%d*)%s+(-?%d+%.?%d*)')
     table.insert(context.position, vec.Vec3(tonumber(x), tonumber(y), tonumber(z)))

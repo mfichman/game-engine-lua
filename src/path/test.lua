@@ -20,4 +20,4 @@
 
 
 local path = require('path')
-print(path.find('mesh/quad.obj'))
+assert(path.find('mesh/quad.obj') == './mesh/quad.obj')

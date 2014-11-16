@@ -217,7 +217,7 @@ end
 
 -- Show a backtrace starting at the current level.
 local function bt()
-  output:write(debug.traceback('', startlevel()))
+  output:write(debug.traceback('', level+startlevel()))
   output:write('\n')
   return true
 end

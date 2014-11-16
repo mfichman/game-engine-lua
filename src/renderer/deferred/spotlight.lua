@@ -34,12 +34,13 @@ local function params(g, light)
   gl.glUniform1i(program.shadowMap, 5)
 
   gl.glUniform3fv(program.diffuseColor, 1, light.diffuseColor.data)
-  gl.glUniform3fv(program.backDiffuseColor, 1, light.backDiffuseColor.data)
   gl.glUniform3fv(program.specularColor, 1, light.specularColor.data)
-  gl.glUniform3fv(program.ambientColor, 1, light.ambientColor.data)
   gl.glUniform1f(program.atten0, light.constantAttenuation)
   gl.glUniform1f(program.atten1, light.linearAttenuation)
   gl.glUniform1f(program.atten2, light.quadraticAttenuation)
+
+  gl.glUniform1f(program.cutoff, light.cutoff / 180)
+  gl.glUniform1f(program.power, light.power)
 
   -- Transform the light direction from world space into view space
   local transform = g.worldTransform * g.camera.viewTransform
@@ -50,7 +51,7 @@ end
 -- Shadow mapping. Set the shadow map buffer and light matrix
 local function shadowMap(g, light)
   if not light.shadowMap then
-    gl.glUniform1f(program.shadowMapSize, 0)
+    g:glUniform1f(program.shadowMapSize, 0)
     return
   end
 
@@ -64,28 +65,23 @@ local function shadowMap(g, light)
   gl.glUniformMatrix4fv(program.light, 1, 0, viewToLightTransform.data)
 end
 
--- Render a hemispherical light using the deferred lighting technique. This 
--- function renders a light bounding volume using alpha blending. The shader 
--- applies the lighting equation to input from the material G-buffers and 
--- outputs the result to the current back buffer.
 local function render(g, light)
   assert(g, 'graphics context is nil')
   assert(light, 'light is nil')
 
   local radius = light:radiusOfEffect()
   if radius <= 0 then return end
-  
-  if not program then asset.open('mesh/LightShapes.obj') end
-  program = program or asset.open('shader/deferred/HemiLight.prog')
-  
+
+  program = program or asset.open('shader/deferred/SpotLight.prog')
+
   g:glUseProgram(program.id)
-  g:glEnable(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST, gl.GL_BLEND, gl.GL_DEPTH_CLAMP)
+  g:glEnable(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST, gl.GL_BLEND, gl.GL_DEPTH_CLAMP) 
   -- Blend lights together with alpha blending.
   -- Use GL_DEPTH_CLAMP to ensures that if the light volume fragment would be
   -- normally clipped by the positive Z, the fragment is still rendered anyway.
   -- Otherwise, you can get "holes" where the light volume intersects the far
   -- clipping plane.   
-  g:glCullFace(gl.GL_FRONT) 
+  g:glCullFace(gl.GL_FRONT)
   -- Render the face of the light volume that's farthest from the camera
   g:glDepthFunc(gl.GL_ALWAYS)
   -- Always render light volume fragments, regardless of depth fail/pass
@@ -95,20 +91,9 @@ local function render(g, light)
   g:commit()
 
   params(g, light)
-  shadowMap(g, light)
-
-  -- Calculate the model transform, and scale the model to cover the light's
-  -- area of affect.
-  if light.linearAttenuation == 0 and light.quadraticAttenuation == 0 then
-    -- If attenuation is 0, then render a fullscreen quad instead of a 
-    -- bounding sphere.  This renders a degenerate hemi-light, which is a simple
-    -- full-scene directional light.
-    lightvolume.quad(g, program)
-  else
-    lightvolume.sphere(g, program, radius)
-  end
+  lightvolume.cone(g, program, radius, light.cutoff, light.direction)  
 end
 
 return {
-  render=render
+  render=render,
 }

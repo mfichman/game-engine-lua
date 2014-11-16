@@ -75,6 +75,9 @@ function Context:commit()
   if self.state.depthFunc ~= self.committed.depthFunc then
     gl.glDepthFunc(self.state.depthFunc or gl.GL_LESS)
   end
+  if self.state.depthMask ~= self.committed.depthMask then
+    gl.glDepthMask(self.state.depthMask or gl.GL_TRUE)
+  end
 
   if self.state.blendFuncSrc ~= self.committed.blendFuncSrc or
      self.state.blendFuncDst ~= self.committed.blendFuncDst then
@@ -114,6 +117,10 @@ end
 
 function Context:glDepthFunc(val)
   self.state.depthFunc = val
+end
+
+function Context:glDepthMask(val)
+  self.state.depthMask = val
 end
 
 function Context:glBlendFunc(src, dst)

@@ -74,6 +74,14 @@ function Vec3:len2(other)
   return self:dot(self)
 end
 
+function Vec3:orthogonal()
+  local ortho = self:cross(Vec3.new(1, 0, 0))
+  if ortho:len2() < 1e-8 then
+      ortho = self:cross(Vec3.new(0, 1, 0))
+  end
+  return ortho:unit()
+end
+
 function Vec3:unit()
   local norm = self:len()
   return Vec3.new(self.x/norm, self.y/norm, self.z/norm)

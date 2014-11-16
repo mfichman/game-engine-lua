@@ -18,34 +18,17 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local vec = require('vec')
+local os = require('os')
 
-local Transform = {}; Transform.__index = Transform
+local test = {
+  'src/asset/test.lua',
+  'src/game/test.lua',
+  'src/graphics/test.lua',
+  'src/path/test.lua',
+  'src/sandbox/test.lua',
+  'src/vec/test.lua',
+}
 
-function Transform.new()
-  local self = setmetatable({}, Transform)
-  self.component = {}
-  self.origin = vec.Vec3()
-  self.rotation = vec.Quat()
-  self.shadowMode = 'shadowed'
-  self.renderMode = 'visible'
-  return self
+for i, test in ipairs(test) do
+  assert(os.execute('luajit '..test)==0)
 end
-
-function Transform:componentIs(comp)
-  assert(comp)
-  table.insert(self.component, comp)
-  return comp
-end
-
-function Transform:componentDel(comp)
-  assert(comp)
-  for i, v in ipairs(self.component) do
-    if v == comp then
-      table.remove(self.component, i)
-      return
-    end
-  end
-end
-
-return Transform.new

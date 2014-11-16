@@ -26,9 +26,9 @@ local Deferred = {}; Deferred.__index = Deferred
 
 local model = require('renderer.deferred.model')
 local hemilight = require('renderer.deferred.hemilight')
+local pointlight = require('renderer.deferred.pointlight')
+local spotlight = require('renderer.deferred.spotlight')
 --[[
-local spotlight = require('graphics.renderer.deferred.spotlight')
-local pointlight = require('graphics.renderer.deferred.pointlight')
 local decal = require('graphics.renderer.deferred.decal')
 local shadow = require('graphics.renderer.shadow')
 
@@ -128,7 +128,6 @@ function Deferred:render()
 
   self.finalFrameBuffer:enable()
   gl.glClear(gl.GL_COLOR_BUFFER_BIT)
-  gl.glDepthMask(gl.GL_FALSE) -- disable depth writes for alpha passes below
   
   -- Pass 2: Render lighting using light bounding boxes
   gl.glActiveTexture(gl.GL_TEXTURE0)
@@ -142,8 +141,8 @@ function Deferred:render()
   gl.glActiveTexture(gl.GL_TEXTURE4)
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.depthBuffer.id)
   self:apply(hemilight.render, graphics.HemiLight)
-  --self:apply(spotlight.render, SpotLight) FIXME
-  --self:apply(pointlight.render, PointLight) FIXME
+  self:apply(spotlight.render, graphics.SpotLight)
+  self:apply(pointlight.render, graphics.PointLight)
 
   -- Pass 3: Skybox
   gl.glStencilFunc(gl.GL_EQUAL, 0, 0xff) -- pass fragments with zero stencil value

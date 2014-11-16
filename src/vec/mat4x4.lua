@@ -23,6 +23,7 @@ local math = require('math')
 
 local Vec3 = require('vec.vec3')
 local Vec4 = require('vec.vec4')
+local Mat3 = require('vec.mat3')
 
 ffi.cdef[[
   typedef struct vec_Mat4x4 {
@@ -105,6 +106,18 @@ function Mat4x4.scale(x, y, z)
     0, y, 0, 0,
     0, 0, z, 0,
     0, 0, 0, 1)
+end
+
+function Mat4x4.forward(forward)
+  local zaxis = forward:unit()
+  local xaxis = forward:orthogonal():cross(zaxis):unit()
+  local yaxis = zaxis:cross(xaxis):unit()
+
+  return Mat4x4.new(
+      xaxis.x, yaxis.x, zaxis.x, 0,
+      xaxis.y, yaxis.y, zaxis.y, 0,
+      xaxis.z, yaxis.z, zaxis.z, 0,
+      0, 0, 0, 1)
 end
 
 function Mat4x4.rotate(quat)
@@ -275,21 +288,22 @@ end
 
 -- Transform a vector & do the perspective divide
 local function mulvec3(self, v)
-    local m = self.data
-    local invw = 1 / (m[3]*v.x + m[7]*v.y + m[11]*v.z + m[15]);
-    
-    return Vec3(
-      (m[0]*v.x + m[4]*v.y + m[8]*v.z + m[12])*invw,
-      (m[1]*v.x + m[5]*v.y + m[9]*v.z + m[13])*invw,
-      (m[2]*v.x + m[6]*v.y + m[10]*v.z + m[14])*invw)
+  local m = self.data
+  local invw = 1 / (m[3]*v.x + m[7]*v.y + m[11]*v.z + m[15]);
+  
+  return Vec3(
+    (m[0]*v.x + m[4]*v.y + m[8]*v.z + m[12])*invw,
+    (m[1]*v.x + m[5]*v.y + m[9]*v.z + m[13])*invw,
+    (m[2]*v.x + m[6]*v.y + m[10]*v.z + m[14])*invw)
 end
 
-function Mat4x4:mulnormal(v)
+-- Return 3x3 rotation matrix
+function Mat4x4:rotation()
   local m = self.data
-  return Vec3(
-    m[0]*v.x + m[4]*v.y + m[8]*v.z,
-    m[1]*v.x + m[5]*v.y + m[9]*v.z,
-    m[2]*v.x + m[6]*v.y + m[10]*v.z)
+  return Mat3.new(
+    m[0], m[1], m[2], 
+    m[4], m[5], m[6],
+    m[8], m[9], m[10])
 end
 
 function Mat4x4:__mul(other)
@@ -297,8 +311,6 @@ function Mat4x4:__mul(other)
     return mulmat4x4(self, other)
   elseif other.new == Vec4 then
     return mulvec4(self, other)
-  elseif other.new == Vec3 then
-    return mulvec3(self, other)
   else
     assert(false, 'invalid multiplicand')
   end

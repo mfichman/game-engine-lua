@@ -24,10 +24,13 @@ package.path = package.path..';./src/?.lua;./src/?/init.lua'
 local game = require('game')
 local dbg = require('dbg')
 local entity = require('entity')
+local vec = require('vec')
 
 local function init()
   entity.Fighter{}
-  entity.Rock{kind='rock0'}
+  entity.Rock{kind='Rock0', origin=vec.Vec3(-10, 0, 0)}
+  entity.Rock{kind='Rock0', origin=vec.Vec3(10, 0, 0)}
+--  entity.Rock{kind='SmoothSphere'}
 end
 
 xpcall(init, dbg.start)

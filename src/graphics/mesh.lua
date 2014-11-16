@@ -41,7 +41,6 @@ local MeshVertex = ffi.typeof('graphics_MeshVertex')
 function Mesh.new()
   local self = setmetatable({}, Mesh)
   self.status = 'dirty'
-  self.renderMode = 'visible'
   self.id = 0
   self.index = Buffer(gl.GL_ELEMENT_ARRAY_BUFFER, gl.GL_STATIC_DRAW, 'GLuint')
   self.vertex = Buffer(gl.GL_ARRAY_BUFFER, gl.GL_STATIC_DRAW, 'graphics_MeshVertex')

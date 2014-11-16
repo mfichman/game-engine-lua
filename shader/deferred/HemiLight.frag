@@ -45,10 +45,10 @@ void main() {
 
     if (Rd > 0) {
 	    vec3 diffuse = li.Kd * Ld * Rd;// * mix(Ldb, Ld, Rd);
-        color.rgb = (diffuse + specular) * shadow;
+        color.rgb = atten * (diffuse + specular) * shadow;
     } else {
 	    vec3 diffuse = li.Kd * Ldb * -Rd;// * mix(Ldb, Ld, Rd);
-        color.rgb  = diffuse;
+        color.rgb  = atten * diffuse;
         // FIXME: Two-sided lighting model: Need to shadow the unlit side as
         // well.  Currently, on the unlit side, we just ignore the shadow value.
     }

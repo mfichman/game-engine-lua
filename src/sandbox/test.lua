@@ -22,11 +22,11 @@ local sandbox = require('sandbox')
 
 local unsafe = [[
   local string = require('string')
-  local io = require('io')
-  string.len('unsafe')
+  assert(string.len('foobar') == 6)
+  local val, err = pcall(function() local io = require('io') end)
+  assert(err:match('package not found: io'))
 ]]
 
 local fn = sandbox.load(unsafe)
 fn()
-
 

@@ -80,6 +80,7 @@ local function render(g, model)
   assert(model, 'model is nil')
   assert(model.material, 'model has no material!')
 
+  if model.renderMode == 'invisible' then return end
   if model.material.opacity < 1 then return end
   program = program or asset.open('shader/deferred/Model.prog') 
   white = white or asset.open('texture/White.png')

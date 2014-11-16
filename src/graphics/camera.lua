@@ -37,6 +37,7 @@ function Camera.new()
   self.mode = 'perspective'
   self.transform = vec.Mat4.identity()
   self.projectionTransform = vec.Mat4.identity()
+  self.inverseProjectionTransform = vec.Mat4.identity()
   self.viewTransform = vec.Mat4.identity()
   self.inverseViewTransform = vec.Mat4.identity()
 
@@ -55,6 +56,7 @@ function Camera:update()
     error('invalid camera mode')
   end
 
+  self.inverseProjectionTransform = self.projectionTransform:inverse()
   self.inverseViewTransform = self.viewTransform:inverse()
   self.transform = self.projectionTransform * self.viewTransform
 end

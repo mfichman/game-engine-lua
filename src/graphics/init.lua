@@ -27,9 +27,11 @@ return {
   Material=require('graphics.material'),
   Mesh=require('graphics.mesh'),
   Model=require('graphics.model'),
+  PointLight=require('graphics.pointlight'),
   Program=require('graphics.program'),
   RenderTarget=require('graphics.rendertarget'),
   Shader=require('graphics.shader'),
+  SpotLight=require('graphics.spotlight'),
   Texture=require('graphics.texture'),
   Transform=require('graphics.transform'),
 }

@@ -18,34 +18,37 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
+local math = require('math')
 local vec = require('vec')
 
-local Transform = {}; Transform.__index = Transform
+local PointLight = {}; PointLight.__index = PointLight
 
-function Transform.new()
-  local self = setmetatable({}, Transform)
-  self.component = {}
-  self.origin = vec.Vec3()
-  self.rotation = vec.Quat()
-  self.shadowMode = 'shadowed'
-  self.renderMode = 'visible'
+function PointLight.new(args)
+  local self = setmetatable({}, PointLight)
+  local args = args or self
+  self.diffuseColor = args.diffuseColor or vec.Vec4(1, 1, 1, 1)
+  self.specularColor = args.specularColor or vec.Vec4(1, 1, 1, 1)
+  self.constantAttenuation = args.constantAttenuation or 1
+  self.linearAttenuation = args.linearAttenuation or 1
+  self.quadraticAttenuation = args.quadraticAttenuation or 0
   return self
 end
 
-function Transform:componentIs(comp)
-  assert(comp)
-  table.insert(self.component, comp)
-  return comp
-end
-
-function Transform:componentDel(comp)
-  assert(comp)
-  for i, v in ipairs(self.component) do
-    if v == comp then
-      table.remove(self.component, i)
-      return
-    end
+function PointLight:radiusOfEffect()
+  local a = self.quadraticAttenuation
+  local b = self.linearAttenuation
+  local c = self.constantAttenuation
+  local minIntensity = 0.02
+  if a ~= 0 then
+    -- Quadratic equation to find distance at which intensity is below the
+    -- threshold
+    local d1 = -b + math.sqrt(b*b - 4*a*(c - 1/minIntensity))/2/a
+    local d2 = -b - math.sqrt(b*b - 4*a*(c - 1/minIntensity))/2/a
+    return math.max(d1, d2)
+  else
+    -- If a == 0, then we use the slope instead.
+    return (1-minIntensity*c)/(minIntensity*b)
   end
 end
 
-return Transform.new
+return PointLight.new

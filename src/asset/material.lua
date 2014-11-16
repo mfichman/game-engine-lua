@@ -34,7 +34,7 @@ local function line(context, str)
   elseif str:match('^%s*$') then return end
 
   local asset = require('asset')
-  local cmd, rest = str:match('^%s*(%w+)%s+(.*)%s*')
+  local cmd, rest = str:match('^%s*([_%w]+)%s+(.*)%s*')
   if cmd == nil then error('invalid str: '..str) end
 
   if 'newmtl' == cmd then

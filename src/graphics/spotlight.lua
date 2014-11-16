@@ -21,24 +21,23 @@
 local math = require('math')
 local vec = require('vec')
 
-local HemiLight = {}; HemiLight.__index = HemiLight
+local SpotLight = {}; SpotLight.__index = SpotLight
 
-function HemiLight.new(args)
-  local self = setmetatable({}, HemiLight)
+function SpotLight.new(args)
+  local self = setmetatable({}, SpotLight)
   local args = args or self
   self.diffuseColor = args.diffuseColor or vec.Vec4(1, 1, 1, 1)
-  self.backDiffuseColor = args.backDiffuseColor or vec.Vec4(0, 0, 0, 1)
   self.specularColor = args.specularColor or vec.Vec4(1, 1, 1, 1)
-  self.ambientColor = args.ambientColor or vec.Vec4(0, 0, 0, 1)
-  self.direction = args.direction or vec.Vec3(-1, 0, 0)
   self.constantAttenuation = args.constantAttenuation or 1
   self.linearAttenuation = args.linearAttenuation or 1
   self.quadraticAttenuation = args.quadraticAttenuation or 0
-  self.shadowViewDistance = args.shadowViewDistance or 20
+  self.cutoff = args.cutoff or 30
+  self.power = args.power or 20
+  self.direction = args.direction or vec.Vec3(0, -1, 0)
   return self
 end
 
-function HemiLight:radiusOfEffect()
+function SpotLight:radiusOfEffect()
   local a = self.quadraticAttenuation
   local b = self.linearAttenuation
   local c = self.constantAttenuation
@@ -55,4 +54,4 @@ function HemiLight:radiusOfEffect()
   end
 end
 
-return HemiLight.new
+return SpotLight.new

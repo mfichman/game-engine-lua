@@ -2,14 +2,8 @@ local ffi = require('ffi')
 local path = require('path')
 
 
-local window, graphics
-if ffi.os == 'Windows' then
-  window = ffi.load('csfml-window-2', true)
-  graphics = ffi.load('csfml-graphics-2', true)
-else
-  window = ffi.load('csfml-window', true)
-  graphics = ffi.load('csfml-graphics', true)
-end
+local window = ffi.load('csfml-window', true)
+local graphics = ffi.load('csfml-graphics', true)
 
 ffi.cdef(path.open('sfml/sfml-window.h'):read('*all'))
 ffi.cdef(path.open('sfml/sfml-graphics.h'):read('*all'))

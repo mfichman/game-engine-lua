@@ -19,7 +19,7 @@
 -- IN THE SOFTWARE.
 
 
-package.path = package.path..';./src/?.lua;./src/?/init.lua'
+package.path = './src/?.lua;./src/?/init.lua;'..package.path
 
 local game = require('game')
 local dbg = require('dbg')

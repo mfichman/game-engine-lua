@@ -57,6 +57,11 @@ local function window()
     error('this program requires OpenGL 3.2')
   end
 
+  if ffi.os == 'Windows' then
+    local glew = require('glew')
+    glew.glewInit()
+  end
+
   gl.glViewport(0, 0, mode.width, mode.height)
   gl.glClearColor(0, 0, 0, 1)
 

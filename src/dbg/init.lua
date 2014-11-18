@@ -240,6 +240,7 @@ end
 -- the chunk in a special environment that exposes debug primitives.
 function start(e, line)
   if e == 'line' then
+    local info = debug.getinfo(2, 'Slf')
     if info.func == step then return end
     if info.func == start then return end
     debug.sethook()

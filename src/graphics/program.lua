@@ -81,9 +81,11 @@ function Program:link()
   gl.glGetProgramiv(self.id, gl.GL_ACTIVE_UNIFORMS, uniforms)
   gl.glGetProgramiv(self.id, gl.GL_ACTIVE_UNIFORM_MAX_LENGTH, maxlen)
 
+  local size = ffi.new('GLint[1]')
+  local kind = ffi.new('GLenum[1]')
   local buf = ffi.new('GLchar[?]', maxlen[0])
   for i=0,uniforms[0]-1 do
-    gl.glGetActiveUniform(self.id, i, maxlen[0], nil, nil, nil, buf)
+    gl.glGetActiveUniform(self.id, i, maxlen[0], nil, size, kind, buf)
     local name = ffi.string(buf)
     self[name] = gl.glGetUniformLocation(self.id, buf)
   end

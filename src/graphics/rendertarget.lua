@@ -54,6 +54,6 @@ function RenderTarget:del()
   self.id = 0
 end
 
-RenderTarget.__gc = del
+RenderTarget.__gc = RenderTarget.del
 
 return RenderTarget.new

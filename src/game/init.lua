@@ -26,6 +26,7 @@ local db = require('db')
 local gl = require('gl')
 local bit = require('bit')
 local vec = require('vec')
+local stats = require('stats')
 
 local Game = {}; Game.__index = Game
 
@@ -90,6 +91,7 @@ function Game.new()
   self.config = config
   self.graphics = graphics.Context(config.display.width, config.display.height)
   self.renderer = renderer.Deferred(self.graphics)
+  self.clock = sfml.Clock()
   return self
 end
 
@@ -113,12 +115,21 @@ end
 
 -- Handle input and step the simulation as necessary
 function Game:poll()
+  self.samples = self.samples or {}
+  self.clock:restart()
   local event = sfml.Event()
   while self.window:pollEvent(event) == 1 do
     if event.type == sfml.EvtClosed then os.exit(0) end
   end
   self:render()
   self.window:display()
+
+  collectgarbage('collect')
+  table.insert(self.samples, self.clock:getElapsedTime():asSeconds())
+  if #self.samples > 100 then
+    print(stats.stats(self.samples))
+    self.samples = {}
+  end
 end
 
 -- Run the game

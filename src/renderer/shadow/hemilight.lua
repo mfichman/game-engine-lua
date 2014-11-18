@@ -18,39 +18,12 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-display = {
-  vsync = false,
-  width = 1280,
-  height = 720,
-  fullscreen = false,
-}
+local gl = require('gl')
+local bit = require('bit')
+local graphics = require('graphics')
 
-log = {
-  cpu = false,
-  memory = false,
-}
+local Shadow = {}; Shadow.__index = Shadow
 
-chunk = {
-  cachesize = 16,
-  size = 64,
-  pitch = 2,
-}
 
-key = {
-  accel = "i",
-  brake = "j",
-  mine = "m",
-  attack = "space",
-  inspect = "enter",
-  inventory = "u",
-  zoomin = "add",
-  zoomout = "subtract",
-}
-
-button = {
-  attack = "left",
-  action = "right",
-  click = "left",
-  alt = "right",
-}
+return Shadow.new
 

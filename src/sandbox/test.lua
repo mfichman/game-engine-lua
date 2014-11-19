@@ -19,7 +19,6 @@
 -- IN THE SOFTWARE.
 
 local sandbox = require('sandbox')
-
 local unsafe = [[
   local string = require('string')
   assert(string.len('foobar') == 6)

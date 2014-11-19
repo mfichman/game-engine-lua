@@ -18,6 +18,8 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-
 local path = require('path')
 assert(path.find('mesh/quad.obj') == './mesh/quad.obj')
+assert(path.open('mesh/quad.obj'))
+assert(path.join('foo/', 'mesh/quad.obj') == 'foo/mesh/quad.obj')
+assert(path.join('foo', 'mesh/quad.obj') == 'foo/mesh/quad.obj')

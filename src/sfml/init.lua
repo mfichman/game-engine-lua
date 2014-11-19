@@ -1,10 +1,9 @@
 local ffi = require('ffi')
 local path = require('path')
 
-
-local window = ffi.load('csfml-window', true)
-local graphics = ffi.load('csfml-graphics', true)
-local system = ffi.load('csfml-system', true)
+local window = ffi.load('csfml-window')
+local graphics = ffi.load('csfml-graphics')
+local system = ffi.load('csfml-system')
 
 ffi.cdef(path.open('sfml/sfml-window.h'):read('*all'))
 ffi.cdef(path.open('sfml/sfml-graphics.h'):read('*all'))

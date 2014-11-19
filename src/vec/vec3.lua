@@ -20,19 +20,6 @@
 
 local ffi = require('ffi')
 
-ffi.cdef[[
-  typedef struct vec_Vec3 {
-    union {
-      struct {
-        union { vec_Scalar x; vec_Scalar r; vec_Scalar red; };
-        union { vec_Scalar y; vec_Scalar g; vec_Scalar green; };
-        union { vec_Scalar z; vec_Scalar b; vec_Scalar blue; };
-      };
-      vec_Scalar data[3];
-    };
-  } vec_Vec3;
-]]
-
 local Vec3 = {}; Vec3.__index = Vec3
 local Vec3Type = ffi.typeof('vec_Vec3')
 

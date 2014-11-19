@@ -24,12 +24,6 @@ local math = require('math')
 local Vec3 = require('vec.vec3')
 local Vec4 = require('vec.vec4')
 
-ffi.cdef[[
-  typedef struct vec_Mat3x3 {
-    vec_Scalar data[16];
-  } vec_Mat3x3;
-]]
-
 local Mat3x3 = {}; Mat3x3.__index = Mat3x3
 local Mat3x3Type = ffi.typeof('vec_Mat3x3')
 

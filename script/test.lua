@@ -18,6 +18,8 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
+package.path = './src/?.lua;./src/?/init.lua;'..package.path
+
 local os = require('os')
 
 local test = {
@@ -27,8 +29,10 @@ local test = {
   'src/path/test.lua',
   'src/sandbox/test.lua',
   'src/vec/test.lua',
+  'src/physics/test.lua',
 }
 
 for i, test in ipairs(test) do
-  assert(os.execute('luajit '..test)==0)
+  print(test)
+  dofile(test)
 end

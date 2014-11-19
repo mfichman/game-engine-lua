@@ -19,26 +19,43 @@
 -- IN THE SOFTWARE.
 
 local ffi = require('ffi')
+local vec = require('vec')
+local path = require('path')
 
-local Vec3 = require('vec.vec3')
-local Quat = require('vec.quat')
+local physics = ffi.load('src/physics/physics')
 
-local Transform = {}; Transform.__index = Transform
-local TransformType = ffi.typeof('vec_Transform')
-  
-function Transform.new(position, rotation)
-  if position then
-    return TransformType(position, rotation)
-  else
-    return TransformType(Vec3(), Quat())
+ffi.cdef(path.open('physics/physics.h'):read('*all'))
+
+local function metatype(class, ctor, attr)
+  local mt = {}
+  local cache = {}
+
+  function mt.__index(t, k)
+    if not cache[k] then 
+      cache[k] = physics[string.format('%s_%s', class, k)]
+    end
+    return cache[k] 
+  end
+
+  function mt.__gc(t)
+    return t:del()
+  end
+
+  local t = ffi.metatype(ffi.typeof(class), mt)
+  return function(...)
+    return physics[ctor](...)
   end
 end
 
-function Transform:__mul(other)
-  return Transform.new(
-    self.rotation * other.origin + self.origin,
-    self.rotation * other.rotation)
-end
+metatype('physics_Shape')
+metatype('physics_Constraint')
 
-ffi.metatype(TransformType, Transform)
-return Transform.new
+return {
+  World = metatype('physics_World', 'physics_World_new'),
+  SphereShape = physics['physics_SphereShape_new'],
+  CompoundShape = physics['physics_CompoundShape_new'],
+  ConvexHullShape = physics['physics_ConvexHullShape_new'],
+  HingeConstraint = physics['physics_HingeConstraint_new'],
+  RigidBody = metatype('physics_RigidBody', 'physics_RigidBody_new'),
+  RigidBodyDesc = ffi.typeof('physics_RigidBodyDesc'),
+}

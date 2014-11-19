@@ -18,11 +18,10 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
+local path = require('path')
 local ffi = require('ffi')
 
-ffi.cdef[[
-  typedef float vec_Scalar;
-]]
+ffi.cdef(path.open('vec/vec.h'):read('*all'))
 
 return {
   Mat4=require('vec.mat4'),

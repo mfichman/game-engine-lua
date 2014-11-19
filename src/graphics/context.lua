@@ -47,9 +47,9 @@ end
 -- If a Transform object is submitted, then propagate its transform to all of
 -- its children.
 function Context:submit(node, worldTransform)
-  local worldTransform = worldTransform or vec.Transform.identity()
+  local worldTransform = worldTransform or vec.Transform()
   if Transform == node.new then
-    local tx = worldTransform * vec.Transform.new(node.origin, node.rotation)
+    local tx = worldTransform * vec.Transform(node.origin, node.rotation)
     for _, c in ipairs(node.component) do
       self:submit(c, tx)
     end

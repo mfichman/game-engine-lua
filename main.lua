@@ -18,7 +18,6 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-
 package.path = './src/?.lua;./src/?/init.lua;'..package.path
 
 local game = require('game')

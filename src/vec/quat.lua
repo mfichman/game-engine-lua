@@ -21,26 +21,12 @@
 local ffi = require('ffi')
 local math = require('math')
 
-ffi.cdef[[
-  typedef struct vec_Quat {
-    union {
-      struct {
-        union { vec_Scalar w; };
-        union { vec_Scalar x; };
-        union { vec_Scalar y; };
-        union { vec_Scalar z; };
-      };
-      vec_Scalar data[4];
-    };
-  } vec_Quat;
-]]
-
 local Quat = {}; Quat.__index = Quat
 local QuatType = ffi.typeof('vec_Quat')
 local Vec3 = require('vec.vec3')
 
 function Quat.new(w, x, y, z)
-  if w or x or y or x then
+  if w then
     return QuatType(w, x, y, z)
   else
     return QuatType(1, 0, 0, 0)

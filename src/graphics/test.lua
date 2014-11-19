@@ -25,6 +25,10 @@ local ffi = require('ffi')
 local vec = require('vec')
 
 local context = sfml.Context()
+if ffi.os == 'Windows' then
+  local glew = require('glew')
+  glew.glewInit()
+end
 
 -- Buffer
 local b = graphics.Buffer(gl.GL_ARRAY_BUFFER, gl.GL_STATIC_DRAW, 'int')
@@ -126,5 +130,5 @@ local p = asset.open('shader/deferred/Model.prog')
 local arr = ffi.new('GLfloat[3]')
 
 gl.glUseProgram(p.id)
-gl.glUniform3fv(p.ambientColor, 1, arr)
+gl.glUniform3fv(p.diffuseColor, 1, arr)
 assert(gl.glGetError() == 0)

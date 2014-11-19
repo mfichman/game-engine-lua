@@ -18,20 +18,26 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-
 local graphics = require('graphics')
 local sfml = require('sfml')
 local asset = require('asset')
+local ffi = require('ffi')
 
 local settings = sfml.ContextSettings()
 settings.depthBits = 24
 settings.stencilBits = 0
 settings.majorVersion = 3
 settings.minorVersion = 2
+
 local context = sfml.Context()
+if ffi.os == 'Windows' then
+  local glew = require('glew')
+  glew.glewInit()
+end
 
 assert(asset.open('texture/White.png'))
 assert(asset.open('shader/Flat.frag'))
+
 local m = asset.open('mesh/Quad.obj')
 assert(m)
 assert(m.new == graphics.Transform)
@@ -71,4 +77,9 @@ assert(m.material.diffuseColor.red > .32)
 assert(m.material.specularColor.red == 0)
 assert(m.material.opacity == 1)
 
+local m = asset.open('mesh/Rock0.shape')
+assert(m)
+
+local m = asset.open('mesh/Rock0.shape/Cube')
+assert(m)
 

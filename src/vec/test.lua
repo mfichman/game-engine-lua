@@ -18,11 +18,8 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-
-package.path = package.path..';./?/init.lua'
 local vec = require('vec')
 local ffi = require('ffi')
-
 
 -- Vec4
 local v1 = vec.Vec4(1, 2, 3, 4)
@@ -147,8 +144,8 @@ assert(d.z == 14)
 
 
 -- Transform
-local t = vec.Transform.new(v, vec.Quat())
-local r = vec.Transform.new(vec.Vec3(), vec.Quat())
+local t = vec.Transform(v, vec.Quat())
+local r = vec.Transform(vec.Vec3(), vec.Quat())
 
 local result = t * r
 assert(result.origin.x == 25)

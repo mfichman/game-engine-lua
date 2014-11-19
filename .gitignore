@@ -1,4 +1,8 @@
 *.swp
+*.exp
+*.ilk
+*.pdb
+*.idb
 *.obj
 *.lib
 *.dll

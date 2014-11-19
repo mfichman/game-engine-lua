@@ -18,27 +18,13 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local ffi = require('ffi')
+package.path = './src/?.lua;./src/?/init.lua;'..package.path
 
-local Vec3 = require('vec.vec3')
-local Quat = require('vec.quat')
+local build = require('build')
 
-local Transform = {}; Transform.__index = Transform
-local TransformType = ffi.typeof('vec_Transform')
-  
-function Transform.new(position, rotation)
-  if position then
-    return TransformType(position, rotation)
-  else
-    return TransformType(Vec3(), Quat())
-  end
-end
+build.libpath { 'C:\\WinBrew\\lib' }
+build.lib { 'BulletCollision', 'BulletSoftBody', 'BulletDynamics', 'LinearMath', 'BulletMultiThreaded' }
+build.include {'C:\\WinBrew\\include'}
+build.include {'C:\\WinBrew\\include\\Bullet'}
+build.module('physics')
 
-function Transform:__mul(other)
-  return Transform.new(
-    self.rotation * other.origin + self.origin,
-    self.rotation * other.rotation)
-end
-
-ffi.metatype(TransformType, Transform)
-return Transform.new

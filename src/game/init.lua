@@ -22,12 +22,14 @@ local sfml = require('sfml')
 local config = require('config')
 local graphics = require('graphics')
 local renderer = require('renderer')
+local physics = require('physics')
 local db = require('db')
 local gl = require('gl')
 local bit = require('bit')
 local vec = require('vec')
 local stats = require('stats')
 local ffi = require('ffi')
+local component = require('component')
 
 local Game = {}; Game.__index = Game
 
@@ -97,6 +99,8 @@ function Game.new()
   self.config = config
   self.graphics = graphics.Context(config.display.width, config.display.height)
   self.renderer = renderer.Deferred(self.graphics)
+  self.world = physics.World()
+  self.world:setGravity(vec.Vec3())
   self.clock = sfml.Clock()
   return self
 end
@@ -143,6 +147,20 @@ function Game:run()
   while self.window:isOpen() do
     self:poll()
   end
+end
+
+function Game:Table(kind)
+  local kind = component[kind]
+  return self.db:tableIs(kind)
+end
+
+function Game:Entity(id, data)
+  local id = id or self.db:entityIs()
+  for i, data in ipairs(data) do
+    local kind = component[data[1]]
+    self.db:componentIs(kind, id, kind(id, data))
+  end
+  return id
 end
 
 function Game:del()

@@ -26,9 +26,9 @@ local Quat = require('vec.quat')
 local Transform = {}; Transform.__index = Transform
 local TransformType = ffi.typeof('vec_Transform')
   
-function Transform.new(position, rotation)
-  if position then
-    return TransformType(position, rotation)
+function Transform.new(origin, rotation)
+  if origin then
+    return TransformType(origin, rotation)
   else
     return TransformType(Vec3(), Quat())
   end

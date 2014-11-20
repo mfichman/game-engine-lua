@@ -31,8 +31,7 @@ function Camera.new()
   self.right = 0
   self.top = 0
   self.bottom = 0
-  self.viewportWidth = 0
-  self.viewportHeight = 0
+  self.viewport = vec.Vec2()
   self.fieldOfView = 45
   self.mode = 'perspective'
   self.transform = vec.Mat4.identity()
@@ -50,7 +49,7 @@ function Camera:update()
   if self.mode == 'ortho' then
     self.projectionTransform = vec.Mat4.ortho(self.left, self.right, self.bottom, self.top, self.near, self.far)
   elseif self.mode == 'perspective' then
-    local aspectRatio = self.viewportWidth/self.viewportHeight
+    local aspectRatio = self.viewport.width/self.viewport.height
     self.projectionTransform = vec.Mat4.perspective(self.fieldOfView, aspectRatio, self.near, self.far)
   else
     error('invalid camera mode')

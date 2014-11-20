@@ -190,14 +190,8 @@ physics_RigidBody* physics_RigidBody_new(physics_RigidBodyDesc* desc) {
         info.m_collisionShape->calculateLocalInertia(info.m_mass, info.m_localInertia);
     }
     btQuaternion quat = info.m_startWorldTransform.getRotation();
-    printf("%f %f %f %f\n", quat.getW(), quat.getX(), quat.getY(), quat.getZ());
-    printf("%f %f %f %f\n", r->w, r->x, r->y, r->z);
     
-    auto self= new btRigidBody(info);
-     quat = self->getOrientation();
-    printf("%f %f %f %f\n", quat.getW(), quat.getX(), quat.getY(), quat.getZ());
-
-    return (physics_RigidBody*)self;
+    return (physics_RigidBody*)new btRigidBody(info);
 }
 
 void physics_RigidBody_del(physics_RigidBody* self) {
@@ -252,6 +246,10 @@ vec_Vec3 physics_RigidBody_getAngularVelocity(physics_RigidBody* self) {
     return convert<vec_Vec3>(((btRigidBody*)self)->getAngularVelocity());
 }
 
+vec_Vec3 physics_RigidBody_getLinearFactor(physics_RigidBody* self) {
+    return convert<vec_Vec3>(((btRigidBody*)self)->getLinearFactor());
+}
+
 vec_Vec3 physics_RigidBody_getAngularFactor(physics_RigidBody* self) {
     return convert<vec_Vec3>(((btRigidBody*)self)->getAngularFactor());
 }
@@ -270,6 +268,10 @@ void physics_RigidBody_setAngularVelocity(physics_RigidBody* self, vec_Vec3 cons
 
 void physics_RigidBody_setAngularFactor(physics_RigidBody* self, vec_Vec3 const* factor) {
     ((btRigidBody*)self)->setAngularFactor(convert<btVector3>(factor));
+}
+
+void physics_RigidBody_setLinearFactor(physics_RigidBody* self, vec_Vec3 const* factor) {
+    ((btRigidBody*)self)->setLinearFactor(convert<btVector3>(factor));
 }
 
 void physics_RigidBody_setUserPointer(physics_RigidBody* self, void* data) {

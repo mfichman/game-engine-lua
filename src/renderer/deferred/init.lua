@@ -47,7 +47,7 @@ function Deferred.new(context)
   local self = setmetatable({}, Deferred)
   self.context = context
 
-  local width, height = context.camera.viewportWidth, context.camera.viewportHeight
+  local width, height = context.camera.viewport.width, context.camera.viewport.height
   self.diffuseBuffer = graphics.RenderTarget(width, height, gl.GL_RGB)
   self.specularBuffer = graphics.RenderTarget(width, height, gl.GL_RGBA)
   self.normalBuffer = graphics.RenderTarget(width, height, gl.GL_RGB16F)
@@ -165,8 +165,8 @@ function Deferred:render()
   gl.glDepthMask(gl.GL_TRUE)
 
   -- Blit final framebuf to screen
-  local width = self.context.camera.viewportWidth
-  local height = self.context.camera.viewportHeight
+  local width = self.context.camera.viewport.width
+  local height = self.context.camera.viewport.height
   gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, self.finalFrameBuffer.id)
   gl.glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, gl.GL_COLOR_BUFFER_BIT, gl.GL_NEAREST)
   gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, 0)

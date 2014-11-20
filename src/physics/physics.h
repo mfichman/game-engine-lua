@@ -71,11 +71,13 @@ __declspec(dllexport) vec_Vec3 physics_RigidBody_getPosition(physics_RigidBody* 
 __declspec(dllexport) vec_Quat physics_RigidBody_getRotation(physics_RigidBody* self);
 __declspec(dllexport) vec_Vec3 physics_RigidBody_getLinearVelocity(physics_RigidBody* self);
 __declspec(dllexport) vec_Vec3 physics_RigidBody_getAngularVelocity(physics_RigidBody* self);
+__declspec(dllexport) vec_Vec3 physics_RigidBody_getLinearFactor(physics_RigidBody* self);
 __declspec(dllexport) vec_Vec3 physics_RigidBody_getAngularFactor(physics_RigidBody* self);
 __declspec(dllexport) void* physics_RigidBody_getUserPointer(physics_RigidBody* self, void* data);
 __declspec(dllexport) void physics_RigidBody_setLinearVelocity(physics_RigidBody* self, vec_Vec3 const* velocity);
 __declspec(dllexport) void physics_RigidBody_setAngularVelocity(physics_RigidBody* self, vec_Vec3 const* velocity);
 __declspec(dllexport) void physics_RigidBody_setAngularFactor(physics_RigidBody* self, vec_Vec3 const* factor);
+__declspec(dllexport) void physics_RigidBody_setLinearFactor(physics_RigidBody* self, vec_Vec3 const* factor);
 __declspec(dllexport) void physics_RigidBody_setUserPointer(physics_RigidBody* self, void* data);
 
 

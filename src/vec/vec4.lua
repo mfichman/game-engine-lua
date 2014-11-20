@@ -47,6 +47,10 @@ function Vec4:__mul(other)
   return Vec4.new(self.x*other, self.y*other, self.z*other, self.w*other)
 end
 
+function Vec4:__div(other)
+  return Vec4.new(self.x/other, self.y/other, self.z/other, self.w/other)
+end
+
 function Vec4:len(other)
   return math.sqrt(self:len2())
 end

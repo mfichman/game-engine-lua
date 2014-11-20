@@ -32,8 +32,7 @@ function Context.new(width, height)
   assert(height, 'height is nil')
   local self = setmetatable({}, Context) 
   self.camera = Camera()
-  self.camera.viewportWidth = width
-  self.camera.viewportHeight = height
+  self.camera.viewport = vec.Vec2(width, height)
   self.worldTransform = vec.Mat4.identity()
   self.program = 0
   self.op = {} -- array of objects submitted for rendering in this frame
@@ -81,8 +80,10 @@ function Context:commit()
 
   if self.state.blendFuncSrc ~= self.committed.blendFuncSrc or
      self.state.blendFuncDst ~= self.committed.blendFuncDst then
-    gl.glBlendFunc(self.state.blendFuncSrc or gl.GL_ONE,
-                   self.state.blendFuncDst or gl.GL_ZERO)
+
+    local bfs = self.state.blendFuncSrc or gl.GL_ONE
+    local bfd = self.state.blendFuncDst or gl.GL_ZERO
+    gl.glBlendFunc(bfs, bfd)
   end
 
   for enum, _ in pairs(self.state.enabled) do

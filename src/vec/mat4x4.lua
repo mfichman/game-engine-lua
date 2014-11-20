@@ -152,12 +152,15 @@ function Mat4x4.transform(quat, origin)
   local fTyz = fTz*quat.y;
   local fTzz = fTz*quat.z;
 
+
 -- FIXME: transpose?
-  return Mat4x4.new(
+  local self =  Mat4x4.new(
     1-(fTyy+fTzz), fTxy+fTwz, fTxz-fTwy, 0,
     fTxy-fTwz, 1-(fTxx+fTzz), fTyz+fTwx, 0,
     fTxz+fTwy, fTyz-fTwx, 1-(fTxx+fTyy), 0,
     origin.x, origin.y, origin.z, 1)
+
+  return self
 end
 
 function Mat4x4:transpose()

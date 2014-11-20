@@ -18,23 +18,50 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
+local config = require('config')
+local sfml = require('sfml')
 local ffi = require('ffi')
+local gl = require('gl')
 
-local Vec3 = require('vec.vec3')
-local Quat = require('vec.quat')
+local Window = {}; Window.__index = Window
 
-local Transform = {}; Transform.__index = Transform
-local TransformType = ffi.typeof('vec_Transform')
+-- Create a new window from the current config
+function Window.new()
+  local mode = sfml.VideoMode()
+  mode.bitsPerPixel = 32
+  mode.width = config.display.width
+  mode.height = config.display.height
   
-function Transform.new(origin, rotation)
-  return TransformType(origin or Vec3(), rotation or Quat())
+  local settings = sfml.ContextSettings()
+  settings.depthBits = 24
+  settings.stencilBits = 0
+  settings.majorVersion = 3
+  settings.minorVersion = 2
+  
+  local style
+  if config.display.fullscreen then
+    style = sfml.Fullscreen
+  else
+    style = sfml.DefaultStyle
+  end
+  
+  local window = sfml.Window(mode, "quadrant", style, settings)
+  window:setVerticalSyncEnabled(config.display.vsync)
+  local settings = window:getSettings()
+  if settings.majorVersion < 3 
+     or (settings.majorVersion == 3 and settings.minorVersion < 2) then
+    error('this program requires OpenGL 3.2')
+  end
+
+  if ffi.os == 'Windows' then
+    local glew = require('glew')
+    glew.glewInit()
+  end
+
+  gl.glViewport(0, 0, mode.width, mode.height)
+  gl.glClearColor(0, 0, 0, 1)
+
+  return window
 end
 
-function Transform:__mul(other)
-  return Transform.new(
-    self.rotation * other.origin + self.origin,
-    self.rotation * other.rotation)
-end
-
-ffi.metatype(TransformType, Transform)
-return Transform.new
+return Window.new

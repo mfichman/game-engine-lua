@@ -28,49 +28,11 @@ local gl = require('gl')
 local bit = require('bit')
 local vec = require('vec')
 local stats = require('stats')
-local ffi = require('ffi')
+local window = require('window')
 local component = require('component')
+local input = require('input')
 
 local Game = {}; Game.__index = Game
-
--- Create a new window from the current config
-local function window()
-  local mode = sfml.VideoMode()
-  mode.bitsPerPixel = 32
-  mode.width = config.display.width
-  mode.height = config.display.height
-  
-  local settings = sfml.ContextSettings()
-  settings.depthBits = 24
-  settings.stencilBits = 0
-  settings.majorVersion = 3
-  settings.minorVersion = 2
-  
-  local style
-  if config.display.fullscreen then
-    style = sfml.Fullscreen
-  else
-    style = sfml.DefaultStyle
-  end
-  
-  local window = sfml.Window(mode, "quadrant", style, settings)
-  window:setVerticalSyncEnabled(config.display.vsync)
-  local settings = window:getSettings()
-  if settings.majorVersion < 3 
-     or (settings.majorVersion == 3 and settings.minorVersion < 2) then
-    error('this program requires OpenGL 3.2')
-  end
-
-  if ffi.os == 'Windows' then
-    local glew = require('glew')
-    glew.glewInit()
-  end
-
-  gl.glViewport(0, 0, mode.width, mode.height)
-  gl.glClearColor(0, 0, 0, 1)
-
-  return window
-end
 
 -- Call 'event' on each row in the table. If the first row in the table does 
 -- not have 'event' as a member, then skip all other components in the table as
@@ -94,14 +56,17 @@ end
 -- Create a new game object
 function Game.new()
   local self = setmetatable({}, Game)
-  self.window = window()
+  self.window = window.Window()
   self.db = db.Database()
+  self.input = input.Map()
   self.config = config
   self.graphics = graphics.Context(config.display.width, config.display.height)
   self.renderer = renderer.Deferred(self.graphics)
   self.world = physics.World()
   self.world:setGravity(vec.Vec3())
   self.clock = sfml.Clock()
+  self.accumulator = 0
+  self.timestep = 1/60
   return self
 end
 
@@ -120,32 +85,54 @@ function Game:render()
   self:apply('render')
   self.renderer:render() 
   self.graphics:finish()
+  self.window:display()
   assert(gl.glGetError() == 0)
+end
+
+-- Handle physics update
+function Game:update()
+  self.accumulator = self.accumulator + self.clock:getElapsedTime():asSeconds()
+  self.clock:restart()
+
+  -- FIXME: Need to limit the # of iterations this loop does, so that the game
+  -- doesn't get stuck in this loop for a long time if the window is closed or
+  -- the computer slows down.
+  while self.accumulator > self.timestep do
+    -- Run Bullet with maxSubSteps=0, which causes Bullet to step by exactly
+    -- timestep seconds. The code in this function handles framerate
+    -- independence and interpolation by itself, so we don't need Bullet to do
+    -- it. After each step, fire a 'tick' event, so that components that must
+    -- update each frame are notified.
+    self.world:stepSimulation(self.timestep, 1, self.timestep) 
+    self:tick()
+    self.accumulator = self.accumulator - self.timestep     
+  end
 end
 
 -- Handle input and step the simulation as necessary
 function Game:poll()
-  self.samples = self.samples or {}
-  self.clock:restart()
   local event = sfml.Event()
   while self.window:pollEvent(event) == 1 do
     if event.type == sfml.EvtClosed then os.exit(0) end
   end
-  self:render()
-  self.window:display()
 
-  collectgarbage('collect')
-  table.insert(self.samples, self.clock:getElapsedTime():asSeconds())
+--  collectgarbage('collect')
+--  table.insert(self.samples, self.clock:getElapsedTime():asSeconds())
+--[[
   if #self.samples > 100 then
     print(stats.stats(self.samples))
     self.samples = {}
   end
+]]
 end
 
 -- Run the game
 function Game:run()
+  self.clock:restart()
   while self.window:isOpen() do
     self:poll()
+    self:update()
+    self:render()
   end
 end
 

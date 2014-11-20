@@ -47,7 +47,7 @@ key = {
   zoomout = "subtract",
 }
 
-button = {
+mouse = {
   attack = "left",
   action = "right",
   click = "left",

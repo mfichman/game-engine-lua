@@ -18,19 +18,21 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-package.path = './src/?.lua;./src/?/init.lua;'..package.path
+local sfml = require('sfml')
 
-local game = require('game')
-local dbg = require('dbg')
-local entity = require('entity')
-local vec = require('vec')
+local Binding = {}; Binding.__index = Binding
 
-local function init()
-  entity.Fighter{}
---  entity.Rock{kind='Rock0', origin=vec.Vec3(-10, 0, 0)}
---  entity.Rock{kind='Rock0', origin=vec.Vec3(10, 0, 0)}
---  entity.Rock{kind='SmoothSphere'}
+function Binding.new(args)
+  local self = setmetatable({}, Binding)
+  self.key = args.key
+  self.button = args.button
+  return self
 end
 
-xpcall(init, dbg.start)
-xpcall(function() game:run() end, dbg.start)
+function Binding:__call()
+  if self.key and sfml.Keyboard_isKeyPressed(self.key) == 1 then return true end
+  if self.mouse and sfml.Mouse_isButtonPressed(self.button) == 1 then return true end
+  return false
+end
+
+return Binding.new

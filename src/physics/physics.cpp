@@ -50,11 +50,11 @@ template <> inline vec_Vec3 convert<vec_Vec3>(btVector3 const& val) {
 }
 
 template <> inline btQuaternion convert<btQuaternion>(vec_Quat const* val) {
-    return btQuaternion(val->w, val->x, val->y, val->z);
+    return btQuaternion(val->x, val->y, val->z, val->w);
 }
 
 template <> inline btQuaternion convert<btQuaternion>(vec_Quat* val) {
-    return btQuaternion(val->w, val->x, val->y, val->z);
+    return btQuaternion(val->x, val->y, val->z, val->w);
 }
 
 template <> inline vec_Quat convert<vec_Quat>(btQuaternion const& val) {
@@ -180,7 +180,7 @@ physics_RigidBody* physics_RigidBody_new(physics_RigidBodyDesc* desc) {
     vec_Vec3* const o = &desc->transform.origin;
     
     btRigidBody::btRigidBodyConstructionInfo info(0, 0, 0);
-    info.m_startWorldTransform = btTransform(*(btQuaternion*)r, *(btVector3*)o);
+    info.m_startWorldTransform = btTransform(convert<btQuaternion>(r), convert<btVector3>(o));
     info.m_collisionShape = (btCollisionShape*)desc->shape;
     info.m_friction = desc->friction;
     info.m_restitution = desc->restitution;
@@ -189,8 +189,15 @@ physics_RigidBody* physics_RigidBody_new(physics_RigidBodyDesc* desc) {
     if (info.m_collisionShape) {
         info.m_collisionShape->calculateLocalInertia(info.m_mass, info.m_localInertia);
     }
+    btQuaternion quat = info.m_startWorldTransform.getRotation();
+    printf("%f %f %f %f\n", quat.getW(), quat.getX(), quat.getY(), quat.getZ());
+    printf("%f %f %f %f\n", r->w, r->x, r->y, r->z);
     
-    return (physics_RigidBody*)new btRigidBody(info);
+    auto self= new btRigidBody(info);
+     quat = self->getOrientation();
+    printf("%f %f %f %f\n", quat.getW(), quat.getX(), quat.getY(), quat.getZ());
+
+    return (physics_RigidBody*)self;
 }
 
 void physics_RigidBody_del(physics_RigidBody* self) {

@@ -18,19 +18,37 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-package.path = './src/?.lua;./src/?/init.lua;'..package.path
+local config = require('config')
+local sfml = require('sfml')
+local key = require('input.key')
+local mouse = require('input.mouse')
 
-local game = require('game')
-local dbg = require('dbg')
-local entity = require('entity')
-local vec = require('vec')
+local Map = {}; Map.__index = Map
+local Binding = require('input.binding')
 
-local function init()
-  entity.Fighter{}
---  entity.Rock{kind='Rock0', origin=vec.Vec3(-10, 0, 0)}
---  entity.Rock{kind='Rock0', origin=vec.Vec3(10, 0, 0)}
---  entity.Rock{kind='SmoothSphere'}
+local action = {
+  'accel','brake','mine','click','alt','attack','inspect','inventory',
+  'zoomin','zoomout'
+}
+
+-- Convert semantic actions (see above) into SFML keycodes/mousebutton codes
+-- using the lookup tables in mouse.lua and key.lua.
+function Map.new()
+  local self = setmetatable({}, Map)
+  for i, action in ipairs(action) do
+    local kkey = config.key[action]
+    local kmouse = config.mouse[action]
+    local args = {}
+    if kkey then
+      args.key = key[kkey:lower()] 
+      print(key, args.key)
+    end
+    if kmouse then
+      args.mouse = mouse[kmouse:lower()]
+    end
+    self[action] = Binding(args)
+  end
+  return self
 end
 
-xpcall(init, dbg.start)
-xpcall(function() game:run() end, dbg.start)
+return Map.new

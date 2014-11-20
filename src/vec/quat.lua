@@ -48,7 +48,34 @@ end
 
 function Quat:unit()
   local norm = self:len()
-  return Quat.new(self.x/norm, self.y/norm, self.z/norm, self.w/norm)
+  return Quat.new(self.w/norm, self.x/norm, self.y/norm, self.z/norm)
+end
+
+function Quat:dot(other)
+  return self.w*other.w + self.x*other.x + self.y*other.y + self.z*other.z
+end
+
+function Quat:slerp(other, alpha) 
+  local cos = self:dot(other)
+  local rkt = Quat.new()
+
+  if cos < 0 then
+      cos = -cos;
+      rkt = Quat.new(-other.w, -other.x, -other.y, -other.z)
+  else
+      rkt = other
+  end
+
+  if math.abs(cos) < (1-1e-03) then
+      local sin = math.sqrt(1-cos*cos)
+      local angle = math.atan2(sin, cos)
+      local invsin = 1/sin
+      local coeff0 = math.sin((1-alpha) * angle) * invsin
+      local coeff1 = math.sin(alpha * angle) * invsin
+      return self*coeff0 + rkt*coeff1
+  else
+      return (self*(1-alpha) + rkt*alpha):unit();
+  end
 end
 
 local function mulquat(self, q)
@@ -67,8 +94,14 @@ local function mulvec3(self, v)
   return v+((uv*self.w)+uuv)*2
 end
 
+function Quat:__add(other)
+  return Quat.new(self.w+other.w, self.x+other.x, self.y+other.y, self.z+other.z)
+end
+
 function Quat:__mul(other)
-  if other.new == Quat.new then
+  if type(other) == 'number' then
+    return Quat.new(self.w*other, self.x*other, self.y*other, self.z*other)
+  elseif other.new == Quat.new then
     return mulquat(self, other)
   elseif other.new == Vec3 then
     return mulvec3(self, other)

@@ -38,6 +38,13 @@ function Vec3:cross(other)
     self.x*other.y - self.y*other.x)
 end
 
+function Vec3:lerp(other, alpha)
+  return Vec3.new(
+    self.x*(1-alpha)+other.x*alpha,
+    self.y*(1-alpha)+other.y*alpha,
+    self.z*(1-alpha)+other.z*alpha)
+end
+
 function Vec3:__add(other)
   return Vec3.new(self.x+other.x, self.y+other.y, self.z+other.z)
 end

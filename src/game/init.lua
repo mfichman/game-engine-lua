@@ -107,6 +107,7 @@ function Game:update()
     self:tick()
     self.accumulator = self.accumulator - self.timestep     
   end
+  self:apply('update')
 end
 
 -- Handle input and step the simulation as necessary

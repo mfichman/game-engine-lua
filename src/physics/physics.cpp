@@ -33,6 +33,30 @@ extern "C" {
 template <typename T, typename V> T convert(V* val);
 template <typename T, typename V> T convert(V const& val);
 
+struct MotionState : public btMotionState {
+    MotionState(btTransform const& transform) : transform(transform) {}
+    virtual void getWorldTransform(btTransform& trans) const { trans = transform; }
+    virtual void setWorldTransform(btTransform const& trans) { transform = trans; }
+    btTransform transform;
+};
+
+struct World : public btDiscreteDynamicsWorld {
+    World(btCollisionDispatcher* dispatcher, btDbvtBroadphase* broadphase, btConstraintSolver* solver, btCollisionConfiguration* config) :
+        btDiscreteDynamicsWorld(dispatcher, broadphase, solver, config) {}
+
+    /* Interpolate motion states, even though we're using 0 substeps. This
+     * avoids the need for registering tick callbacks, which cause problems for
+     * LuaJIT. We call bullet's substep API directly, but with a fixed timestep
+     * value each time. At the end of the substeps, we call synchronizeMotionStates
+     * once to get bullet to go interpolation for rendering.
+     */
+    void synchronizeMotionStates(btScalar remainder, btScalar fixedTimeStep) {
+        m_localTime = remainder;
+        m_fixedTimeStep = fixedTimeStep;
+        btDiscreteDynamicsWorld::synchronizeMotionStates();
+    }
+};
+
 template <> inline btVector3 convert<btVector3>(vec_Vec3 const* val) {
     return btVector3(val->x, val->y, val->z);
 }
@@ -71,7 +95,7 @@ physics_World* physics_World_new() {
     btCollisionDispatcher* dispatcher = new btCollisionDispatcher(config);
     btDbvtBroadphase* broadphase = new btDbvtBroadphase();
     btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
-    return (physics_World*)new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, config);
+    return (physics_World*)new World(dispatcher, broadphase, solver, config);
 }
 
 void physics_World_del(physics_World* self) {
@@ -117,6 +141,10 @@ void physics_World_removeCollisionObject(physics_World* self, physics_CollisionO
 
 void physics_World_stepSimulation(physics_World* self, vec_Scalar timeStep, int maxSubSteps, vec_Scalar fixedTimeStep) { 
     ((btDiscreteDynamicsWorld*)self)->stepSimulation(timeStep, maxSubSteps, fixedTimeStep); 
+}
+
+void physics_World_synchronizeMotionStates(physics_World* self, vec_Scalar remainder, vec_Scalar fixedTimeStep) {
+    ((World*)self)->synchronizeMotionStates(remainder, fixedTimeStep);
 }
 
 vec_Vec3 physics_World_getGravity(physics_World* self) {
@@ -180,7 +208,7 @@ physics_RigidBody* physics_RigidBody_new(physics_RigidBodyDesc* desc) {
     vec_Vec3* const o = &desc->transform.origin;
     
     btRigidBody::btRigidBodyConstructionInfo info(0, 0, 0);
-    info.m_startWorldTransform = btTransform(convert<btQuaternion>(r), convert<btVector3>(o));
+    info.m_motionState = new MotionState(btTransform(convert<btQuaternion>(r), convert<btVector3>(o)));
     info.m_collisionShape = (btCollisionShape*)desc->shape;
     info.m_friction = desc->friction;
     info.m_restitution = desc->restitution;
@@ -195,6 +223,7 @@ physics_RigidBody* physics_RigidBody_new(physics_RigidBodyDesc* desc) {
 }
 
 void physics_RigidBody_del(physics_RigidBody* self) {
+    delete ((btRigidBody*)self)->getMotionState();
     delete (btRigidBody*)self;
 }
 
@@ -236,6 +265,16 @@ vec_Vec3 physics_RigidBody_getPosition(physics_RigidBody* self) {
 
 vec_Quat physics_RigidBody_getRotation(physics_RigidBody* self) {
     return convert<vec_Quat>(((btRigidBody*)self)->getOrientation());
+}
+
+vec_Vec3 physics_RigidBody_getPredictedPosition(physics_RigidBody* self) {
+    MotionState* ms = (MotionState*)((btRigidBody*)self)->getMotionState();
+    return convert<vec_Vec3>(ms->transform.getOrigin());
+}
+
+vec_Quat physics_RigidBody_getPredictedRotation(physics_RigidBody* self) {
+    MotionState* ms = (MotionState*)((btRigidBody*)self)->getMotionState();
+    return convert<vec_Quat>(ms->transform.getRotation());
 }
 
 vec_Vec3 physics_RigidBody_getLinearVelocity(physics_RigidBody* self) {

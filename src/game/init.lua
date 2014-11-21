@@ -67,6 +67,7 @@ function Game.new()
   self.clock = sfml.Clock()
   self.accumulator = 0
   self.timestep = 1/60
+  self.samples = {}
   return self
 end
 
@@ -89,24 +90,37 @@ function Game:render()
   assert(gl.glGetError() == 0)
 end
 
--- Handle physics update
+-- Handle physics update. Execute fixed-time ticks to bring the physics state
+-- up as close to current time as possible. Then, interpolate positions of
+-- objects using the remaining time.
 function Game:update()
-  self.accumulator = self.accumulator + self.clock:getElapsedTime():asSeconds()
+  self.delta = self.clock:getElapsedTime():asSeconds()
+  self.accumulator = self.accumulator + self.delta
   self.clock:restart()
 
-  -- FIXME: Need to limit the # of iterations this loop does, so that the game
-  -- doesn't get stuck in this loop for a long time if the window is closed or
-  -- the computer slows down.
-  while self.accumulator > self.timestep do
-    -- Run Bullet with maxSubSteps=0, which causes Bullet to step by exactly
-    -- timestep seconds. The code in this function handles framerate
-    -- independence and interpolation by itself, so we don't need Bullet to do
-    -- it. After each step, fire a 'tick' event, so that components that must
-    -- update each frame are notified.
-    self.world:stepSimulation(self.timestep, 1, self.timestep) 
-    self:tick()
-    self.accumulator = self.accumulator - self.timestep     
+  local substeps, remainder = math.modf(self.accumulator/self.timestep)
+  
+  -- Clamp substeps to drop ticks if the physics engine gets too far behind.
+  -- The game doesn't get stuck in the substep loop for a long time if the
+  -- window is closed or the computer slows down.
+  if substeps > 8 then
+    print(string.format('warning: dropping %d frames', substeps-8))
+    substeps = 8
   end
+  self.accumulator = remainder*self.timestep
+
+  -- Run Bullet with maxSubSteps=0, which causes Bullet to step by exactly do
+  -- one substep of exactly timestep seconds. The code in this function handles
+  -- framerate independence and interpolation by itself, so we don't need
+  -- Bullet to do it. After each step, fire a 'tick' event, so that components
+  -- that must update each frame are notified.
+  for i=1,substeps do
+    self.world:stepSimulation(self.timestep, 0, self.timestep) 
+    self:tick()
+  end
+
+  -- Call Bullet to do intepolation once per frame.
+  self.world:synchronizeMotionStates(self.accumulator, self.timestep)
   self:apply('update')
 end
 
@@ -116,25 +130,35 @@ function Game:poll()
   while self.window:pollEvent(event) == 1 do
     if event.type == sfml.EvtClosed then os.exit(0) end
   end
+end
 
---  collectgarbage('collect')
---  table.insert(self.samples, self.clock:getElapsedTime():asSeconds())
---[[
+-- Sample performance data
+function Game:sample()
+  table.insert(self.samples, self.delta)
   if #self.samples > 100 then
     print(stats.stats(self.samples))
     self.samples = {}
   end
-]]
+end
+
+function Game:gc()
+  if self.delta < self.timestep/4 then
+    collectgarbage('step', 1)
+  end
 end
 
 -- Run the game
 function Game:run()
+  collectgarbage('stop')
   self.clock:restart()
   while self.window:isOpen() do
     self:poll()
     self:update()
     self:render()
+    self:gc()
+    --self:sample()
   end
+  collectgarbage('start')
 end
 
 function Game:Table(kind)

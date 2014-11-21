@@ -47,6 +47,7 @@ __declspec(dllexport) void physics_World_removeRigidBody(physics_World* self, ph
 __declspec(dllexport) void physics_World_removeConstraint(physics_World* self, physics_Constraint* constraint);
 __declspec(dllexport) void physics_World_removeCollisionObject(physics_World* self, physics_CollisionObject* object);
 __declspec(dllexport) void physics_World_stepSimulation(physics_World* self, vec_Scalar timeStep, int maxSubSteps, vec_Scalar fixedTimeStep);
+__declspec(dllexport) void physics_World_synchronizeMotionStates(physics_World* self, vec_Scalar remainder, vec_Scalar fixedTimeStep);
 
 __declspec(dllexport) physics_Shape* physics_SphereShape_new(vec_Scalar radius);
 __declspec(dllexport) physics_Shape* physics_ConvexHullShape_new(uint32_t* index, uint32_t indexCount, vec_Vec3* vertex, uint32_t vertexCount, uint32_t vertexStride);
@@ -69,6 +70,8 @@ __declspec(dllexport) vec_Vec3 physics_RigidBody_getTotalForce(physics_RigidBody
 __declspec(dllexport) vec_Vec3 phsyics_RigidBody_getTotalTorque(physics_RigidBody* self);
 __declspec(dllexport) vec_Vec3 physics_RigidBody_getPosition(physics_RigidBody* self);
 __declspec(dllexport) vec_Quat physics_RigidBody_getRotation(physics_RigidBody* self);
+__declspec(dllexport) vec_Vec3 physics_RigidBody_getPredictedPosition(physics_RigidBody* self);
+__declspec(dllexport) vec_Quat physics_RigidBody_getPredictedRotation(physics_RigidBody* self);
 __declspec(dllexport) vec_Vec3 physics_RigidBody_getLinearVelocity(physics_RigidBody* self);
 __declspec(dllexport) vec_Vec3 physics_RigidBody_getAngularVelocity(physics_RigidBody* self);
 __declspec(dllexport) vec_Vec3 physics_RigidBody_getLinearFactor(physics_RigidBody* self);

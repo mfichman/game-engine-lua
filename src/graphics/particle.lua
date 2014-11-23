@@ -18,15 +18,17 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local RenderOp = {}; RenderOp.__index = RenderOp
+local ffi = require('ffi')
 
--- A render op encapsulates everything needed for a single draw command: the
--- object to be rendered, the complete transform set and the Z value.
-function RenderOp.new(node, worldTransform)
-  local self = setmetatable({}, RenderOp)
-  self.node = node
-  self.worldTransform = worldTransform
-  return self
-end
+ffi.cdef[[
+  typedef struct graphics_Particle {
+    vec_Vec3 position; 
+    vec_Vec3 velocity;
+    vec_Vec4 color;
+    vec_Scalar size;
+    vec_Scalar rotation;
+  } graphics_Particle;
+]]
 
-return RenderOp.new
+
+return ffi.typeof('graphics_Particle')

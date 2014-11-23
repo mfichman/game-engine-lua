@@ -19,7 +19,6 @@
 -- IN THE SOFTWARE.
 
 local struct = require('graphics.struct')
-local ffi = require('ffi')
 local vec = require('vec')
 local gl = require('gl')
 
@@ -27,12 +26,12 @@ local Buffer = require('graphics.buffer')
 
 local Particles = {}; Particles.__index = Particles
 
-ffi.cdef[[
-  typedef struct graphics_Particle {
-    vec_Vec3 position; 
-    vec_Vec3 velocity;
-    vec_Vec4 color;
-    vec_Scalar size;
-    vec_Scalar rotation;
-  } graphics_Particle;
-]]
+function Particles.new(args)
+  local self = setmetatable({}, Particles)
+  self.clearMode = 'manual'
+  self.blendMode = 'additive'
+  self.tint = vec.Vec4(1, 1, 1, 1)
+  return self
+end
+
+return Particles.new

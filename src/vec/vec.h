@@ -42,6 +42,11 @@ typedef struct vec_Quat {
     vec_Scalar z;
 } vec_Quat;
 
+typedef struct vec_Vec2 {
+    union { vec_Scalar x; vec_Scalar u; vec_Scalar w; vec_Scalar width; };
+    union { vec_Scalar y; vec_Scalar v; vec_Scalar h; vec_Scalar height; };
+} vec_Vec2;
+
 typedef struct vec_Vec3 {
     vec_Scalar x;
     vec_Scalar y;
@@ -55,13 +60,16 @@ typedef struct vec_Vec4 {
     vec_Scalar w;
 } vec_Vec4;
 
+typedef struct vec_Color {
+    vec_Scalar x;
+    vec_Scalar y;
+    vec_Scalar z;
+    vec_Scalar w;
+} vec_Color;
+
 typedef struct vec_Transform {
     vec_Vec3 origin;
     vec_Quat rotation;
 } vec_Transform;
 
-typedef struct vec_Vec2 {
-    union { vec_Scalar x; vec_Scalar u; vec_Scalar w; vec_Scalar width; };
-    union { vec_Scalar y; vec_Scalar v; vec_Scalar h; vec_Scalar height; };
-} vec_Vec2;
 

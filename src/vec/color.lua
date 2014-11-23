@@ -18,15 +18,49 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local RenderOp = {}; RenderOp.__index = RenderOp
+local ffi = require('ffi')
+local math = require('math')
 
--- A render op encapsulates everything needed for a single draw command: the
--- object to be rendered, the complete transform set and the Z value.
-function RenderOp.new(node, worldTransform)
-  local self = setmetatable({}, RenderOp)
-  self.node = node
-  self.worldTransform = worldTransform
-  return self
+local Color = {}; Color.__index = Color
+local ColorType = ffi.typeof('vec_Color')
+
+function Color.new(...)
+  return ColorType(...)
 end
 
-return RenderOp.new
+function Color:__add(other)
+  return Color.new(self.x+other.x, self.y+other.y, self.z+other.z, self.w+other.w)
+end
+
+function Color:__sub(other)
+  return Color.new(self.x-other.x, self.y-other.y, self.z-other.z, self.w-other.w)
+end
+
+function Color:__mul(other)
+  if type(self) == 'number' then
+    other, self = self, other
+  end
+  return Color.new(self.x*other, self.y*other, self.z*other, self.w*other)
+end
+
+function Color:__div(other)
+  if type(self) == 'number' then
+    other, self = self, other
+  end
+  return Color.new(self.x/other, self.y/other, self.z/other, self.w/other)
+end
+
+function Color:__tostring()
+  return string.format('%f, %f, %f, %f', self.x, self.y, self.z, self.w)
+end
+
+function Color:__eq(other)
+  return self.x == other.x and self.y == other.y and self.z == other.z and self.w == other.w
+end
+
+function Color:data()
+  return ffi.cast('vec_Scalar*', self)
+end
+
+ffi.metatype(ColorType, Color)
+return Color.new

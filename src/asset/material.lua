@@ -25,7 +25,7 @@ local path = require('path')
 
 local function color(rest)
   local r, g, b = rest:match('(-?%d+%.%d*)%s+(-?%d+%.%d*)%s+(-?%d+%.%d*)')
-  return vec.Vec4(tonumber(r), tonumber(g), tonumber(b), 0)
+  return vec.Color(tonumber(r), tonumber(g), tonumber(b), 0)
 end
 
 -- Parses a single line from a MTL file

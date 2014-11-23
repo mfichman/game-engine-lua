@@ -159,7 +159,7 @@ function Game:run()
     self:gc()
     --self:sample()
   end
-  collectgarbage('start')
+  collectgarbage('restart')
 end
 
 function Game:Table(kind)

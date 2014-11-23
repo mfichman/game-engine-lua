@@ -235,8 +235,8 @@ local function locals()
 end
 
 -- Show a backtrace starting at the current level.
-local function bt()
-  output:write(debug.traceback('', level+startlevel()))
+local function bt(msg)
+  output:write(debug.traceback(msg or '', level+startlevel()))
   output:write('\n')
   return true
 end
@@ -267,8 +267,7 @@ function start(e, line)
     local text = getline(info.short_src, line)
     output:write(string.format('%s:%d', info.short_src, line, text))
   elseif e then
-    output:write(debug.traceback(e))
-    output:write('\n')
+    bt(e)
   else 
     local info = debug.getinfo(2, 'Slf')
     local line = info.currentline

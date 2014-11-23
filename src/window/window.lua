@@ -32,19 +32,13 @@ function Window.new()
   mode.width = config.display.width
   mode.height = config.display.height
   
+  local style = config.display.fullscreen and sfml.Fullscreen or sfml.DefaultStyle
   local settings = sfml.ContextSettings()
   settings.depthBits = 24
   settings.stencilBits = 0
   settings.majorVersion = 3
   settings.minorVersion = 2
-  
-  local style
-  if config.display.fullscreen then
-    style = sfml.Fullscreen
-  else
-    style = sfml.DefaultStyle
-  end
-  
+
   local window = sfml.Window(mode, "quadrant", style, settings)
   window:setVerticalSyncEnabled(config.display.vsync)
   local settings = window:getSettings()
@@ -59,7 +53,7 @@ function Window.new()
   end
 
   gl.glViewport(0, 0, mode.width, mode.height)
-  gl.glClearColor(0, 0, 0, 1)
+  gl.glClearColor(.03, .03, .03, 1)
 
   return window
 end

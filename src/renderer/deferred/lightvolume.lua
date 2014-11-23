@@ -40,12 +40,12 @@ local function quad(g, program)
 
   local identity = vec.Mat4.identity()
   local inverseProjection = g.camera.inverseProjectionTransform
-  gl.glUniformMatrix4fv(program.transform, 1, 0, identity.data)
-  gl.glUniformMatrix4fv(program.modelViewMatrix, 1, 0, identity.data)
+  gl.glUniformMatrix4fv(program.transform, 1, 0, identity:data())
+  gl.glUniformMatrix4fv(program.modelViewMatrix, 1, 0, identity:data())
   -- Use the identity transform for model/view, so that the specially-shaped
   -- unit quad maps to the whole screen as a fullscreen quad in clip-space, 
   -- that is, x=[-1,1] y=[-1,1]
-  gl.glUniformMatrix4fv(program.unprojectMatrix, 1, 0, inverseProjection.data)
+  gl.glUniformMatrix4fv(program.unprojectMatrix, 1, 0, inverseProjection:data())
   mesh(g, program, unitQuad)
 end
 
@@ -61,9 +61,9 @@ local function sphere(g, program, radius)
   local transform = g.camera.transform * worldTransform
   local modelView = g.camera.viewTransform * worldTransform
   local inverseProjection = g.camera.inverseProjectionTransform
-  gl.glUniformMatrix4fv(program.transform, 1, 0, transform.data)
-  gl.glUniformMatrix4fv(program.modelViewMatrix, 1, 0, modelView.data)
-  gl.glUniformMatrix4fv(program.unprojectMatrix, 1, 0, inverseProjection.data)
+  gl.glUniformMatrix4fv(program.transform, 1, 0, transform:data())
+  gl.glUniformMatrix4fv(program.modelViewMatrix, 1, 0, modelView:data())
+  gl.glUniformMatrix4fv(program.unprojectMatrix, 1, 0, inverseProjection:data())
   mesh(g, program, unitSphere)
 end
 
@@ -83,15 +83,15 @@ local function cone(g, program, radius, cutoff, direction)
   local sz = radius
 
   -- Transform the light to point in the correct direction
-  local rotate = vec.Mat4.forward(direction)
+  local rotate = vec.Mat4.forward(-direction)
   local scale = vec.Mat4.scale(sx, sy, sz)
   local worldTransform = g.worldTransform * rotate * scale  
   local transform = g.camera.transform * worldTransform
   local modelView = g.camera.viewTransform * worldTransform
   local inverseProjection = g.camera.inverseProjectionTransform
-  gl.glUniformMatrix4fv(program.transform, 1, 0, transform.data)
-  gl.glUniformMatrix4fv(program.modelViewMatrix, 1, 0, modelView.data)
-  gl.glUniformMatrix4fv(program.unprojectMatrix, 1, 0, inverseProjection.data)
+  gl.glUniformMatrix4fv(program.transform, 1, 0, transform:data())
+  gl.glUniformMatrix4fv(program.modelViewMatrix, 1, 0, modelView:data())
+  gl.glUniformMatrix4fv(program.unprojectMatrix, 1, 0, inverseProjection:data())
   mesh(g, program, unitCone)
 end
 

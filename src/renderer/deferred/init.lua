@@ -128,7 +128,8 @@ function Deferred:render()
 
   self.finalFrameBuffer:enable()
   gl.glClear(gl.GL_COLOR_BUFFER_BIT)
-  
+  gl.glDisable(gl.GL_STENCIL_TEST) -- ignore stencil for UI/particles
+
   -- Pass 2: Render lighting using light bounding boxes
   gl.glActiveTexture(gl.GL_TEXTURE0)
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.diffuseBuffer.id)

@@ -18,13 +18,16 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local math = require('math')
+local ffi = require('ffi')
 
--- Returns a random number in the range [min, max)
-local function float(min, max)
-  return min+(max-min)*math.random()
-end
+ffi.cdef[[
+  typedef struct graphics_MeshVertex {
+    vec_Vec3 position;
+    vec_Vec3 normal;
+    vec_Vec3 tangent;
+    vec_Vec2 texcoord;
+  } graphics_MeshVertex;
+]]
 
-return {
-  float=float,
-}
+return ffi.typeof('graphics_MeshVertex')
+

@@ -23,46 +23,36 @@
 typedef float vec_Scalar;
 
 typedef struct vec_Mat3x3 {
-    vec_Scalar data[16];
+    vec_Scalar d00, d01, d02;
+    vec_Scalar d03, d04, d05;
+    vec_Scalar d06, d07, d08;
 } vec_Mat3x3;
 
 typedef struct vec_Mat4x4 {
-    vec_Scalar data[16];
+    vec_Scalar d00, d01, d02, d03;
+    vec_Scalar d04, d05, d06, d07;
+    vec_Scalar d08, d09, d10, d11;
+    vec_Scalar d12, d13, d14, d15;
 } vec_Mat4x4;
 
 typedef struct vec_Quat {
-    union {
-        struct {
-            union { vec_Scalar w; };
-            union { vec_Scalar x; };
-            union { vec_Scalar y; };
-            union { vec_Scalar z; };
-        };
-        vec_Scalar data[4];
-    };
+    vec_Scalar w;
+    vec_Scalar x;
+    vec_Scalar y;
+    vec_Scalar z;
 } vec_Quat;
 
 typedef struct vec_Vec3 {
-    union {
-        struct {
-            union { vec_Scalar x; vec_Scalar r; vec_Scalar red; };
-            union { vec_Scalar y; vec_Scalar g; vec_Scalar green; };
-            union { vec_Scalar z; vec_Scalar b; vec_Scalar blue; };
-        };
-        vec_Scalar data[3];
-    };
+    vec_Scalar x;
+    vec_Scalar y;
+    vec_Scalar z;
 } vec_Vec3;
 
 typedef struct vec_Vec4 {
-    union {
-        struct {
-            union { vec_Scalar x; vec_Scalar r; vec_Scalar red; };
-            union { vec_Scalar y; vec_Scalar g; vec_Scalar green; };
-            union { vec_Scalar z; vec_Scalar b; vec_Scalar blue; };
-            union { vec_Scalar w; vec_Scalar a; vec_Scalar alpha; };
-        };
-        vec_Scalar data[4];
-    };
+    vec_Scalar x;
+    vec_Scalar y;
+    vec_Scalar z;
+    vec_Scalar w;
 } vec_Vec4;
 
 typedef struct vec_Transform {
@@ -71,12 +61,7 @@ typedef struct vec_Transform {
 } vec_Transform;
 
 typedef struct vec_Vec2 {
-    union {
-        struct {
-            union { vec_Scalar x; vec_Scalar u; vec_Scalar w; vec_Scalar width; };
-            union { vec_Scalar y; vec_Scalar v; vec_Scalar h; vec_Scalar height; };
-        };
-        vec_Scalar data[2];
-    };
+    union { vec_Scalar x; vec_Scalar u; vec_Scalar w; vec_Scalar width; };
+    union { vec_Scalar y; vec_Scalar v; vec_Scalar h; vec_Scalar height; };
 } vec_Vec2;
 

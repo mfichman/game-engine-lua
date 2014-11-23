@@ -18,13 +18,17 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local math = require('math')
+local vec = require('vec')
 
--- Returns a random number in the range [min, max)
-local function float(min, max)
-  return min+(max-min)*math.random()
+local Box = {}; Box.__index = Box
+
+function Box.new(args)
+  local self = setmetatable({}, box)
+  self.min = (args and args.min) or vec.Vec3()
+  self.max = (args and args.max) or vec.Vec3()
+  return self
 end
 
 return {
-  float=float,
+  Box=Box.new,
 }

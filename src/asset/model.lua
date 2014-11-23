@@ -33,10 +33,11 @@ local function vertex(context, key)
   local i, j, k = key:match('(%d+)/(%d+)/(%d+)')
   local index = context.model.mesh.vertex.count
 
-  local vertex = context.model.mesh.format()
-  vertex.position = context.position[tonumber(i)]
-  vertex.texcoord = context.texcoord[tonumber(j)]
-  vertex.normal = context.normal[tonumber(k)]
+  local vertex = graphics.MeshVertex {
+    position=context.position[tonumber(i)],
+    texcoord=context.texcoord[tonumber(j)],
+    normal=context.normal[tonumber(k)],
+  }
 
   context.model.mesh.vertex:push(vertex)
   context.cache[key] = index

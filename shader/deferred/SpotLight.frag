@@ -57,5 +57,6 @@ void main() {
     // float lum = 0.2216*color.r + 0.7152*color.g + 0.0722*color.b;
     // float lumd = lum / (1+lum); 
     
+    //color.rgb += .1;
     //color.rgb *= lumd;
 }

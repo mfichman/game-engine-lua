@@ -21,6 +21,7 @@
 local asset = require('asset')
 local gl = require('gl')
 local lightvolume = require('renderer.deferred.lightvolume')
+local ffi = require('ffi')
 
 local program
 
@@ -33,10 +34,10 @@ local function params(g, light)
   gl.glUniform1i(program.depthBuffer, 4)
   gl.glUniform1i(program.shadowMap, 5)
 
-  gl.glUniform3fv(program.diffuseColor, 1, light.diffuseColor.data)
-  gl.glUniform3fv(program.backDiffuseColor, 1, light.backDiffuseColor.data)
-  gl.glUniform3fv(program.specularColor, 1, light.specularColor.data)
-  gl.glUniform3fv(program.ambientColor, 1, light.ambientColor.data)
+  gl.glUniform3fv(program.diffuseColor, 1, light.diffuseColor:data())
+  gl.glUniform3fv(program.backDiffuseColor, 1, light.backDiffuseColor:data())
+  gl.glUniform3fv(program.specularColor, 1, light.specularColor:data())
+  gl.glUniform3fv(program.ambientColor, 1, light.ambientColor:data())
   gl.glUniform1f(program.atten0, light.constantAttenuation)
   gl.glUniform1f(program.atten1, light.linearAttenuation)
   gl.glUniform1f(program.atten2, light.quadraticAttenuation)
@@ -44,7 +45,7 @@ local function params(g, light)
   -- Transform the light direction from world space into view space
   local transform = g.worldTransform * g.camera.viewTransform
   local direction = transform:rotation() * light.direction:unit()
-  gl.glUniform3fv(program.direction, 1, direction.data)
+  gl.glUniform3fv(program.direction, 1, direction:data())
 end
 
 -- Shadow mapping. Set the shadow map buffer and light matrix

@@ -20,6 +20,7 @@
 
 return {
   Buffer=require('graphics.buffer'),
+  StreamDrawBuffer=require('graphics.streamdrawbuffer'),
   Camera=require('graphics.camera'),
   Context=require('graphics.context'),
   DepthTarget=require('graphics.depthtarget'),
@@ -27,6 +28,7 @@ return {
   HemiLight=require('graphics.hemilight'),
   Material=require('graphics.material'),
   Mesh=require('graphics.mesh'),
+  MeshVertex=require('graphics.meshvertex'),
   Model=require('graphics.model'),
   PointLight=require('graphics.pointlight'),
   Program=require('graphics.program'),

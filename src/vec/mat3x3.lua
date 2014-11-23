@@ -28,7 +28,7 @@ local Mat3x3 = {}; Mat3x3.__index = Mat3x3
 local Mat3x3Type = ffi.typeof('vec_Mat3x3')
 
 function Mat3x3.new(...)
-  return Mat3x3Type({{...}})
+  return Mat3x3Type(...)
 end
 
 function Mat3x3.identity()
@@ -62,9 +62,9 @@ end
 
 function Mat3x3:transpose()
   return Mat3x3.new(
-    self.data[0], self.data[4], self.data[8],
-    self.data[1], self.data[5], self.data[9],
-    self.data[2], self.data[6], self.data[10])
+    self.d00, self.d04, self.d08,
+    self.d01, self.d05, self.d09,
+    self.d02, self.d06, self.d10)
 end
 
 function Mat3x3:__tostring()
@@ -83,11 +83,10 @@ end
 
 -- Transform a vector & do the perspective divide
 local function mulvec3(self, v)
-  local m = self.data
   return Vec3(
-    m[0]*v.x + m[3]*v.y + m[6]*v.z,
-    m[1]*v.x + m[4]*v.y + m[7]*v.z,
-    m[2]*v.x + m[5]*v.y + m[8]*v.z)
+    self.d00*v.x + self.d03*v.y + self.d06*v.z,
+    self.d01*v.x + self.d04*v.y + self.d07*v.z,
+    self.d02*v.x + self.d05*v.y + self.d08*v.z)
 end
 
 function Mat3x3:__mul(other)

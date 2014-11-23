@@ -29,23 +29,23 @@ local function params(g, light)
   gl.glUniform1i(program.diffuseBuffer, 0)
   gl.glUniform1i(program.specularBuffer, 1)
   gl.glUniform1i(program.normalBuffer, 2)
-  gl.glUniform1i(program.emissiveBuffer, 3)
+  --gl.glUniform1i(program.emissiveBuffer, 3)
   gl.glUniform1i(program.depthBuffer, 4)
   gl.glUniform1i(program.shadowMap, 5)
 
-  gl.glUniform3fv(program.diffuseColor, 1, light.diffuseColor.data)
-  gl.glUniform3fv(program.specularColor, 1, light.specularColor.data)
+  gl.glUniform3fv(program.diffuseColor, 1, light.diffuseColor:data())
+  gl.glUniform3fv(program.specularColor, 1, light.specularColor:data())
   gl.glUniform1f(program.atten0, light.constantAttenuation)
   gl.glUniform1f(program.atten1, light.linearAttenuation)
   gl.glUniform1f(program.atten2, light.quadraticAttenuation)
 
-  gl.glUniform1f(program.cutoff, light.cutoff / 180)
+  gl.glUniform1f(program.cutoff, math.cos(math.pi * light.cutoff / 180))
   gl.glUniform1f(program.power, light.power)
 
   -- Transform the light direction from world space into view space
   local transform = g.worldTransform * g.camera.viewTransform
   local direction = transform:rotation() * light.direction:unit()
-  gl.glUniform3fv(program.direction, 1, direction.data)
+  gl.glUniform3fv(program.direction, 1, direction:data())
 end
 
 -- Shadow mapping. Set the shadow map buffer and light matrix

@@ -132,3 +132,7 @@ local arr = ffi.new('GLfloat[3]')
 gl.glUseProgram(p.id)
 gl.glUniform3fv(p.diffuseColor, 1, arr)
 assert(gl.glGetError() == 0)
+
+local sdb = graphics.StreamDrawBuffer(1024)
+sdb:reset()
+sdb:del()

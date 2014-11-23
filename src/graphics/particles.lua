@@ -18,13 +18,21 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local math = require('math')
+local struct = require('graphics.struct')
+local ffi = require('ffi')
+local vec = require('vec')
+local gl = require('gl')
 
--- Returns a random number in the range [min, max)
-local function float(min, max)
-  return min+(max-min)*math.random()
-end
+local Buffer = require('graphics.buffer')
 
-return {
-  float=float,
-}
+local Particles = {}; Particles.__index = Particles
+
+ffi.cdef[[
+  typedef struct graphics_Particle {
+    vec_Vec3 position; 
+    vec_Vec3 velocity;
+    vec_Vec4 color;
+    vec_Scalar size;
+    vec_Scalar rotation;
+  } graphics_Particle;
+]]

@@ -125,8 +125,8 @@ function Game:update()
 end
 
 -- Handle input and step the simulation as necessary
+local event = sfml.Event() -- FIXME: Optimization to prevent JIT escape
 function Game:poll()
-  local event = sfml.Event()
   while self.window:pollEvent(event) == 1 do
     if event.type == sfml.EvtClosed then os.exit(0) end
   end
@@ -134,9 +134,10 @@ end
 
 -- Sample performance data
 function Game:sample()
-  table.insert(self.samples, self.delta)
-  if #self.samples > 100 then
-    print(stats.stats(self.samples))
+  table.insert(self.samples, self.delta * 1000) -- convert to ms
+  if #self.samples > 1000 then
+    local min, max, median, mean, stdev = stats.stats(self.samples)
+    print(string.format('min=%05.2f max=%05.2f median=%05.2f mean=%05.2f stdev=%05.2f', min, max, median, mean, stdev))
     self.samples = {}
   end
 end

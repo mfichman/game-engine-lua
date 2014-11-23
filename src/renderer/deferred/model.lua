@@ -37,16 +37,16 @@ local function mesh(g, mesh)
   -- Calculate the normal matrix and pass it to the vertex shader
   local normalMatrix = (g.camera.viewTransform * g.worldTransform):inverse():transpose()
   local temp = ffi.new('GLfloat[9]', {
-    normalMatrix.data[0], normalMatrix.data[1], normalMatrix.data[2], 
-    normalMatrix.data[4], normalMatrix.data[5], normalMatrix.data[6], 
-    normalMatrix.data[8], normalMatrix.data[9], normalMatrix.data[10], 
+    normalMatrix.d00, normalMatrix.d01, normalMatrix.d02, 
+    normalMatrix.d04, normalMatrix.d05, normalMatrix.d06, 
+    normalMatrix.d08, normalMatrix.d09, normalMatrix.d10, 
   })
 
   local transform = g.camera.transform * g.worldTransform
 
   -- Pass the model matrix to the vertex shader
   g:glUniformMatrix3fv(program.normalMatrix, 1, 0, temp)
-  g:glUniformMatrix4fv(program.transform, 1, 0, transform.data) 
+  g:glUniformMatrix4fv(program.transform, 1, 0, transform:data()) 
 
   gl.glBindVertexArray(mesh.id)
   gl.glDrawElements(gl.GL_TRIANGLES, mesh.index.count, gl.GL_UNSIGNED_INT, nil)
@@ -62,10 +62,10 @@ end
 
 -- Pass the material data to the shader
 local function material(g, material)
-  g:glUniform3fv(program.diffuseColor, 1, material.diffuseColor.data)
-  g:glUniform3fv(program.ambientColor, 1, material.ambientColor.data)
-  g:glUniform3fv(program.specularColor, 1, material.specularColor.data)
-  g:glUniform3fv(program.emissiveColor, 1, material.emissiveColor.data)
+  g:glUniform3fv(program.diffuseColor, 1, material.diffuseColor:data())
+  g:glUniform3fv(program.ambientColor, 1, material.ambientColor:data())
+  g:glUniform3fv(program.specularColor, 1, material.specularColor:data())
+  g:glUniform3fv(program.emissiveColor, 1, material.emissiveColor:data())
   g:glUniform1f(program.hardness, material.hardness)
 
   texture(g, material.diffuseMap or white, gl.GL_TEXTURE0+0)

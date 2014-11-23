@@ -41,7 +41,6 @@ function Map.new()
     local args = {}
     if kkey then
       args.key = key[kkey:lower()] 
-      print(key, args.key)
     end
     if kmouse then
       args.mouse = mouse[kmouse:lower()]

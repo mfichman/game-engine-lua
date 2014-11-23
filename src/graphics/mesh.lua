@@ -24,19 +24,9 @@ local vec = require('vec')
 local gl = require('gl')
 
 local Buffer = require('graphics.buffer')
+local MeshVertex = require('graphics.meshvertex')
 
 local Mesh = {}; Mesh.__index = Mesh
-
-ffi.cdef[[
-  typedef struct graphics_MeshVertex {
-    vec_Vec3 position;
-    vec_Vec3 normal;
-    vec_Vec3 tangent;
-    vec_Vec2 texcoord;
-  } graphics_MeshVertex;
-]]
-
-local MeshVertex = ffi.typeof('graphics_MeshVertex')
 
 -- Calculate the tangent vectors for face i
 local function updateTangent(self, i)
@@ -88,7 +78,6 @@ function Mesh.new()
   self.id = 0
   self.index = Buffer(gl.GL_ELEMENT_ARRAY_BUFFER, gl.GL_STATIC_DRAW, 'GLuint')
   self.vertex = Buffer(gl.GL_ARRAY_BUFFER, gl.GL_STATIC_DRAW, 'graphics_MeshVertex')
-  self.format = MeshVertex
   return self
 end
 

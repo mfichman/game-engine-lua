@@ -29,7 +29,7 @@ local Mat4x4 = {}; Mat4x4.__index = Mat4x4
 local Mat4x4Type = ffi.typeof('vec_Mat4x4')
 
 function Mat4x4.new(...)
-  return Mat4x4Type({{...}})
+  return Mat4x4Type(...)
 end
 
 function Mat4x4.frustum(left, right, bottom, top, near, far)
@@ -165,19 +165,19 @@ end
 
 function Mat4x4:transpose()
   return Mat4x4.new(
-    self.data[0], self.data[4], self.data[8], self.data[12],
-    self.data[1], self.data[5], self.data[9], self.data[13],
-    self.data[2], self.data[6], self.data[10], self.data[14],
-    self.data[3], self.data[7], self.data[11], self.data[15])
+    self.d00, self.d04, self.d08, self.d12,
+    self.d01, self.d05, self.d09, self.d13,
+    self.d02, self.d06, self.d10, self.d14,
+    self.d03, self.d07, self.d11, self.d15)
 end
 
 function Mat4x4:inverse()
   local out = Mat4x4.new()
 
-  local m00, m01, m02, m03 = self.data[0], self.data[4], self.data[8], self.data[12]
-  local m10, m11, m12, m13 = self.data[1], self.data[5], self.data[9], self.data[13]
-  local m20, m21, m22, m23 = self.data[2], self.data[6], self.data[10], self.data[14]
-  local m30, m31, m32, m33 = self.data[3], self.data[7], self.data[11], self.data[15]
+  local m00, m01, m02, m03 = self.d00, self.d04, self.d08, self.d12
+  local m10, m11, m12, m13 = self.d01, self.d05, self.d09, self.d13
+  local m20, m21, m22, m23 = self.d02, self.d06, self.d10, self.d14
+  local m30, m31, m32, m33 = self.d03, self.d07, self.d11, self.d15
 
   local v0 = m20 * m31 - m21 * m30
   local v1 = m20 * m32 - m22 * m30
@@ -193,15 +193,15 @@ function Mat4x4:inverse()
 
   local invDet = 1 / (t00 * m00 + t10 * m01 + t20 * m02 + t30 * m03)
 
-  out.data[0] = t00 * invDet
-  out.data[1] = t10 * invDet
-  out.data[2] = t20 * invDet
-  out.data[3] = t30 * invDet
+  out.d00 = t00 * invDet
+  out.d01 = t10 * invDet
+  out.d02 = t20 * invDet
+  out.d03 = t30 * invDet
 
-  out.data[4] = - (v5 * m01 - v4 * m02 + v3 * m03) * invDet
-  out.data[5] =   (v5 * m00 - v2 * m02 + v1 * m03) * invDet
-  out.data[6] = - (v4 * m00 - v2 * m01 + v0 * m03) * invDet
-  out.data[7] =   (v3 * m00 - v1 * m01 + v0 * m02) * invDet
+  out.d04 = - (v5 * m01 - v4 * m02 + v3 * m03) * invDet
+  out.d05 =   (v5 * m00 - v2 * m02 + v1 * m03) * invDet
+  out.d06 = - (v4 * m00 - v2 * m01 + v0 * m03) * invDet
+  out.d07 =   (v3 * m00 - v1 * m01 + v0 * m02) * invDet
 
   v0 = m10 * m31 - m11 * m30
   v1 = m10 * m32 - m12 * m30
@@ -210,10 +210,10 @@ function Mat4x4:inverse()
   v4 = m11 * m33 - m13 * m31
   v5 = m12 * m33 - m13 * m32
 
-  out.data[8] =   (v5 * m01 - v4 * m02 + v3 * m03) * invDet
-  out.data[9] = - (v5 * m00 - v2 * m02 + v1 * m03) * invDet
-  out.data[10] =   (v4 * m00 - v2 * m01 + v0 * m03) * invDet
-  out.data[11] = - (v3 * m00 - v1 * m01 + v0 * m02) * invDet
+  out.d08 =   (v5 * m01 - v4 * m02 + v3 * m03) * invDet
+  out.d09 = - (v5 * m00 - v2 * m02 + v1 * m03) * invDet
+  out.d10 =   (v4 * m00 - v2 * m01 + v0 * m03) * invDet
+  out.d11 = - (v3 * m00 - v1 * m01 + v0 * m02) * invDet
 
   v0 = m21 * m10 - m20 * m11
   v1 = m22 * m10 - m20 * m12
@@ -222,10 +222,10 @@ function Mat4x4:inverse()
   v4 = m23 * m11 - m21 * m13
   v5 = m23 * m12 - m22 * m13
 
-  out.data[12] = - (v5 * m01 - v4 * m02 + v3 * m03) * invDet
-  out.data[13] =   (v5 * m00 - v2 * m02 + v1 * m03) * invDet
-  out.data[14] = - (v4 * m00 - v2 * m01 + v0 * m03) * invDet
-  out.data[15] =   (v3 * m00 - v1 * m01 + v0 * m02) * invDet
+  out.d12 = - (v5 * m01 - v4 * m02 + v3 * m03) * invDet
+  out.d13 =   (v5 * m00 - v2 * m02 + v1 * m03) * invDet
+  out.d14 = - (v4 * m00 - v2 * m01 + v0 * m03) * invDet
+  out.d15 =   (v3 * m00 - v1 * m01 + v0 * m02) * invDet
   
   return out
 end
@@ -246,61 +246,59 @@ end
 
 local function mulmat4x4(self, other)
   local out = Mat4x4.new()
-  local data = out.data
+  local m1, m2 = other, self
 
-  m1 = other.data
-  m2 = self.data
-
-  data[0] = m1[0]*m2[0] + m1[1]*m2[4] + m1[2]*m2[8] + m1[3]*m2[12];
-  data[1] = m1[0]*m2[1] + m1[1]*m2[5] + m1[2]*m2[9] + m1[3]*m2[13];
-  data[2] = m1[0]*m2[2] + m1[1]*m2[6] + m1[2]*m2[10] + m1[3]*m2[14];
-  data[3] = m1[0]*m2[3] + m1[1]*m2[7] + m1[2]*m2[11] + m1[3]*m2[15];
+  out.d00 = m1.d00*m2.d00 + m1.d01*m2.d04 + m1.d02*m2.d08 + m1.d03*m2.d12;
+  out.d01 = m1.d00*m2.d01 + m1.d01*m2.d05 + m1.d02*m2.d09 + m1.d03*m2.d13;
+  out.d02 = m1.d00*m2.d02 + m1.d01*m2.d06 + m1.d02*m2.d10 + m1.d03*m2.d14;
+  out.d03 = m1.d00*m2.d03 + m1.d01*m2.d07 + m1.d02*m2.d11 + m1.d03*m2.d15;
   
-  data[4] = m1[4]*m2[0] + m1[5]*m2[4] + m1[6]*m2[8] + m1[7]*m2[12];
-  data[5] = m1[4]*m2[1] + m1[5]*m2[5] + m1[6]*m2[9] + m1[7]*m2[13];
-  data[6] = m1[4]*m2[2] + m1[5]*m2[6] + m1[6]*m2[10] + m1[7]*m2[14];
-  data[7] = m1[4]*m2[3] + m1[5]*m2[7] + m1[6]*m2[11] + m1[7]*m2[15];
+  out.d04 = m1.d04*m2.d00 + m1.d05*m2.d04 + m1.d06*m2.d08 + m1.d07*m2.d12;
+  out.d05 = m1.d04*m2.d01 + m1.d05*m2.d05 + m1.d06*m2.d09 + m1.d07*m2.d13;
+  out.d06 = m1.d04*m2.d02 + m1.d05*m2.d06 + m1.d06*m2.d10 + m1.d07*m2.d14;
+  out.d07 = m1.d04*m2.d03 + m1.d05*m2.d07 + m1.d06*m2.d11 + m1.d07*m2.d15;
   
-  data[8] = m1[8]*m2[0] + m1[9]*m2[4] + m1[10]*m2[8] + m1[11]*m2[12];
-  data[9] = m1[8]*m2[1] + m1[9]*m2[5] + m1[10]*m2[9] + m1[11]*m2[13];
-  data[10] = m1[8]*m2[2] + m1[9]*m2[6] + m1[10]*m2[10] + m1[11]*m2[14];
-  data[11] = m1[8]*m2[3] + m1[9]*m2[7] + m1[10]*m2[11] + m1[11]*m2[15];
+  out.d08 = m1.d08*m2.d00 + m1.d09*m2.d04 + m1.d10*m2.d08 + m1.d11*m2.d12;
+  out.d09 = m1.d08*m2.d01 + m1.d09*m2.d05 + m1.d10*m2.d09 + m1.d11*m2.d13;
+  out.d10 = m1.d08*m2.d02 + m1.d09*m2.d06 + m1.d10*m2.d10 + m1.d11*m2.d14;
+  out.d11 = m1.d08*m2.d03 + m1.d09*m2.d07 + m1.d10*m2.d11 + m1.d11*m2.d15;
   
-  data[12] = m1[12]*m2[0] + m1[13]*m2[4] + m1[14]*m2[8] + m1[15]*m2[12];
-  data[13] = m1[12]*m2[1] + m1[13]*m2[5] + m1[14]*m2[9] + m1[15]*m2[13];
-  data[14] = m1[12]*m2[2] + m1[13]*m2[6] + m1[14]*m2[10] + m1[15]*m2[14];
-  data[15] = m1[12]*m2[3] + m1[13]*m2[7] + m1[14]*m2[11] + m1[15]*m2[15];
+  out.d12 = m1.d12*m2.d00 + m1.d13*m2.d04 + m1.d14*m2.d08 + m1.d15*m2.d12;
+  out.d13 = m1.d12*m2.d01 + m1.d13*m2.d05 + m1.d14*m2.d09 + m1.d15*m2.d13;
+  out.d14 = m1.d12*m2.d02 + m1.d13*m2.d06 + m1.d14*m2.d10 + m1.d15*m2.d14;
+  out.d15 = m1.d12*m2.d03 + m1.d13*m2.d07 + m1.d14*m2.d11 + m1.d15*m2.d15;
 
   return out
 end
 
 local function mulvec4(self, v)
-  local m = self.data
   return Vec4(
-    m[0]*v.x + m[4]*v.y + m[8]*v.z + m[12]*v.w,
-    m[1]*v.x + m[5]*v.y + m[9]*v.z + m[13]*v.w,
-    m[2]*v.x + m[6]*v.y + m[10]*v.z + m[14]*v.w,
-    m[3]*v.x + m[7]*v.y + m[11]*v.z + m[15]*v.w)
+    self.d00*v.x + self.d04*v.y + self.d08*v.z + self.d12*v.w,
+    self.d01*v.x + self.d05*v.y + self.d09*v.z + self.d13*v.w,
+    self.d02*v.x + self.d06*v.y + self.d10*v.z + self.d14*v.w,
+    self.d03*v.x + self.d07*v.y + self.d11*v.z + self.d15*v.w)
 end
 
 -- Transform a vector & do the perspective divide
 local function mulvec3(self, v)
-  local m = self.data
-  local invw = 1 / (m[3]*v.x + m[7]*v.y + m[11]*v.z + m[15]);
+  local invw = 1 / (self.d03*v.x + self.d07*v.y + self.d11*v.z + self.d15);
   
   return Vec3(
-    (m[0]*v.x + m[4]*v.y + m[8]*v.z + m[12])*invw,
-    (m[1]*v.x + m[5]*v.y + m[9]*v.z + m[13])*invw,
-    (m[2]*v.x + m[6]*v.y + m[10]*v.z + m[14])*invw)
+    (self.d00*v.x + self.d04*v.y + self.d08*v.z + self.d12)*invw,
+    (self.d01*v.x + self.d05*v.y + self.d09*v.z + self.d13)*invw,
+    (self.d02*v.x + self.d06*v.y + self.d10*v.z + self.d14)*invw)
 end
 
 -- Return 3x3 rotation matrix
 function Mat4x4:rotation()
-  local m = self.data
   return Mat3.new(
-    m[0], m[1], m[2], 
-    m[4], m[5], m[6],
-    m[8], m[9], m[10])
+    self.d00, self.d01, self.d02, 
+    self.d04, self.d05, self.d06,
+    self.d08, self.d09, self.d10)
+end
+
+function Mat4x4:data()
+  return ffi.cast('vec_Scalar*', self)
 end
 
 function Mat4x4:__mul(other)

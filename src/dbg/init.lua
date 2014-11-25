@@ -191,6 +191,23 @@ local function dostring(code)
   return results(xpcall(chunk, function(e) output:write(e..'\n') end))
 end
 
+local function list()
+  local info = debug.getinfo(startlevel()+level, 'Slf')
+  local line = info.currentline
+  local text = {}
+  local len = tostring(line+8):len()
+  for i=-8,8 do
+    local l = line+i
+    if i == 0 then
+      table.insert(text, string.format('>> %'..len..'d | %s', l, getline(info.short_src, line+i)))
+    else
+      table.insert(text, string.format('   %'..len..'d | %s', l, getline(info.short_src, line+i)))
+    end
+  end
+  print(table.concat(text, '\n'))
+  return true
+end
+
 -- Eval and print a code chunk.
 local function show(code)
   pretty(dostring('return '..code))
@@ -222,20 +239,28 @@ end
 local function locals()
   local level = startlevel()+level
   local i = 1
+  local buf = {}
+  local maxnamelen = 0
   while true do 
     name, v = debug.getlocal(level, i)
     if name == nil then
-      return true
+      break
+    elseif name:match('%(.*%)') then
     else
-      output:write(name..'\t'..tostring(v)..'\n')
+      maxnamelen = math.max(maxnamelen, name:len()) 
+      table.insert(buf, {name, tostring(v)})
     end
      i = i+1
   end  
+  for i, pair in ipairs(buf) do
+    local name, value = pair[1], pair[2]
+    output:write(string.format('%-'..maxnamelen..'s  %s\n', name, value))
+  end
   return true
 end
 
 -- Show a backtrace starting at the current level.
-local function bt(msg)
+local function backtrace(msg)
   output:write(debug.traceback(msg or '', level+startlevel()))
   output:write('\n')
   return true
@@ -267,7 +292,7 @@ function start(e, line)
     local text = getline(info.short_src, line)
     output:write(string.format('%s:%d', info.short_src, line, text))
   elseif e then
-    bt(e)
+    backtrace(e)
   else 
     local info = debug.getinfo(2, 'Slf')
     local line = info.currentline
@@ -293,7 +318,8 @@ function start(e, line)
       {':up', up},
       {':down', down},
       {':locals', locals},
-      {':bt', bt},
+      {':backtrace', backtrace},
+      {':bt', backtrace},
       {':show%s*(.*)', show},
       {':cont', cont},
       {':step', step},

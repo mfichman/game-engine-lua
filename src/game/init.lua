@@ -47,9 +47,12 @@ local function processTable(table, event)
 end
 
 -- Call 'event' on each table in the database.
-local function processDb(db, event)
-  for kind, table in pairs(db.table) do
-    processTable(table, event)
+local function processDb(db, event, process)
+  for i, kind in ipairs(process) do
+    local table = db.table[kind]
+    if table then
+      processTable(table, event)
+    end
   end
 end
 
@@ -68,12 +71,13 @@ function Game.new()
   self.accumulator = 0
   self.timestep = 1/60
   self.samples = {}
+  self.process = {}
   return self
 end
 
 -- Call 'event' on each component in the game database.
 function Game:apply(event)
-  processDb(self.db, event)
+  processDb(self.db, event, self.process)
 end
 
 -- Increment the game by one tick (send the 'tick' event to all components)
@@ -151,6 +155,10 @@ end
 -- Run the game
 function Game:run()
   collectgarbage('stop')
+  for i, v in ipairs(config.process) do
+    table.insert(self.process, component[v])
+  end
+
   self.clock:restart()
   while self.window:isOpen() do
     self:poll()

@@ -31,4 +31,5 @@ return {
   Vec3=require('vec.vec3'),
   Vec4=require('vec.vec4'),
   Transform=require('vec.transform'),
+  Color=require('vec.color'),
 }

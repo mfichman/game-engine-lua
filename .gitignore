@@ -1,5 +1,6 @@
 *.swp
 *.exp
+*.dylib*
 *.ilk
 *.pdb
 *.idb

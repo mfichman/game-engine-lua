@@ -232,15 +232,10 @@ end
 
 function Mat4x4:__tostring()
   local buf = {}
-  for i=0,3 do 
-    for j=0,3 do
-      if j ~= 0 then 
-        table.insert(buf, ', ')
-      end
-      table.insert(buf, self.data[i+j*4]) 
-    end
-    table.insert(buf, '\n')
-  end
+  table.insert(buf, string.format('%f, %f, %f, %f\n', self.d00, self.d04, self.d08, self.d12))
+  table.insert(buf, string.format('%f, %f, %f, %f\n', self.d01, self.d05, self.d09, self.d12))
+  table.insert(buf, string.format('%f, %f, %f, %f\n', self.d02, self.d06, self.d10, self.d14))
+  table.insert(buf, string.format('%f, %f, %f, %f\n', self.d03, self.d07, self.d11, self.d15))
   return table.concat(buf)
 end
 

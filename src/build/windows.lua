@@ -18,43 +18,59 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local ffi = require('ffi')
-local vec = require('vec')
+local os = require('os')
 local path = require('path')
+local string = require('string')
 
-local physics = ffi.load('physics')
-ffi.cdef(path.open('physics/physics.h'):read('*all'))
+local flags = {}
+local linker = {}
 
-local function metatype(class, ctor, attr)
-  local mt = {}
-  local cache = {}
-
-  function mt.__index(t, k)
-    if not cache[k] then 
-      cache[k] = physics[string.format('%s_%s', class, k)]
-    end
-    return cache[k] 
-  end
-
-  function mt.__gc(t)
-    return t:del()
-  end
-
-  local t = ffi.metatype(ffi.typeof(class), mt)
-  return function(...)
-    return physics[ctor](...)
+local function include(include)
+  for i, include in pairs(include) do
+    table.insert(flags, string.format('/I%s', include))
   end
 end
 
-metatype('physics_Shape')
-metatype('physics_Constraint')
+local function lib(link)
+  for i, link in pairs(link) do
+    table.insert(linker, string.format('%s.lib', link))
+  end
+end
+
+local function libpath(path)
+  for i, path in pairs(path) do
+    table.insert(linker, string.format('/LIBPATH:%s', path))
+  end
+end
+
+local function module(name)
+  local source = path.find(string.format('%s/%s.cpp', name, name))
+  local lib = source:gsub('[.]cpp', '.dll')
+
+  local cmd = {}
+  table.insert(cmd, 'cl')
+  table.insert(cmd, '/nologo /MD /EHsc /Zi /Gm /FS')
+  for i, flag in pairs(flags) do
+    table.insert(cmd, flag)
+  end
+  table.insert(cmd, '/I./src')
+  table.insert(cmd, source)
+  table.insert(cmd, '/link')
+  for i, linker in pairs(linker) do
+    table.insert(cmd, linker)
+  end
+  table.insert(cmd, '/dll')
+  table.insert(cmd, string.format('/out:%s', lib))
+
+  local cmd = table.concat(cmd, ' ')
+  print(cmd)
+  os.execute(cmd)
+end
+
 
 return {
-  World = metatype('physics_World', 'physics_World_new'),
-  SphereShape = physics['physics_SphereShape_new'],
-  CompoundShape = physics['physics_CompoundShape_new'],
-  ConvexHullShape = physics['physics_ConvexHullShape_new'],
-  HingeConstraint = physics['physics_HingeConstraint_new'],
-  RigidBody = metatype('physics_RigidBody', 'physics_RigidBody_new'),
-  RigidBodyDesc = ffi.typeof('physics_RigidBodyDesc'),
+  libpath=libpath,
+  lib=lib,
+  include=include,
+  module=module,
 }

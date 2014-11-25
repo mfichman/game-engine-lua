@@ -28,7 +28,7 @@ local vec = require('vec')
 local function init()
   entity.Fighter{}
   entity.Rock{kind='Rock0', origin=vec.Vec3(-10, 0, -5)}
-  entity.Rock{kind='Rock1', origin=vec.Vec3(10, 0, -5)}
+  entity.Rock{kind='Rock0', origin=vec.Vec3(10, 0, -5)}
 --  entity.Rock{kind='SmoothSphere'}
 end
 

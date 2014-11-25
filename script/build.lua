@@ -22,9 +22,10 @@ package.path = './src/?.lua;./src/?/init.lua;'..package.path
 
 local build = require('build')
 
-build.libpath { 'C:\\WinBrew\\lib' }
+--build.libpath { 'C:\\WinBrew\\lib' }
 build.lib { 'BulletCollision', 'BulletSoftBody', 'BulletDynamics', 'LinearMath', 'BulletMultiThreaded' }
-build.include {'C:\\WinBrew\\include'}
-build.include {'C:\\WinBrew\\include\\Bullet'}
+--build.include {'C:\\WinBrew\\include'}
+--build.include {'C:\\WinBrew\\include\\Bullet'}
+build.include {'/usr/local/include/Bullet'}
 build.module('physics')
 

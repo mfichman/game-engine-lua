@@ -54,3 +54,15 @@ mouse = {
   alt = "right",
 }
 
+process = {
+  'RigidBody',
+  'Camera',
+  'UserInput',
+  'Thruster',
+  'EngineFlame',
+  'Delete',
+  'Armor',
+  'Group',
+  'Model',
+  'Target',
+}

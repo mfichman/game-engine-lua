@@ -18,59 +18,12 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local os = require('os')
-local path = require('path')
-local string = require('string')
+local ffi = require('ffi')
 
-local flags = {}
-local linker = {}
-
-local function include(include)
-  for i, include in pairs(include) do
-    table.insert(flags, string.format('/I%s', include))
-  end
+if ffi.os == 'Windows' then
+  return require('build.windows')
+elseif ffi.os == 'OSX' then
+  return require('build.posix')
+else
+  error('unsupported platform')
 end
-
-local function lib(link)
-  for i, link in pairs(link) do
-    table.insert(linker, string.format('%s.lib', link))
-  end
-end
-
-local function libpath(path)
-  for i, path in pairs(path) do
-    table.insert(linker, string.format('/LIBPATH:%s', path))
-  end
-end
-
-local function module(name)
-  local source = path.find(string.format('%s/%s.cpp', name, name))
-  local lib = source:gsub('[.]cpp', '.dll')
-
-  local cmd = {}
-  table.insert(cmd, 'cl')
-  table.insert(cmd, '/nologo /MD /EHsc /Zi /Gm /FS')
-  for i, flag in pairs(flags) do
-    table.insert(cmd, flag)
-  end
-  table.insert(cmd, '/I./src')
-  table.insert(cmd, source)
-  table.insert(cmd, '/link')
-  for i, linker in pairs(linker) do
-    table.insert(cmd, linker)
-  end
-  table.insert(cmd, '/dll')
-  table.insert(cmd, string.format('/out:%s', lib))
-
-  local cmd = table.concat(cmd, ' ')
-  print(cmd)
-  os.execute(cmd)
-end
-
-
-return {
-  libpath=libpath,
-  lib=lib,
-  include=include,
-  module=module,
-}

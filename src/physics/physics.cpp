@@ -219,7 +219,10 @@ physics_RigidBody* physics_RigidBody_new(physics_RigidBodyDesc* desc) {
     }
     btQuaternion quat = info.m_startWorldTransform.getRotation();
     
-    return (physics_RigidBody*)new btRigidBody(info);
+    btRigidBody* body = new btRigidBody(info);
+    body->setSleepingThresholds(0.03f, 0.01f);
+    body->setActivationState(DISABLE_DEACTIVATION);
+    return (physics_RigidBody*)body;
 }
 
 void physics_RigidBody_del(physics_RigidBody* self) {

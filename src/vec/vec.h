@@ -61,10 +61,10 @@ typedef struct vec_Vec4 {
 } vec_Vec4;
 
 typedef struct vec_Color {
-    vec_Scalar x;
-    vec_Scalar y;
-    vec_Scalar z;
-    vec_Scalar w;
+    vec_Scalar r;
+    vec_Scalar g;
+    vec_Scalar b;
+    vec_Scalar a;
 } vec_Color;
 
 typedef struct vec_Transform {

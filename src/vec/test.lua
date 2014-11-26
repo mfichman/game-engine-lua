@@ -44,10 +44,10 @@ assert(v3.y == 4)
 assert(v3.z == 6)
 assert(v3.w == 8)
 
-assert(v3.data[0] == 2)
-assert(v3.data[1] == 4)
-assert(v3.data[2] == 6)
-assert(v3.data[3] == 8)
+assert(v3:data()[0] == 2)
+assert(v3:data()[1] == 4)
+assert(v3:data()[2] == 6)
+assert(v3:data()[3] == 8)
 assert(ffi.sizeof(v3) == ffi.sizeof('vec_Scalar')*4)
 assert(v3 == vec.Vec4(2, 4, 6, 8))
 
@@ -72,9 +72,9 @@ assert(v3.x == 2)
 assert(v3.y == 4)
 assert(v3.z == 6)
 
-assert(v3.data[0] == 2)
-assert(v3.data[1] == 4)
-assert(v3.data[2] == 6)
+assert(v3:data()[0] == 2)
+assert(v3:data()[1] == 4)
+assert(v3:data()[2] == 6)
 assert(ffi.sizeof(v3) == ffi.sizeof('vec_Scalar')*3)
 assert(v3 == vec.Vec3(2, 4, 6))
 
@@ -96,8 +96,8 @@ local v3 = 2 * v1
 assert(v3.x == 2)
 assert(v3.y == 4)
 
-assert(v3.data[0] == 2)
-assert(v3.data[1] == 4)
+assert(v3:data()[0] == 2)
+assert(v3:data()[1] == 4)
 assert(ffi.sizeof(v3) == ffi.sizeof('vec_Scalar')*2)
 
 assert(v3 == vec.Vec2(2, 4))

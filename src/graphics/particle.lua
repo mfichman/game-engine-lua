@@ -24,11 +24,10 @@ ffi.cdef[[
   typedef struct graphics_Particle {
     vec_Vec3 position; 
     vec_Vec3 velocity;
-    vec_Vec4 color;
+    vec_Color color;
     vec_Scalar size;
     vec_Scalar rotation;
   } graphics_Particle;
 ]]
-
 
 return ffi.typeof('graphics_Particle')

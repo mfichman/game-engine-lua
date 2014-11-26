@@ -28,6 +28,12 @@ typedef struct physics_RigidBody physics_RigidBody;
 typedef struct physics_Constraint physics_Constraint;
 typedef struct physics_CollisionObject physics_CollisionObject;
 
+enum physics_CollisionFlags {
+    physics_STATIC_OBJECT = 1,
+    physics_KINEMATIC_OBJECT = 2,
+    physics_NO_CONTACT_RESPONSE = 4,
+};
+
 typedef struct physics_RigidBodyDesc {
     vec_Scalar mass;
     vec_Transform transform;
@@ -40,7 +46,7 @@ __declspec(dllexport) physics_World* physics_World_new();
 __declspec(dllexport) void physics_World_del(physics_World* self);
 __declspec(dllexport) void physics_World_setGravity(physics_World* self, vec_Vec3 const* gravity);
 __declspec(dllexport) vec_Vec3 physics_World_getGravity(physics_World* self);
-__declspec(dllexport) void physics_World_addRigidBody(physics_World* self, physics_RigidBody* body);
+__declspec(dllexport) void physics_World_addRigidBody(physics_World* self, physics_RigidBody* body, uint16_t group, uint16_t mask);
 __declspec(dllexport) void physics_World_addConstraint(physics_World* self, physics_Constraint* constraint);
 __declspec(dllexport) void physics_World_addCollisionObject(physics_World* self, physics_CollisionObject* object);
 __declspec(dllexport) void physics_World_removeRigidBody(physics_World* self, physics_RigidBody* body);
@@ -76,11 +82,13 @@ __declspec(dllexport) vec_Vec3 physics_RigidBody_getLinearVelocity(physics_Rigid
 __declspec(dllexport) vec_Vec3 physics_RigidBody_getAngularVelocity(physics_RigidBody* self);
 __declspec(dllexport) vec_Vec3 physics_RigidBody_getLinearFactor(physics_RigidBody* self);
 __declspec(dllexport) vec_Vec3 physics_RigidBody_getAngularFactor(physics_RigidBody* self);
-__declspec(dllexport) void* physics_RigidBody_getUserPointer(physics_RigidBody* self, void* data);
+__declspec(dllexport) uint32_t physics_RigidBody_getCollisionFlags(physics_RigidBody* self);
+__declspec(dllexport) void* physics_RigidBody_getUserPointer(physics_RigidBody* self);
 __declspec(dllexport) void physics_RigidBody_setLinearVelocity(physics_RigidBody* self, vec_Vec3 const* velocity);
 __declspec(dllexport) void physics_RigidBody_setAngularVelocity(physics_RigidBody* self, vec_Vec3 const* velocity);
 __declspec(dllexport) void physics_RigidBody_setAngularFactor(physics_RigidBody* self, vec_Vec3 const* factor);
 __declspec(dllexport) void physics_RigidBody_setLinearFactor(physics_RigidBody* self, vec_Vec3 const* factor);
+__declspec(dllexport) void physics_RigidBody_setCollisionFlags(physics_RigidBody* self, uint32_t flags);
 __declspec(dllexport) void physics_RigidBody_setUserPointer(physics_RigidBody* self, void* data);
 
 

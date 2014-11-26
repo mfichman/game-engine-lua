@@ -45,8 +45,8 @@ end
 
 local function module(name)
   local source = path.find(string.format('%s/%s.cpp', name, name))
-  local lib = source:gsub('([^/]*)[.]cpp', function(all)
-    return 'lib'..all..'.dylib'
+  local lib = source:gsub('.-([^/]*)[.]cpp', function(all)
+    return 'lib'..all..'.dll'
   end)
   
   local cmd = {}

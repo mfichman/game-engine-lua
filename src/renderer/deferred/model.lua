@@ -28,10 +28,6 @@ local program, white, blue
 
 -- Render a mesh, using the current bindings for the material and texture
 local function mesh(g, mesh)
-  assert(mesh, 'model has no mesh!')
-  assert(mesh.index, 'mesh has no index buffer!')
-  assert(g.camera, 'no camera!')
-
   mesh:sync()
 
   -- Calculate the normal matrix and pass it to the vertex shader
@@ -76,8 +72,6 @@ end
 
 -- Render a model (a mesh with an attached texture and material)
 local function render(g, model)
-  assert(g, 'graphics context is nil')
-  assert(model, 'model is nil')
   assert(model.material, 'model has no material!')
 
   if model.renderMode == 'invisible' then return end

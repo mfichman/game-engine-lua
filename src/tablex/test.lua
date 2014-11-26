@@ -18,28 +18,16 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local struct = require('graphics.struct')
-local vec = require('vec')
-local gl = require('gl')
+local tablex = require('tablex')
 
-local Buffer = require('graphics.buffer')
-local Particle = require('graphics.particle')
+local t = {foo='1', baz='2'}
+local c = tablex.const(t)
 
-local Particles = {}; Particles.__index = Particles
+assert(c.foo=='1')
+assert(c.baz=='2')
 
-function Particles.new(args)
-  local self = setmetatable({}, Particles)
-  assert(args.texture, 'no texture set for particles')
-  self.texture = args.texture
-  self.clearMode = 'manual'
-  self.blendMode = 'additive'
-  self.tint = vec.Vec4(1, 1, 1, 1)
-  self.particle = Buffer(nil, nil, 'graphics_Particle')
-  return self
-end
+val, err = pcall(function() c.foo = 1 end)
+assert(err)
 
-function Particles:visible()
-  return self.texture and self.particle.count > 0
-end
-
-return Particles.new
+val, err = pcall(function() c.dingus = 1 end)
+assert(err)

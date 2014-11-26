@@ -29,33 +29,33 @@ function Color.new(...)
 end
 
 function Color:__add(other)
-  return Color.new(self.x+other.x, self.y+other.y, self.z+other.z, self.w+other.w)
+  return Color.new(self.r+other.x, self.g+other.y, self.b+other.z, self.a+other.w)
 end
 
 function Color:__sub(other)
-  return Color.new(self.x-other.x, self.y-other.y, self.z-other.z, self.w-other.w)
+  return Color.new(self.r-other.x, self.g-other.y, self.b-other.z, self.a-other.w)
 end
 
 function Color:__mul(other)
   if type(self) == 'number' then
     other, self = self, other
   end
-  return Color.new(self.x*other, self.y*other, self.z*other, self.w*other)
+  return Color.new(self.r*other, self.g*other, self.b*other, self.a*other)
 end
 
 function Color:__div(other)
   if type(self) == 'number' then
     other, self = self, other
   end
-  return Color.new(self.x/other, self.y/other, self.z/other, self.w/other)
+  return Color.new(self.r/other, self.g/other, self.b/other, self.a/other)
 end
 
 function Color:__tostring()
-  return string.format('%f, %f, %f, %f', self.x, self.y, self.z, self.w)
+  return string.format('%f, %f, %f, %f', self.r, self.g, self.b, self.a)
 end
 
 function Color:__eq(other)
-  return self.x == other.x and self.y == other.y and self.z == other.z and self.w == other.w
+  return self.r == other.x and self.g == other.y and self.b == other.z and self.a == other.w
 end
 
 function Color:data()

@@ -21,11 +21,15 @@
 package.path = './src/?.lua;./src/?/init.lua;'..package.path
 
 local build = require('build')
+local ffi = require('ffi')
 
---build.libpath { 'C:\\WinBrew\\lib' }
 build.lib { 'BulletCollision', 'BulletSoftBody', 'BulletDynamics', 'LinearMath', 'BulletMultiThreaded' }
---build.include {'C:\\WinBrew\\include'}
---build.include {'C:\\WinBrew\\include\\Bullet'}
-build.include {'/usr/local/include/Bullet'}
+if ffi.os == 'Windows' then
+  build.libpath { 'C:\\WinBrew\\lib' }
+  build.include {'C:\\WinBrew\\include'}
+  build.include {'C:\\WinBrew\\include\\Bullet'}
+else
+  build.include {'/usr/local/include/Bullet'}
+end
 build.module('physics')
 

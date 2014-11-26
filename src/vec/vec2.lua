@@ -68,6 +68,9 @@ function Vec2:__tostring()
   return string.format('%f, %f', self.x, self.y)
 end
 
+function Vec2:data()
+  return ffi.cast('vec_Scalar*', self)
+end
 
 ffi.metatype(Vec2Type, Vec2)
 return Vec2.new

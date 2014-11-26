@@ -35,6 +35,7 @@ function HemiLight.new(args)
   self.linearAttenuation = args.linearAttenuation or 1
   self.quadraticAttenuation = args.quadraticAttenuation or 0
   self.shadowViewDistance = args.shadowViewDistance or 20
+  self.shadowMap = args.shadowMap
   return self
 end
 

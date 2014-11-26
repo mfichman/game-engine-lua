@@ -18,28 +18,18 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local struct = require('graphics.struct')
-local vec = require('vec')
-local gl = require('gl')
-
-local Buffer = require('graphics.buffer')
-local Particle = require('graphics.particle')
-
-local Particles = {}; Particles.__index = Particles
-
-function Particles.new(args)
-  local self = setmetatable({}, Particles)
-  assert(args.texture, 'no texture set for particles')
-  self.texture = args.texture
-  self.clearMode = 'manual'
-  self.blendMode = 'additive'
-  self.tint = vec.Vec4(1, 1, 1, 1)
-  self.particle = Buffer(nil, nil, 'graphics_Particle')
-  return self
+-- Apply a renderer to all objects in the graphics context that match the given
+-- kind of object.
+local function apply(render, g, kind)
+  for i, op in ipairs(g.op) do
+    if op.node.new == kind then
+      g.worldTransform = op.worldTransform
+      render(g, op.node)
+    end
+  end
 end
 
-function Particles:visible()
-  return self.texture and self.particle.count > 0
-end
+return {
+  apply=apply,
+}
 
-return Particles.new

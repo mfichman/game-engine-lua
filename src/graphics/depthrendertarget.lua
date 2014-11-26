@@ -18,73 +18,75 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local ffi = require('ffi')
 local gl = require('gl')
+local ffi = require('ffi')
 
-local DepthTarget = {}; DepthTarget.__index = DepthTarget
+local DepthRenderTarget = {}; DepthRenderTarget.__index = DepthRenderTarget
 
-function DepthTarget.new(width, height)
-  local self = setmetatable({}, DepthTarget)
+function DepthRenderTarget.new(width, height)
+  local self = setmetatable({}, DepthRenderTarget)
   self.width = width
   self.height = height
 
   local id = ffi.new('GLint[1]')
+  
+  -- Initialize texture, including filtering options
   gl.glGenTextures(1, id)
   self.depthBuffer = id[0]
-
-  -- Initialize the texture, including filtering options
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.depthBuffer)
-  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST)
-  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
   gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE)
   gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_EDGE)
+  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST)
+  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
+  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR)
+  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
 
-  -- Recommended by opengl.org -- Allows use of sampler2DShadow, and thus 
+  -- Recommended by opengl.org -- Allows one to use sampler2DShadow, and thus
   -- get automatic depth comparison and PCF filtering.
   gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_COMPARE_MODE, gl.GL_COMPARE_REF_TO_TEXTURE)
   gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_COMPARE_FUNC, gl.GL_LEQUAL)
 
-  gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_DEPTH_COMPONENT24, width, height, 0, 
-      gl.GL_DEPTH_COMPONENT, gl.GL_FLOAT, 0);
+  -- Establish texture size
+  gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_DEPTH_COMPONENT24, width, height, 0, gl.GL_DEPTH_COMPONENT, gl.GL_FLOAT, nil);
+
+
+  -- Generate and attach framebuffer
   gl.glGenFramebuffers(1, id)
   self.id = id[0]
-  gl.glBindFrambuffer(gl.GL_FRAMEBUFFER, self.id)
-
-  -- Attach the texture to the frame buffer
-  gl.glFramebufferTexture2D(gl.GL_FRAMEBUFFER, gl.GL_DEPTH_ATTACHMENT,
-      gl.GL_TEXTURE_2D, self.depthBuffer, 0)
+  gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.id);
+  gl.glFramebufferTexture2D(gl.GL_FRAMEBUFFER, gl.GL_DEPTH_ATTACHMENT, gl.GL_TEXTURE_2D, self.depthBuffer, 0)
 
   -- Check the status of the FBO
   self:enable()
   local status = gl.glCheckFramebufferStatus(gl.GL_FRAMEBUFFER)
   if gl.GL_FRAMEBUFFER_COMPLETE ~= status then
-      error("couldn't create depth render target")
+    error('couldn\'t create depth render target')
   end
   self:disable()
+
+  return self
 end
 
-function DepthTarget:enable()
+function DepthRenderTarget:del()
+  local id = ffi.new('GLint[1]')
+  id[0] = self.id
+  gl.glDeleteFramebuffers(1, id)
+  id[0] = self.depthBuffer
+  gl.glDeleteTextures(1, id)
+end
+
+DepthRenderTarget.__gc = DepthRenderTarget.del
+
+function DepthRenderTarget:enable()
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.id)
   gl.glDrawBuffer(gl.GL_NONE)
   gl.glReadBuffer(gl.GL_NONE)
 end
 
-function DepthTarget:disable()
+function DepthRenderTarget:disable()
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0)
   gl.glDrawBuffer(gl.GL_BACK)
   gl.glReadBuffer(gl.GL_BACK)
 end
 
-function DepthTarget:del()
-  local id = ffi.new('GLint[1]', self.depthBuffer)
-  gl.glDeleteTextures(1, id)
-  self.depthBuffer = 0
-
-  local id = ffi.new('GLint[1]', self.id)
-  gl.glDeleteFramebuffers(1, id)
-  self.id = 0
-end
-
-DepthTarget.__gc = DepthTarget.del
-
-return DepthTarget.new
+return DepthRenderTarget.new

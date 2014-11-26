@@ -18,3 +18,27 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
+local Shadow = {}; Shadow.__index = Shadow
+
+local gl = require('gl')
+local graphics = require('graphics')
+local apply = require('renderer.apply')
+
+local hemilight = require('renderer.shadow.hemilight')
+--local spotlight = require('renderer.deferred.spotlight')
+--local pointlight = require('renderer.deferred.pointlight')
+
+function Shadow.new(context)
+  assert(context, 'no context set')
+  local self = setmetatable({}, Shadow)
+  self.context = context
+  return self
+end
+
+function Shadow:render()
+  apply.apply(hemilight.render, self.context, graphics.HemiLight)
+  --apply.apply(spotlight.render, self.context, graphics.SpotLight)
+  --apply.apply(pointlight.render, self.context, graphics.PointLight)
+end
+
+return Shadow.new

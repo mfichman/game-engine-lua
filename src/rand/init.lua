@@ -25,6 +25,11 @@ local function float(min, max)
   return min+(max-min)*math.random()
 end
 
+local function int(min, max)
+  return math.random(min, max)
+end
+
 return {
   float=float,
+  int=int,
 }

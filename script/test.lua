@@ -30,6 +30,8 @@ local test = {
   'src/sandbox/test.lua',
   'src/vec/test.lua',
   'src/physics/test.lua',
+  'src/tablex/test.lua',
+  'src/item/test.lua',
 }
 
 for i, test in ipairs(test) do

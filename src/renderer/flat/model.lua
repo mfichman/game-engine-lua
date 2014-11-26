@@ -18,28 +18,29 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local struct = require('graphics.struct')
-local vec = require('vec')
+local asset = require('asset')
 local gl = require('gl')
 
-local Buffer = require('graphics.buffer')
-local Particle = require('graphics.particle')
+local program
 
-local Particles = {}; Particles.__index = Particles
+local function render(g, model)
+  if model.material.opacity < 1 then return end
+  local mesh = model.mesh
+  mesh:sync()
 
-function Particles.new(args)
-  local self = setmetatable({}, Particles)
-  assert(args.texture, 'no texture set for particles')
-  self.texture = args.texture
-  self.clearMode = 'manual'
-  self.blendMode = 'additive'
-  self.tint = vec.Vec4(1, 1, 1, 1)
-  self.particle = Buffer(nil, nil, 'graphics_Particle')
-  return self
+  program = program or asset.open('shader/Flat.prog')
+  gl.glUseProgram(program.id)
+
+  -- Pass the model matrix to the vertex shader
+  local transform = g.camera.transform * g.worldTransform
+  gl.glUniformMatrix4fv(program.transform, 1, 0, transform:data())
+
+  -- Render the mesh
+  gl.glBindVertexArray(mesh.id)
+  gl.glDrawElements(gl.GL_TRIANGLES, mesh.index.count, gl.GL_UNSIGNED_INT, nil)
+  gl.glBindVertexArray(0)
 end
 
-function Particles:visible()
-  return self.texture and self.particle.count > 0
-end
-
-return Particles.new
+return {
+  render=render,
+}

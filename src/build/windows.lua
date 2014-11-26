@@ -45,7 +45,9 @@ end
 
 local function module(name)
   local source = path.find(string.format('%s/%s.cpp', name, name))
-  local lib = source:gsub('[.]cpp', '.dll')
+  local lib = source:gsub('.-([^/]*)[.]cpp', function(all)
+    return all..'.dll'
+  end)
 
   local cmd = {}
   table.insert(cmd, 'cl')

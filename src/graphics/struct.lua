@@ -27,8 +27,10 @@ local VoidPtr = ffi.typeof('void*')
 -- Binds the vertex attribute with the given name to the given attribute index.
 local function defAttribute(struct, id, name)
   local stride = ffi.sizeof(struct)
-  local offset = ffi.cast(VoidPtr, ffi.offsetof(struct, name))
-  local size = ffi.sizeof(ffi.cast(struct..'*', nil)[name])
+  local offset, bpos, bsize = ffi.cast(VoidPtr, ffi.offsetof(struct, name))
+  local ref = ffi.new(struct)[name]
+  local size = type(ref) == 'number' and 4 or ffi.sizeof(ref)
+  -- FIXME: Assuming a 4-byte number here is a bit hackish
   gl.glEnableVertexAttribArray(id)
   gl.glVertexAttribPointer(id, size/ffi.sizeof(GLfloat), gl.GL_FLOAT, 0, stride, offset)
 end

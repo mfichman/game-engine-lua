@@ -23,7 +23,7 @@ local vec = require('vec')
 local Camera = {}; Camera.__index = Camera
 
 -- Creates a new orthographic or perspective camera object
-function Camera.new()
+function Camera.new(args)
   local self = setmetatable({}, Camera)
   self.far = 1000
   self.near = .1

@@ -72,6 +72,7 @@ function Game.new()
   self.timestep = 1/60
   self.samples = {}
   self.process = {}
+  self.ticks = 0
   return self
 end
 
@@ -82,7 +83,9 @@ end
 
 -- Increment the game by one tick (send the 'tick' event to all components)
 function Game:tick()
+  self.world:stepSimulation(self.timestep, 0, self.timestep) 
   self:apply('tick')
+  self.ticks = self.ticks+1
 end
 
 -- Render a single frame. 
@@ -119,7 +122,6 @@ function Game:update()
   -- Bullet to do it. After each step, fire a 'tick' event, so that components
   -- that must update each frame are notified.
   for i=1,substeps do
-    self.world:stepSimulation(self.timestep, 0, self.timestep) 
     self:tick()
   end
 
@@ -175,13 +177,12 @@ function Game:Table(kind)
   return self.db:tableIs(kind)
 end
 
-function Game:Entity(id, data)
-  local id = id or self.db:entityIs()
-  for i, data in ipairs(data) do
-    local kind = component[data[1]]
-    self.db:componentIs(kind, id, kind(id, data))
-  end
-  return id
+function Game:Entity(metatable)
+  assert(metatable, 'metatable is nil')
+  local id = self.db:newEntityId()
+  local table = self.db:tableIs(component.Entity)
+  table[id] = metatable
+  return table[id]
 end
 
 function Game:del()

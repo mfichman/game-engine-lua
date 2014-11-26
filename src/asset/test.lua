@@ -72,9 +72,9 @@ local m = m.component[1]
 assert(m)
 assert(m.new == graphics.Model)
 assert(m.material.hardness > 96)
-assert(m.material.ambientColor.red == 0)
-assert(m.material.diffuseColor.red > .32)
-assert(m.material.specularColor.red == 0)
+assert(m.material.ambientColor.r == 0)
+assert(m.material.diffuseColor.r > .32)
+assert(m.material.specularColor.r == 0)
 assert(m.material.opacity == 1)
 
 local m = asset.open('mesh/Rock0.shape')

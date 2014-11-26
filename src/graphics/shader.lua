@@ -40,9 +40,9 @@ function Shader:compile()
   local cstr = ffi.new('GLchar[?]', self.source:len()+1)
   ffi.copy(cstr, self.source)
 
-  local strings = ffi.new('GLchar*[1]', cstr) 
+  local strings = ffi.new('GLchar const *[1]', cstr) 
   local lengths = ffi.new('GLint[1]', self.source:len())
-  gl.glShaderSource(self.id, 1, ffi.cast('GLchar**', strings), lengths)
+  gl.glShaderSource(self.id, 1, strings, lengths)
   gl.glCompileShader(self.id)
 
   local status = ffi.new('GLint[1]')

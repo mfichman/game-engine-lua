@@ -23,7 +23,7 @@ local os = require('os')
 
 local config = io.open('config.lua'):read('*all')
 local env = {}
-local fn, err = load(config, 'config.lua', bd, env)
+local fn, err = load(config, 'config.lua', nil, env)
 if err then 
   io.write(err, '\n') 
   os.exit(1)

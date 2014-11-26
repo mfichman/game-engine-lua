@@ -34,7 +34,7 @@ function StreamDrawBuffer.new(size)
   gl.glGenVertexArrays(1, id)
   self.vertexArrayId = id[0]
 
-  self.size = size
+  self.size = size or 8 * bit.lshift(1, 20) -- 8 MB
   self.offset = 0
   self:reset()
 
@@ -49,6 +49,8 @@ function StreamDrawBuffer:del()
   gl.glDeleteVertexArrays(1, id)
 end
 
+StreamDrawBuffer.__gc = StreamDrawBuffer.del
+
 -- Orphan and re-create the buffer
 function StreamDrawBuffer:reset()
   gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.id)
@@ -58,14 +60,14 @@ end
 
 -- Copy the buffer data to the CPU and issue a draw command. Note that this
 -- requires the vertex format was set independently by a renderer.
-function StreamDrawBuffer:render(kind, buffer)
+function StreamDrawBuffer:draw(kind, buffer)
   local size = buffer.count * buffer.stride
   local free = self.size - self.offset
   assert(size <= self.size, "stream draw buffer is too small")
   if free < size then
     self:reset() -- calls gl.glBindBuffer
   else
-    gl.glBindBuffer(gl.GL_ARRAY_BUFFER, id)
+    gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.id)
   end
 
   local flags = bit.bor(gl.GL_MAP_WRITE_BIT, gl.GL_MAP_UNSYNCHRONIZED_BIT, gl.GL_MAP_INVALIDATE_RANGE_BIT)
@@ -77,6 +79,5 @@ function StreamDrawBuffer:render(kind, buffer)
   gl.glBindVertexArray(0)
   self.offset = self.offset + size 
 end
-
 
 return StreamDrawBuffer.new

@@ -21,25 +21,28 @@
 local gl = require('gl')
 local bit = require('bit')
 local graphics = require('graphics')
+local apply = require('renderer.apply')
 
 local Deferred = {}; Deferred.__index = Deferred
+
+local Shadow = require('renderer.shadow')
 
 local model = require('renderer.deferred.model')
 local hemilight = require('renderer.deferred.hemilight')
 local pointlight = require('renderer.deferred.pointlight')
 local spotlight = require('renderer.deferred.spotlight')
+local particles = require('renderer.forward.particles')
 --[[
-local decal = require('graphics.renderer.deferred.decal')
-local shadow = require('graphics.renderer.shadow')
+local decal = require('renderer.deferred.decal')
+local shadow = require('renderer.shadow')
 
-local skybox = require('graphics.renderer.forward.skybox')
-local transparent = require('graphics.renderer.forward.transparent')
-local particles = require('graphics.renderer.forward.particles')
-local ribbon = require('graphics.renderer.forward.ribbon')
-local billboards = require('graphics.renderer.forward.billboards')
-local quad = require('graphics.renderer.forward.quad')
-local text = require('graphics.renderer.forward.text')
-local ui = require('graphics.renderer.forward.ui')
+local skybox = require('renderer.forward.skybox')
+local transparent = require('renderer.forward.transparent')
+local ribbon = require('renderer.forward.ribbon')
+local billboards = require('renderer.forward.billboards')
+local quad = require('renderer.forward.quad')
+local text = require('renderer.forward.text')
+local ui = require('renderer.forward.ui')
 ]]
 
 function Deferred.new(context)
@@ -78,23 +81,14 @@ function Deferred.new(context)
   self.finalFrameBuffer:stencilBufferIs(self.depthBuffer)
   self.finalFrameBuffer:check()
 
-  return self
-end
+  self.shadow = Shadow(context)
 
-function Deferred:apply(render, kind)
-  for i, op in ipairs(self.context.op) do
-    if op.node.new == kind then
-      self.context.worldTransform = op.worldTransform
-      render(self.context, op.node)
-    end
-  end
+  return self
 end
 
 function Deferred:render()
   -- Pass 0: Render shadow maps
---[[
-  self:apply(shadow.render, Model)
-]]
+  self.shadow:render()
 
   -- Pass 1: Write material properties into the material G-Buffers
 
@@ -108,7 +102,7 @@ function Deferred:render()
   -- Pass 1a: Write material properties in to the material G-Buffers
   self.frameBuffer:enable()
   gl.glClear(bit.bor(gl.GL_COLOR_BUFFER_BIT, gl.GL_DEPTH_BUFFER_BIT, gl.GL_STENCIL_BUFFER_BIT))
-  self:apply(model.render, graphics.Model)
+  apply.apply(model.render, self.context, graphics.Model)
   self.frameBuffer:disable()
 
   -- In passes 1b/2, only write to pixels that were previously written to in
@@ -122,7 +116,7 @@ function Deferred:render()
   self.decalFrameBuffer:enable()
   gl.glActiveTexture(gl.GL_TEXTURE4)
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.depthBuffer.id)
-  self:apply(decal.render, Decals)
+  apply.apply(decal.render, self.context, Decals)
   self.decalFrameBuffer:disable()
 ]]
 
@@ -141,26 +135,26 @@ function Deferred:render()
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.emissiveBuffer.id)
   gl.glActiveTexture(gl.GL_TEXTURE4)
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.depthBuffer.id)
-  self:apply(hemilight.render, graphics.HemiLight)
-  self:apply(spotlight.render, graphics.SpotLight)
-  self:apply(pointlight.render, graphics.PointLight)
+  apply.apply(hemilight.render, self.context, graphics.HemiLight)
+  apply.apply(spotlight.render, self.context, graphics.SpotLight)
+  apply.apply(pointlight.render, self.context, graphics.PointLight)
 
   -- Pass 3: Skybox
   gl.glStencilFunc(gl.GL_EQUAL, 0, 0xff) -- pass fragments with zero stencil value
-  --self:apply(skybox.render, Skybox) FIXME
+  --apply.apply(skybox.render, self.context, graphics.Skybox) FIXME
 
   gl.glDisable(gl.GL_STENCIL_TEST) -- ignore stencil for UI/particles
 
   -- Pass 4: Render transparent objects
-  --self:apply(transparent.render, Model) FIXME
-  --self:apply(particles.render, Particles)
-  --self:apply(ribbon.render, Ribbon)
-  --self:apply(billboards.render, Billboards)
-  --self:apply(quad.render, Quad)
-  --self:apply(text.render, Text)
+  --self:apply(transparent.render, graphics.Model) FIXME
+  apply.apply(particles.render, self.context, graphics.Particles)
+  --self:apply(ribbon.render, graphics.Ribbon)
+  --self:apply(billboards.render, graphics.Billboards)
+  --self:apply(quad.render, graphics.Quad)
+  --self:apply(text.render, graphics.Text)
 
   -- Pass 5: Text/UI rendering...?
-  --self:apply(ui.render, Ui) FIXME
+  --self:apply(ui.render, graphics.Ui) FIXME
 
   self.finalFrameBuffer:disable()
   gl.glDepthMask(gl.GL_TRUE)

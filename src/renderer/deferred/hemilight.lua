@@ -62,7 +62,7 @@ local function shadowMap(g, light)
   -- Set the light matrix in the shader, which transforms from view => light
   -- space. This matrix is used for shadow mapping
   local viewToLightTransform = light.transform * g.camera.inverseViewTransform
-  gl.glUniformMatrix4fv(program.light, 1, 0, viewToLightTransform.data)
+  gl.glUniformMatrix4fv(program.lightMatrix, 1, 0, viewToLightTransform:data())
 end
 
 -- Render a hemispherical light using the deferred lighting technique. This 

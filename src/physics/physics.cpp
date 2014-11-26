@@ -115,8 +115,8 @@ void physics_World_setGravity(physics_World* self, vec_Vec3 const* gravity) {
     ((btDiscreteDynamicsWorld*)self)->setGravity(convert<btVector3>(gravity));
 }
 
-void physics_World_addRigidBody(physics_World* self, physics_RigidBody* body) {
-    ((btDiscreteDynamicsWorld*)self)->addRigidBody((btRigidBody*)body);
+void physics_World_addRigidBody(physics_World* self, physics_RigidBody* body, uint16_t group, uint16_t mask) {
+    ((btDiscreteDynamicsWorld*)self)->addRigidBody((btRigidBody*)body, group, mask);
 }
 
 void physics_World_addConstraint(physics_World* self, physics_Constraint* constraint) {
@@ -296,7 +296,11 @@ vec_Vec3 physics_RigidBody_getAngularFactor(physics_RigidBody* self) {
     return convert<vec_Vec3>(((btRigidBody*)self)->getAngularFactor());
 }
 
-void* physics_RigidBody_getUserPointer(physics_RigidBody* self, void* data) {
+uint32_t physics_RigidBody_getCollisionFlags(physics_RigidBody* self) {
+    return ((btRigidBody*)self)->getCollisionFlags();
+}
+
+void* physics_RigidBody_getUserPointer(physics_RigidBody* self) {
     return ((btRigidBody*)self)->getUserPointer();
 }
 
@@ -314,6 +318,10 @@ void physics_RigidBody_setAngularFactor(physics_RigidBody* self, vec_Vec3 const*
 
 void physics_RigidBody_setLinearFactor(physics_RigidBody* self, vec_Vec3 const* factor) {
     ((btRigidBody*)self)->setLinearFactor(convert<btVector3>(factor));
+}
+
+void physics_RigidBody_setCollisionFlags(physics_RigidBody* self, uint32_t flags) {
+    ((btRigidBody*)self)->setCollisionFlags(flags);
 }
 
 void physics_RigidBody_setUserPointer(physics_RigidBody* self, void* data) {

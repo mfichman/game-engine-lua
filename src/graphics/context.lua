@@ -66,7 +66,7 @@ end
 -- Commit the OpenGL context changes
 function Context:commit()
   if self.state.program ~= self.committed.program then
-    gl.glUseProgram(self.state.program)
+    gl.glUseProgram(self.state.program or 0)
   end
   if self.state.cullFace ~= self.committed.cullFace then
     gl.glCullFace(self.state.cullFace or gl.GL_BACK)

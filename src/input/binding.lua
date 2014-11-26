@@ -25,13 +25,13 @@ local Binding = {}; Binding.__index = Binding
 function Binding.new(args)
   local self = setmetatable({}, Binding)
   self.key = args.key
-  self.button = args.button
+  self.mouse = args.mouse
   return self
 end
 
 function Binding:__call()
   if self.key and sfml.Keyboard_isKeyPressed(self.key) == 1 then return true end
-  if self.mouse and sfml.Mouse_isButtonPressed(self.button) == 1 then return true end
+  if self.mouse and sfml.Mouse_isButtonPressed(self.mouse) == 1 then return true end
   return false
 end
 

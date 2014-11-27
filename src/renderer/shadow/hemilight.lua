@@ -25,11 +25,6 @@ local vec = require('vec')
 local flat = require('renderer.flat.model')
 local apply = require('renderer.apply')
 
--- Render a model into the shadow map buffer using a fast flat shader
-local function model(g, model)
-  
-end
-
 -- Set up the virtual light camera. This is an orthographic camera that faces
 -- in the direction the light points. The frustum for the camera is the
 -- bounding box of the view frustum, in light space.

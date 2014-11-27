@@ -30,10 +30,24 @@ function Transform.new(origin, rotation)
   return TransformType{origin=origin or Vec3(), rotation=rotation or Quat()}
 end
 
-function Transform:__mul(other)
+local function multransform(self, other)
   return Transform.new(
     self.rotation * other.origin + self.origin,
     self.rotation * other.rotation)
+end
+
+local function mulvec3(self, other)
+  return (self.rotation * other) + self.origin
+end
+
+function Transform:__mul(other)
+  if other.new == Transform.new then
+    return multransform(self, other)
+  elseif other.new == Vec3 then
+    return mulvec3(self, other)
+  else
+    error('invalid multiplicand')
+  end
 end
 
 ffi.metatype(TransformType, Transform)

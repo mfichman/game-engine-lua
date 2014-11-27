@@ -26,8 +26,8 @@ local world = physics.World()
 local shape = physics.SphereShape(1)
 local t1 = vec.Transform(vec.Vec3(0, 0, 0), vec.Quat())
 local t2 = vec.Transform(vec.Vec3(9, 0, 0), vec.Quat())
-local body1 = physics.RigidBody(physics.RigidBodyDesc{mass=1, shape=shape, transform=t1})
-local body2 = physics.RigidBody(physics.RigidBodyDesc{mass=1, shape=shape, transform=t2})
+local body1 = physics.RigidBody(physics.RigidBodyDesc{mass = 1, shape = shape, transform = t1})
+local body2 = physics.RigidBody(physics.RigidBodyDesc{mass = 1, shape = shape, transform = t2})
 local constraint = physics.HingeConstraint(body1, body2, t1.origin, t2.origin, vec.Vec3(1), vec.Vec3(1))
 
 world:setGravity(vec.Vec3())
@@ -37,7 +37,7 @@ world:addConstraint(constraint)
 
 body1:setLinearVelocity(vec.Vec3(1, 0, 0))
 
-for i=1,10 do
+for i = 1,10 do
   world:stepSimulation(1/60, 1, 1/60)
 end
 

@@ -23,10 +23,11 @@ local sfml = require('sfml')
 local Binding = {}; Binding.__index = Binding
 
 function Binding.new(args)
-  local self = setmetatable({}, Binding)
-  self.key = args.key
-  self.mouse = args.mouse
-  return self
+  local self = {
+    key = args.key,
+    mouse = args.mouse,
+  }
+  return setmetatable(self, Binding)
 end
 
 function Binding:__call()

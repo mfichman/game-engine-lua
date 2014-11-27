@@ -36,5 +36,5 @@ local function defAttribute(struct, id, name)
 end
 
 return {
-  defAttribute=defAttribute,
+  defAttribute = defAttribute,
 }

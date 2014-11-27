@@ -69,8 +69,8 @@ end
 
 function Mat3x3:__tostring()
   local buf = {}
-  for i=0,2 do 
-    for j=0,2 do
+  for i = 0,2 do 
+    for j = 0,2 do
       if j ~= 0 then 
         table.insert(buf, ', ')
       end

@@ -33,10 +33,10 @@ local function vertex(context, key)
   local i, j, k = key:match('(%d+)/(%d+)/(%d+)')
   local index = context.model.mesh.vertex.count
 
-  local vertex = graphics.MeshVertex {
-    position=context.position[tonumber(i)],
-    texcoord=context.texcoord[tonumber(j)],
-    normal=context.normal[tonumber(k)],
+  local vertex = graphics.MeshVertex{
+    position = context.position[tonumber(i)],
+    texcoord = context.texcoord[tonumber(j)],
+    normal = context.normal[tonumber(k)],
   }
 
   context.model.mesh.vertex:push(vertex)
@@ -124,12 +124,12 @@ local function open(path)
   if not fd then error('file not found: '..path) end
 
   local context = { 
-    transform=graphics.Transform(), 
-    shape=physics.CompoundShape(),
-    path=path,
-    position={},
-    texcoord={},
-    normal={},
+    transform = graphics.Transform(), 
+    shape = physics.CompoundShape(),
+    path = path,
+    position = {},
+    texcoord = {},
+    normal = {},
   } 
   context.transform.name = path
 
@@ -146,5 +146,5 @@ local function open(path)
 end
 
 return {
-  open=open,
+  open = open,
 }

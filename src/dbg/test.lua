@@ -27,7 +27,7 @@ function wrap()
   function foo() 
     local x = 1
     local y = 2
-    local foo = {x=1, y=2, z={}}
+    local foo = {x = 1, y = 2, z = {}}
   
   
     bob.bill = 0

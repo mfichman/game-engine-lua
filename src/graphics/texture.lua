@@ -25,15 +25,16 @@ local Texture = {}; Texture.__index = Texture
 
 -- Create a new texture with the given texture data
 function Texture.new(width, height, pixel)
-  local self = setmetatable({}, Texture)
-  self.width = width
-  self.height = height
-
-  local pixel = ffi.cast('void*', pixel)
   local id = ffi.new('GLint[1]')
   gl.glGenTextures(1, id)
-  self.id = id[0]
 
+  local self = {
+    width = width,
+    height = height,
+    id = id[0],
+  }
+
+  local pixel = ffi.cast('void*', pixel)
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.id)
   gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR_MIPMAP_LINEAR);
   gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR);
@@ -42,7 +43,7 @@ function Texture.new(width, height, pixel)
   gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA8, width, height, 0, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, pixel)
   gl.glGenerateMipmap(gl.GL_TEXTURE_2D)
 
-  return self
+  return setmetatable(self, Texture)
 end
 
 -- Free the buffer and release the hardware handle

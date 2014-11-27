@@ -19,15 +19,15 @@
 -- IN THE SOFTWARE.
 
 local loaders = {
-  ['%.png$']=require('asset.texture'),
-  ['%.jpg$']=require('asset.texture'),
-  ['%.gif$']=require('asset.texture'),
-  ['%.obj$']=require('asset.model'),
-  ['%.mtl$']=require('asset.material'),
-  ['%.prog$']=require('asset.program'),
-  ['%.vert$']=require('asset.shader'),
-  ['%.geom$']=require('asset.shader'),
-  ['%.frag$']=require('asset.shader'),
+  ['%.png$'] = require('asset.texture'),
+  ['%.jpg$'] = require('asset.texture'),
+  ['%.gif$'] = require('asset.texture'),
+  ['%.obj$'] = require('asset.model'),
+  ['%.mtl$'] = require('asset.material'),
+  ['%.prog$'] = require('asset.program'),
+  ['%.vert$'] = require('asset.shader'),
+  ['%.geom$'] = require('asset.shader'),
+  ['%.frag$'] = require('asset.shader'),
 }
 
 local loaded = require('asset.loaded')
@@ -45,11 +45,11 @@ local function open(name)
 end
 
 return {
-  open=open,
-  texture=require('asset.texture'),
-  model=require('asset.model'),
-  material=require('asset.material'),
-  program=require('asset.program'),
-  shader=require('asset.shader'),
+  open = open,
+  texture = require('asset.texture'),
+  model = require('asset.model'),
+  material = require('asset.material'),
+  program = require('asset.program'),
+  shader = require('asset.shader'),
 }
 

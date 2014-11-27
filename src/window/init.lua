@@ -19,5 +19,5 @@
 -- IN THE SOFTWARE.
 
 return {
-  Window=require('window.window'),
+  Window = require('window.window'),
 } 

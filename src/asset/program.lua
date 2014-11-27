@@ -33,6 +33,6 @@ local function open(name)
 end
 
 return {
-  open=open
+  open = open
 }
 

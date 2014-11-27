@@ -73,7 +73,7 @@ assert(p.rotation)
 gl.glUseProgram(p.id)
 local x = ffi.new('GLfloat[3]')
 gl.glUniform3fv(p.position, 1, x)
-assert(gl.glGetError()==0)
+assert(gl.glGetError() ==0)
 
 -- Mesh
 local m = graphics.Mesh()

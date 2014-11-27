@@ -77,7 +77,7 @@ local function open(name)
   local fd = io.open(name)
   if not fd then error('file not found: '..name) end
 
-  local context = { path=name }
+  local context = { path = name }
   for str in fd:lines() do
     line(context, str) 
   end
@@ -88,6 +88,6 @@ local function open(name)
 end
 
 return {
-  open=open,
+  open = open,
 }
 

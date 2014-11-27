@@ -24,14 +24,15 @@ local vec = require('vec')
 local PointLight = {}; PointLight.__index = PointLight
 
 function PointLight.new(args)
-  local self = setmetatable({}, PointLight)
-  local args = args or self
-  self.diffuseColor = args.diffuseColor or vec.Vec4(1, 1, 1, 1)
-  self.specularColor = args.specularColor or vec.Vec4(1, 1, 1, 1)
-  self.constantAttenuation = args.constantAttenuation or 1
-  self.linearAttenuation = args.linearAttenuation or 1
-  self.quadraticAttenuation = args.quadraticAttenuation or 0
-  return self
+  local args = args or {}
+  local self = {
+    diffuseColor = args.diffuseColor or vec.Vec4(1, 1, 1, 1),
+    specularColor = args.specularColor or vec.Vec4(1, 1, 1, 1),
+    constantAttenuation = args.constantAttenuation or 1,
+    linearAttenuation = args.linearAttenuation or 1,
+    quadraticAttenuation = args.quadraticAttenuation or 0,
+  }
+  return setmetatable(self, PointLight)
 end
 
 function PointLight:radiusOfEffect()

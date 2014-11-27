@@ -24,12 +24,12 @@ local ffi = require('ffi')
 ffi.cdef(path.open('vec/vec.h'):read('*all'))
 
 return {
-  Mat4=require('vec.mat4'),
-  Mat4x4=require('vec.mat4x4'),
-  Quat=require('vec.quat'),
-  Vec2=require('vec.vec2'),
-  Vec3=require('vec.vec3'),
-  Vec4=require('vec.vec4'),
-  Transform=require('vec.transform'),
-  Color=require('vec.color'),
+  Mat4 = require('vec.mat4'),
+  Mat4x4 = require('vec.mat4x4'),
+  Quat = require('vec.quat'),
+  Vec2 = require('vec.vec2'),
+  Vec3 = require('vec.vec3'),
+  Vec4 = require('vec.vec4'),
+  Transform = require('vec.transform'),
+  Color = require('vec.color'),
 }

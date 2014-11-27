@@ -61,10 +61,10 @@ local function screenToWorld(camera, screen)
 end
 
 -- Returns a world-space picking ray that passes from a point in screen space
--- through the camera. Returns {origin=?, vector=?}.
+-- through the camera. Returns {origin = ?, vector = ?}.
 local function pickRay(camera, screen)
   -- Find a ray from the mouse to the camera in world space, and then intersect
-  -- the ray with the z=0 plane. Point the thruster in that direction.
+  -- the ray with the z = 0 plane. Point the thruster in that direction.
   local cameraWorld = camera.viewTransform:inverse() * vec.Vec4(0, 0, 0, 1)
   local ray = {}
   ray.origin = screenToWorld(camera, screen)
@@ -74,9 +74,9 @@ local function pickRay(camera, screen)
 end
 
 return {
-  clamp=clamp,
-  rayPlaneIntersect=rayPlaneIntersect,
-  screenToWorld=screenToWorld,
-  deviceToWorld=derviceToWorld,
-  pickRay=pickRay,
+  clamp = clamp,
+  rayPlaneIntersect = rayPlaneIntersect,
+  screenToWorld = screenToWorld,
+  deviceToWorld = derviceToWorld,
+  pickRay = pickRay,
 }

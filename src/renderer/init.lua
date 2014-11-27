@@ -19,6 +19,6 @@
 -- IN THE SOFTWARE.
 
 return {
-  Deferred=require('renderer.deferred'),
---  Forward=require('renderer.forward'),
+  Deferred = require('renderer.deferred'),
+--  Forward = require('renderer.forward'),
 }

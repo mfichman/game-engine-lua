@@ -30,6 +30,6 @@ local function apply(render, g, kind)
 end
 
 return {
-  apply=apply,
+  apply = apply,
 }
 

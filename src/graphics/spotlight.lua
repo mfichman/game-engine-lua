@@ -24,17 +24,18 @@ local vec = require('vec')
 local SpotLight = {}; SpotLight.__index = SpotLight
 
 function SpotLight.new(args)
-  local self = setmetatable({}, SpotLight)
-  local args = args or self
-  self.diffuseColor = args.diffuseColor or vec.Vec4(1, 1, 1, 1)
-  self.specularColor = args.specularColor or vec.Vec4(1, 1, 1, 1)
-  self.constantAttenuation = args.constantAttenuation or 1
-  self.linearAttenuation = args.linearAttenuation or 1
-  self.quadraticAttenuation = args.quadraticAttenuation or 0
-  self.cutoff = args.cutoff or 30
-  self.power = args.power or 20
-  self.direction = args.direction or vec.Vec3(0, -1, 0)
-  return self
+  local args = args or {}
+  local self = {
+    diffuseColor = args.diffuseColor or vec.Vec4(1, 1, 1, 1),
+    specularColor = args.specularColor or vec.Vec4(1, 1, 1, 1),
+    constantAttenuation = args.constantAttenuation or 1,
+    linearAttenuation = args.linearAttenuation or 1,
+    quadraticAttenuation = args.quadraticAttenuation or 0,
+    cutoff = args.cutoff or 30,
+    power = args.power or 20,
+    direction = args.direction or vec.Vec3(0, -1, 0),
+  }
+  return setmetatable(self, SpotLight)
 end
 
 function SpotLight:radiusOfEffect()

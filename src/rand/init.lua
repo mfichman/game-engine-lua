@@ -30,6 +30,6 @@ local function int(min, max)
 end
 
 return {
-  float=float,
-  int=int,
+  float = float,
+  int = int,
 }

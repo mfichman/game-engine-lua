@@ -26,7 +26,12 @@ local StreamDrawBuffer = {}; StreamDrawBuffer.__index = StreamDrawBuffer
 
 -- Create a new buffer that streams data to the GPU using buffer orphaning.
 function StreamDrawBuffer.new(size)
-  local self = setmetatable({}, StreamDrawBuffer)
+  local self = {
+    size = size or 8 * bit.lshift(1, 20), -- 8 MB
+    offset = 0,
+    id = 0,
+    vertexArrayId,
+  }
 
   local id = ffi.new('GLint[1]')
   gl.glGenBuffers(1, id)
@@ -34,8 +39,7 @@ function StreamDrawBuffer.new(size)
   gl.glGenVertexArrays(1, id)
   self.vertexArrayId = id[0]
 
-  self.size = size or 8 * bit.lshift(1, 20) -- 8 MB
-  self.offset = 0
+  setmetatable(self, StreamDrawBuffer)
   self:reset()
 
   return self

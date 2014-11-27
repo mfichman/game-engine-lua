@@ -46,12 +46,12 @@ end
 local function module(name)
   local source = path.find(string.format('%s/%s.cpp', name, name))
   local lib = source:gsub('.-([^/]*)[.]cpp', function(all)
-    return 'lib'..all..'.dll'
+    return 'lib'..all..'.dylib'
   end)
   
   local cmd = {}
   table.insert(cmd, 'c++')
-  table.insert(cmd, '-O2 -g')
+  table.insert(cmd, '-O2 -g -Wno-ignored-attributes')
   for i, flag in pairs(flags) do
     table.insert(cmd, flag)
   end
@@ -70,8 +70,8 @@ end
 
 
 return {
-  libpath=libpath,
-  lib=lib,
-  include=include,
-  module=module,
+  libpath = libpath,
+  lib = lib,
+  include = include,
+  module = module,
 }

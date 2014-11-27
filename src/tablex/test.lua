@@ -20,11 +20,11 @@
 
 local tablex = require('tablex')
 
-local t = {foo='1', baz='2'}
+local t = {foo = '1', baz = '2'}
 local c = tablex.const(t)
 
-assert(c.foo=='1')
-assert(c.baz=='2')
+assert(c.foo =='1')
+assert(c.baz =='2')
 
 val, err = pcall(function() c.foo = 1 end)
 assert(err)

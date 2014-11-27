@@ -26,10 +26,11 @@ local Shader = {}; Shader.__index = Shader
 
 -- Create a new OpenGL shader 
 function Shader.new(kind, source)
-  local self = setmetatable({}, Shader)
-  self.source = source
-  self.kind = kind
-  return self
+  local self = {
+    source = source,
+    kind = kind,
+  }
+  return setmetatable(self, Shader)
 end
 
 -- Compile the shader

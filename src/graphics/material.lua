@@ -23,20 +23,21 @@ local vec = require('vec')
 local Material = {}; Material.__index = Material
 
 function Material.new(args)
-  local self = setmetatable({}, Material)
-  local args = args or self
-  self.diffuseMap = args.diffuseMap
-  self.specularMap = args.specularMap
-  self.normalMap = args.normalMap
-  self.emissiveMap = args.emissiveMap
-  self.ambientColor = args.ambientColor or vec.Vec4(0, 0, 0, 1)
-  self.diffuseColor = args.diffuseColor or vec.Vec4(1, 1, 1, 1)
-  self.specularColor = args.specularColor or vec.Vec4(1, 1, 1, 1)
-  self.emissiveColor = args.emissiveColor or vec.Vec4(0, 0, 0, 1)
-  self.hardness = args.hardnesss or 40
-  self.opacity = args.opacity or 1
-  self.blendMode = args.blendMode or 'alpha'
-  return self
+  local args = args or {}
+  local self = {
+    diffuseMap = args.diffuseMap,
+    specularMap = args.specularMap,
+    normalMap = args.normalMap,
+    emissiveMap = args.emissiveMap,
+    ambientColor = args.ambientColor or vec.Vec4(0, 0, 0, 1),
+    diffuseColor = args.diffuseColor or vec.Vec4(1, 1, 1, 1),
+    specularColor = args.specularColor or vec.Vec4(1, 1, 1, 1),
+    emissiveColor = args.emissiveColor or vec.Vec4(0, 0, 0, 1),
+    hardness = args.hardnesss or 40,
+    opacity = args.opacity or 1,
+    blendMode = args.blendMode or 'alpha',
+  }
+  return setmetatable(self, Material)
 end
 
 return Material.new

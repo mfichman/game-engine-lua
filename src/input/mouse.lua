@@ -21,7 +21,7 @@
 local sfml = require('sfml')
 
 return {
-  ['left']=sfml.MouseLeft,
-  ['right']=sfml.MouseRight,
-  ['middle']=sfml.MouseMiddle,
+  ['left'] = sfml.MouseLeft,
+  ['right'] = sfml.MouseRight,
+  ['middle'] = sfml.MouseMiddle,
 }

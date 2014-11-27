@@ -58,22 +58,25 @@ end
 
 -- Create a new game object
 function Game.new()
-  local self = setmetatable({}, Game)
-  self.window = window.Window()
-  self.db = db.Database()
-  self.input = input.Map()
-  self.config = config
-  self.graphics = graphics.Context(config.display.width, config.display.height)
-  self.renderer = renderer.Deferred(self.graphics)
-  self.world = physics.World()
+  local context = graphics.Context(config.display.width, config.display.height)
+  local self = {
+    window = window.Window(),
+    db = db.Database(),
+    input = input.Map(),
+    config = config,
+    graphics = context,
+    renderer = renderer.Deferred(context),
+    world = physics.World(),
+    clock = sfml.Clock(),
+    accumulator = 0,
+    timestep = 1/60,
+    samples = {},
+    process = {},
+    ticks = 0,
+  }
+
   self.world:setGravity(vec.Vec3())
-  self.clock = sfml.Clock()
-  self.accumulator = 0
-  self.timestep = 1/60
-  self.samples = {}
-  self.process = {}
-  self.ticks = 0
-  return self
+  return setmetatable(self, Game)
 end
 
 -- Call 'event' on each component in the game database.
@@ -116,12 +119,12 @@ function Game:update()
   end
   self.accumulator = remainder*self.timestep
 
-  -- Run Bullet with maxSubSteps=0, which causes Bullet to step by exactly do
+  -- Run Bullet with maxSubSteps = 0, which causes Bullet to step by exactly do
   -- one substep of exactly timestep seconds. The code in this function handles
   -- framerate independence and interpolation by itself, so we don't need
   -- Bullet to do it. After each step, fire a 'tick' event, so that components
   -- that must update each frame are notified.
-  for i=1,substeps do
+  for i = 1,substeps do
     self:tick()
   end
 
@@ -143,7 +146,7 @@ function Game:sample()
   table.insert(self.samples, self.delta * 1000) -- convert to ms
   if #self.samples > 1000 then
     local min, max, median, mean, stdev = stats.stats(self.samples)
-    print(string.format('min=%05.2f max=%05.2f median=%05.2f mean=%05.2f stdev=%05.2f', min, max, median, mean, stdev))
+    print(string.format('min = %05.2f max = %05.2f median = %05.2f mean = %05.2f stdev = %05.2f', min, max, median, mean, stdev))
     self.samples = {}
   end
 end
@@ -165,7 +168,11 @@ function Game:run()
   while self.window:isOpen() do
     self:poll()
     self:update()
+
+    local a = collectgarbage('count')
     self:render()
+    local b = collectgarbage('count')
+    print(b-a)
     self:gc()
     --self:sample()
   end

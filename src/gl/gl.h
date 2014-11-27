@@ -164,7 +164,7 @@ void  glGetVertexAttribPointerv (GLuint index, GLenum pname, GLvoid* *pointer);
 GLboolean  glIsProgram (GLuint program);
 GLboolean  glIsShader (GLuint shader);
 void  glLinkProgram (GLuint program);
-void  glShaderSource (GLuint shader, GLsizei count, GLchar* *string, GLint *length);
+void  glShaderSource (GLuint shader, GLsizei count, GLchar const* *string, GLint *length);
 void  glUseProgram (GLuint program);
 void  glUniform1f (GLint location, GLfloat v0);
 void  glUniform2f (GLint location, GLfloat v0, GLfloat v1);

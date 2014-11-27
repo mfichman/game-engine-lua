@@ -57,4 +57,4 @@ m.Image = metatype('sfImage', 'sfImage_createFromFile')
 m.Time = metatype('sfTime', nil)
 
 
-return setmetatable(m, {__index=index})
+return setmetatable(m, {__index = index})

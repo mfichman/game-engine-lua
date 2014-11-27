@@ -24,19 +24,20 @@ local vec = require('vec')
 local HemiLight = {}; HemiLight.__index = HemiLight
 
 function HemiLight.new(args)
-  local self = setmetatable({}, HemiLight)
-  local args = args or self
-  self.diffuseColor = args.diffuseColor or vec.Vec4(1, 1, 1, 1)
-  self.backDiffuseColor = args.backDiffuseColor or vec.Vec4(0, 0, 0, 1)
-  self.specularColor = args.specularColor or vec.Vec4(1, 1, 1, 1)
-  self.ambientColor = args.ambientColor or vec.Vec4(0, 0, 0, 1)
-  self.direction = args.direction or vec.Vec3(-1, 0, 0)
-  self.constantAttenuation = args.constantAttenuation or 1
-  self.linearAttenuation = args.linearAttenuation or 1
-  self.quadraticAttenuation = args.quadraticAttenuation or 0
-  self.shadowViewDistance = args.shadowViewDistance or 20
-  self.shadowMap = args.shadowMap
-  return self
+  local args = args or {}
+  local self = {
+    diffuseColor = args.diffuseColor or vec.Vec4(1, 1, 1, 1),
+    backDiffuseColor = args.backDiffuseColor or vec.Vec4(0, 0, 0, 1),
+    specularColor = args.specularColor or vec.Vec4(1, 1, 1, 1),
+    ambientColor = args.ambientColor or vec.Vec4(0, 0, 0, 1),
+    direction = args.direction or vec.Vec3(-1, 0, 0),
+    constantAttenuation = args.constantAttenuation or 1,
+    linearAttenuation = args.linearAttenuation or 1,
+    quadraticAttenuation = args.quadraticAttenuation or 0,
+    shadowViewDistance = args.shadowViewDistance or 20,
+    shadowMap = args.shadowMap,
+  }
+  return setmetatable(self, HemiLight)
 end
 
 function HemiLight:radiusOfEffect()

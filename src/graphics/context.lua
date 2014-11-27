@@ -30,16 +30,16 @@ local Camera = require('graphics.camera')
 function Context.new(width, height)
   assert(width, 'width is nil')
   assert(height, 'height is nil')
-  local self = setmetatable({}, Context) 
-  self.camera = Camera()
+  local self = {
+    camera = Camera(),
+    worldTransform = vec.Mat4.identity(),
+    program = 0,
+    op = {}, -- array of objects submitted for rendering in this frame
+    state = {enabled = {}},
+    committed = {enabled = {}},
+  }
   self.camera.viewport = vec.Vec2(width, height)
-  self.worldTransform = vec.Mat4.identity()
-  self.program = 0
-  self.op = {} -- array of objects submitted for rendering in this frame
-
-  self.state = {enabled={}}
-  self.committed = {enabled={}}
-  return self
+  return setmetatable(self, Context) 
 end
 
 -- Submit a node to the rendering pipline using the given model transform. 
@@ -98,7 +98,7 @@ function Context:commit()
   end
 
   self.committed = self.state
-  self.state = {enabled={}}
+  self.state = {enabled = {}}
 end
 
 function Context:glUseProgram(program)

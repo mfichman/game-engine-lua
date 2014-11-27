@@ -21,12 +21,13 @@
 local Model = {}; Model.__index = Model
 
 function Model.new(args)
-  local self = setmetatable({}, Model)
-  local args = args or self
-  self.material = args.material
-  self.mesh = args.mesh
-  self.program = args.program
-  return self
+  local args = args or {}
+  local self = {
+    material = args.material,
+    mesh = args.mesh,
+    program = args.program,
+  }
+  return setmetatable(self, Model)
 end
 
 return Model.new

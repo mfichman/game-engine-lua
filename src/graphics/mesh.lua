@@ -62,23 +62,24 @@ end
 
 -- Calculate and write tangent vectors for the mesh
 local function updateTangents(self)
-  for i=2,self.index.count-1,3 do
+  for i = 2,self.index.count-1,3 do
     updateTangent(self, i)
   end
 
-  for i=0,self.vertex.count-1 do
+  for i = 0,self.vertex.count-1 do
     local vertex = self.vertex[i]
     vertex.tangent = vertex.tangent:unit()
   end
 end
 
 function Mesh.new()
-  local self = setmetatable({}, Mesh)
-  self.status = 'dirty'
-  self.id = 0
-  self.index = Buffer(gl.GL_ELEMENT_ARRAY_BUFFER, gl.GL_STATIC_DRAW, 'GLuint')
-  self.vertex = Buffer(gl.GL_ARRAY_BUFFER, gl.GL_STATIC_DRAW, 'graphics_MeshVertex')
-  return self
+  local self = {
+    index = Buffer(gl.GL_ELEMENT_ARRAY_BUFFER, gl.GL_STATIC_DRAW, 'GLuint'),
+    vertex = Buffer(gl.GL_ARRAY_BUFFER, gl.GL_STATIC_DRAW, 'graphics_MeshVertex'),
+    status = 'dirty',
+    id = 0,
+  }
+  return setmetatable(self, Mesh)
 end
 
 -- Sync the mesh with the hardware

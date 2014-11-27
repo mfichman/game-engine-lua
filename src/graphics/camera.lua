@@ -24,23 +24,23 @@ local Camera = {}; Camera.__index = Camera
 
 -- Creates a new orthographic or perspective camera object
 function Camera.new(args)
-  local self = setmetatable({}, Camera)
-  self.far = 1000
-  self.near = .1
-  self.left = 0
-  self.right = 0
-  self.top = 0
-  self.bottom = 0
-  self.viewport = vec.Vec2()
-  self.fieldOfView = 45
-  self.mode = 'perspective'
-  self.transform = vec.Mat4.identity()
-  self.projectionTransform = vec.Mat4.identity()
-  self.inverseProjectionTransform = vec.Mat4.identity()
-  self.viewTransform = vec.Mat4.identity()
-  self.inverseViewTransform = vec.Mat4.identity()
-
-  return self
+  local self = {
+    transform = vec.Mat4.identity(),
+    projectionTransform = vec.Mat4.identity(),
+    inverseProjectionTransform = vec.Mat4.identity(),
+    viewTransform = vec.Mat4.identity(),
+    inverseViewTransform = vec.Mat4.identity(),
+    far = 1000,
+    near = .1,
+    left = 0,
+    right = 0,
+    top = 0,
+    bottom = 0,
+    viewport = vec.Vec2(),
+    fieldOfView = 45,
+    mode = 'perspective',
+  }
+  return setmetatable(self, Camera)
 end
 
 -- Update the computed transforms from the view transform and projection 

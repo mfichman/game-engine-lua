@@ -23,12 +23,13 @@ local vec = require('vec')
 local Box = {}; Box.__index = Box
 
 function Box.new(args)
-  local self = setmetatable({}, box)
-  self.min = (args and args.min) or vec.Vec3()
-  self.max = (args and args.max) or vec.Vec3()
-  return self
+  local self = {
+    min = (args and args.min) or vec.Vec3(),
+    max = (args and args.max) or vec.Vec3(),
+  }
+  return setmetatable(self, Box)
 end
 
 return {
-  Box=Box.new,
+  Box = Box.new,
 }

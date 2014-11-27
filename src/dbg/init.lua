@@ -155,9 +155,9 @@ local function pretty(val)
     output:write('{\n')
     for k, v in pairs(val) do
       if type(k) == 'string' then
-        output:write('  ["'..k..'"]='..tostring(v)..'\n')
+        output:write('  ["'..k..'"] = '..tostring(v)..'\n')
       else
-        output:write('  ['..tostring(k)..']='..tostring(v)..'\n')
+        output:write('  ['..tostring(k)..'] = '..tostring(v)..'\n')
       end
     end
     output:write('}\n')
@@ -196,7 +196,7 @@ local function list()
   local line = info.currentline
   local text = {}
   local len = tostring(line+8):len()
-  for i=-8,8 do
+  for i = -8,8 do
     local l = line+i
     if i == 0 then
       table.insert(text, string.format('>> %'..len..'d | %s', l, getline(info.short_src, line+i)))
@@ -343,8 +343,8 @@ local function setvar(t, k, v)
   end
 end
 
-setmetatable(env, {__index=getvar, __newindex=setvar})
+setmetatable(env, {__index = getvar, __newindex = setvar})
 
 return {
-  start=start,
+  start = start,
 }

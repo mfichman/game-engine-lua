@@ -32,5 +32,5 @@ local function const(table)
 end
 
 return {
-  const=const,
+  const = const,
 }

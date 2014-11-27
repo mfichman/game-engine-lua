@@ -26,14 +26,16 @@ local Program = {}; Program.__index = Program
 -- Create a new OpenGL program from a vertex, fragment, and optional geometry
 -- shader; link the program
 function Program.new(fragment, vertex, geometry) 
-  local self = setmetatable({}, Program)
-  self.id = gl.glCreateProgram()
-  self.fragment = fragment
-  self.vertex = vertex
-  self.geometry = geometry
+  local self = {
+    id = gl.glCreateProgram(),
+    fragment = fragment,
+    vertex = vertex,
+    geometry = geometry,
+  }
   if #{fragment, vertex, geometry} == 0 then
     error('no shaders attached to program')
   end
+  setmetatable(self, Program)
   self:link()
   return self
 end
@@ -84,7 +86,7 @@ function Program:link()
   local size = ffi.new('GLint[1]')
   local kind = ffi.new('GLenum[1]')
   local buf = ffi.new('GLchar[?]', maxlen[0])
-  for i=0,uniforms[0]-1 do
+  for i = 0,uniforms[0]-1 do
     gl.glGetActiveUniform(self.id, i, maxlen[0], nil, size, kind, buf)
     local name = ffi.string(buf)
     self[name] = gl.glGetUniformLocation(self.id, buf)

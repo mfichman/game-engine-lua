@@ -52,4 +52,4 @@ local function index(t, k)
     return fn
 end
 
-return setmetatable({}, {__index=index})
+return setmetatable({}, {__index = index})

@@ -81,11 +81,11 @@ local function stats(samples)
 end
 
 return {
-  mean=mean,
-  min=min,
-  max=max,
-  median=median,
-  stdev=stdev, 
-  stats=stats,
+  mean = mean,
+  min = min,
+  max = max,
+  median = median,
+  stdev = stdev, 
+  stats = stats,
 }
 

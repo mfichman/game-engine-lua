@@ -71,8 +71,8 @@ end
 
 
 return {
-  libpath=libpath,
-  lib=lib,
-  include=include,
-  module=module,
+  libpath = libpath,
+  lib = lib,
+  include = include,
+  module = module,
 }

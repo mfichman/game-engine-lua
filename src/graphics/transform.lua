@@ -23,13 +23,14 @@ local vec = require('vec')
 local Transform = {}; Transform.__index = Transform
 
 function Transform.new()
-  local self = setmetatable({}, Transform)
-  self.component = {}
-  self.origin = vec.Vec3()
-  self.rotation = vec.Quat()
-  self.shadowMode = 'shadowed'
-  self.renderMode = 'visible'
-  return self
+  local self = {
+    component = {},
+    origin = vec.Vec3(),
+    rotation = vec.Quat(),
+    shadowMode = 'shadowed',
+    renderMode = 'visible',
+  }
+  return setmetatable(self, Transform)
 end
 
 function Transform:componentIs(comp)

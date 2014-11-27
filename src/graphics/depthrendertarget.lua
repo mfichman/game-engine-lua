@@ -24,9 +24,13 @@ local ffi = require('ffi')
 local DepthRenderTarget = {}; DepthRenderTarget.__index = DepthRenderTarget
 
 function DepthRenderTarget.new(width, height)
-  local self = setmetatable({}, DepthRenderTarget)
-  self.width = width
-  self.height = height
+  local self = {
+    width = width,
+    height = height,
+    id = 0,
+    depthBuffer = 0,
+  }
+  setmetatable(self, DepthRenderTarget)
 
   local id = ffi.new('GLint[1]')
   
@@ -48,7 +52,6 @@ function DepthRenderTarget.new(width, height)
 
   -- Establish texture size
   gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_DEPTH_COMPONENT24, width, height, 0, gl.GL_DEPTH_COMPONENT, gl.GL_FLOAT, nil);
-
 
   -- Generate and attach framebuffer
   gl.glGenFramebuffers(1, id)

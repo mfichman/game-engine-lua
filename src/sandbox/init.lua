@@ -34,8 +34,8 @@ local function dofile(path)
 end
 
 return {
-  Env=Env,
-  dofile=dofile,
-  load=load,
-  loadfile=loadfile,
+  Env = Env,
+  dofile = dofile,
+  load = load,
+  loadfile = loadfile,
 }

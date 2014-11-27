@@ -28,14 +28,15 @@ local Particle = require('graphics.particle')
 local Particles = {}; Particles.__index = Particles
 
 function Particles.new(args)
-  local self = setmetatable({}, Particles)
   assert(args.texture, 'no texture set for particles')
-  self.texture = args.texture
-  self.clearMode = 'manual'
-  self.blendMode = 'additive'
-  self.tint = vec.Vec4(1, 1, 1, 1)
-  self.particle = Buffer(nil, nil, 'graphics_Particle')
-  return self
+  local self = {
+    texture = args.texture,
+    clearMode = 'manual',
+    blendMode = 'additive',
+    tint = vec.Vec4(1, 1, 1, 1),
+    particle = Buffer(nil, nil, 'graphics_Particle'),
+  }
+  return setmetatable(self, Particles)
 end
 
 function Particles:visible()

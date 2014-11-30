@@ -28,12 +28,6 @@ typedef struct physics_RigidBody physics_RigidBody;
 typedef struct physics_Constraint physics_Constraint;
 typedef struct physics_CollisionObject physics_CollisionObject;
 
-enum physics_CollisionFlags {
-    physics_STATIC_OBJECT = 1,
-    physics_KINEMATIC_OBJECT = 2,
-    physics_NO_CONTACT_RESPONSE = 4,
-};
-
 typedef struct physics_RigidBodyDesc {
     vec_Scalar mass;
     vec_Transform transform;

@@ -61,4 +61,7 @@ return {
   BULLET = 0x1,
   SOLID = 0x2,
   SHIELD = 0x4,
+  STATIC_OBJECT = 0x1,
+  KINEMATIC_OBJECT = 0x2,
+  NO_CONTACT_RESPONSE = 0x4,
 }

@@ -18,7 +18,6 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local struct = require('graphics.struct')
 local vec = require('vec')
 local gl = require('gl')
 

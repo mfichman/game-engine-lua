@@ -18,8 +18,6 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
--- Renders particles as point sprites.
-
 local ffi = require('ffi')
 local gl = require('gl')
 local graphics = require('graphics')
@@ -33,30 +31,32 @@ local function createDrawBuffer()
   local buffer = graphics.StreamDrawBuffer()
   gl.glBindVertexArray(buffer.vertexArrayId)
   gl.glBindBuffer(gl.GL_ARRAY_BUFFER, buffer.id)
-  struct.defAttribute('graphics_Particle', 0, 'position')
-  struct.defAttribute('graphics_Particle', 1, 'color')
-  struct.defAttribute('graphics_Particle', 2, 'size')
-  struct.defAttribute('graphics_Particle', 3, 'rotation')
+  struct.defAttribute('graphics_Billboard', 0, 'position')
+  struct.defAttribute('graphics_Billboard', 1, 'forward')
+  struct.defAttribute('graphics_Billboard', 2, 'right')
+  struct.defAttribute('graphics_Billboard', 3, 'color')
+  struct.defAttribute('graphics_Billboard', 4, 'width')
+  struct.defAttribute('graphics_Billboard', 5, 'height')
   gl.glBindVertexArray(0)
   return buffer
 end
 
--- Render a set of particles to the screen using the streaming draw buffer
-local function render(g, particles)
-  if not particles:visible() then return end
-  
-  local camera = g.camera
-  local texture = particles.texture
+-- Render billboards using the streaming draw buffer
+local function render(g, billboards)
+  if not billboards:visible() then return end
 
-  program = program or asset.open('shader/forward/Particles.prog')
+  local camera = g.camera
+  local texture = billboards.texture
+
+  program = program or asset.open('shader/forward/Billboards.prog')
   buffer = buffer or createDrawBuffer()
-  
+
   g:glUseProgram(program.id)
   g:glEnable(gl.GL_BLEND, gl.GL_DEPTH_TEST)
   g:glDepthMask(gl.GL_FALSE)
-  if particles.blendMode == 'alpha' then
+  if billboards.blendMode == 'alpha' then
     g:glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-  elseif particles.blendMode == 'additive' then
+  elseif billboards.blendMode == 'additive' then
     g:glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)
   else
     error('invalid particle blend mode')
@@ -66,25 +66,23 @@ local function render(g, particles)
   gl.glUniform1i(program.tex, 0)
   gl.glActiveTexture(gl.GL_TEXTURE0)
   gl.glBindTexture(gl.GL_TEXTURE_2D, texture.id)
-  gl.glUniform4fv(program.tint, 1, particles.tint:data()) 
+  gl.glUniform4fv(program.tint, 1, billboards.tint:data())
+  
+  -- Pass matrices to the shader
+  local transform = camera.transform * g.worldTransform
+  gl.glUniformMatrix4fv(program.transform, 1, 0, transform:data())
 
-  -- Pass matrices to the vertex shader
-  local modelView = camera.viewTransform * g.worldTransform 
-  gl.glUniformMatrix4fv(program.modelViewMatrix, 1, 0, modelView:data())
-  gl.glUniformMatrix4fv(program.projectionMatrix, 1, 0, camera.projectionTransform:data())
-  gl.glUniformMatrix4fv(program.unprojectMatrix, 1, 0, camera.inverseProjectionTransform:data())
-
-  -- Render the particles to the streaming draw buffer
-  buffer:draw(gl.GL_POINTS, particles.particle)
-
-  if particles.clearMode == 'auto' then
-    particles.particle:clear()
-  elseif particles.clearMode == 'manual' then
+  -- Render the billboards
+  buffer:draw(gl.GL_POINTS, billboards.billboard)
+  
+  if billboards.clearMode == 'auto' then
+    billboards.billboard:clear()
+  elseif billboards.clearMode == 'manual' then
   else
-    error('invalid particle clear mode')
+    error('invalid billboard clear mode')
   end
 end
 
 return {
-  render = render
+  render = render,
 }

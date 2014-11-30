@@ -18,27 +18,31 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-return {
-  Billboard = require('graphics.billboard'),
-  Billboards = require('graphics.billboards'),
-  Buffer = require('graphics.buffer'),
-  Camera = require('graphics.camera'),
-  Context = require('graphics.context'),
-  DepthRenderTarget = require('graphics.depthrendertarget'),
-  FrameBuffer = require('graphics.framebuffer'),
-  HemiLight = require('graphics.hemilight'),
-  Material = require('graphics.material'),
-  Mesh = require('graphics.mesh'),
-  MeshVertex = require('graphics.meshvertex'),
-  Model = require('graphics.model'),
-  Particle = require('graphics.particle'),
-  Particles = require('graphics.particles'),
-  PointLight = require('graphics.pointlight'),
-  Program = require('graphics.program'),
-  RenderTarget = require('graphics.rendertarget'),
-  Shader = require('graphics.shader'),
-  SpotLight = require('graphics.spotlight'),
-  StreamDrawBuffer = require('graphics.streamdrawbuffer'),
-  Texture = require('graphics.texture'),
-  Transform = require('graphics.transform'),
-}
+local vec = require('vec')
+local gl = require('gl')
+
+local Buffer = require('graphics.buffer')
+local Billboard = require('graphics.billboard')
+
+local Billboards = {}; Billboards.__index = Billboards
+
+function Billboards.new(args)
+  assert(args.texture, 'no texture set for billboards')
+  local self = {
+    width = args.width or 1,
+    height = args.height or 1,
+    texture = args.texture,
+    clearMode = args.clearMode or 'manual',
+    blendMode = args.blendMore or 'additive',
+    tint = args.tint or vec.Color(1, 1, 1, 1),
+    billboard = Buffer(nil, nil, 'graphics_Billboard')
+  }
+  return setmetatable(self, Billboards)
+end
+
+function Billboards:visible()
+  return self.texture and self.billboard.count > 0
+end
+
+return Billboards.new
+

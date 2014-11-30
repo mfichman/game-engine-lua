@@ -18,27 +18,20 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-return {
-  Billboard = require('graphics.billboard'),
-  Billboards = require('graphics.billboards'),
-  Buffer = require('graphics.buffer'),
-  Camera = require('graphics.camera'),
-  Context = require('graphics.context'),
-  DepthRenderTarget = require('graphics.depthrendertarget'),
-  FrameBuffer = require('graphics.framebuffer'),
-  HemiLight = require('graphics.hemilight'),
-  Material = require('graphics.material'),
-  Mesh = require('graphics.mesh'),
-  MeshVertex = require('graphics.meshvertex'),
-  Model = require('graphics.model'),
-  Particle = require('graphics.particle'),
-  Particles = require('graphics.particles'),
-  PointLight = require('graphics.pointlight'),
-  Program = require('graphics.program'),
-  RenderTarget = require('graphics.rendertarget'),
-  Shader = require('graphics.shader'),
-  SpotLight = require('graphics.spotlight'),
-  StreamDrawBuffer = require('graphics.streamdrawbuffer'),
-  Texture = require('graphics.texture'),
-  Transform = require('graphics.transform'),
-}
+local ffi = require('ffi')
+local vec = require('vec')
+
+ffi.cdef[[
+  typedef struct graphics_Billboard {
+    vec_Vec3 position;
+    vec_Vec3 velocity;
+    vec_Vec3 forward;
+    vec_Vec3 right;
+    vec_Color color;
+    vec_Scalar width;
+    vec_Scalar height;
+  } graphics_Billboard;
+
+]]
+
+return ffi.typeof('graphics_Billboard')

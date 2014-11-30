@@ -144,7 +144,7 @@ end
 -- Sample performance data
 function Game:sample()
   table.insert(self.samples, self.delta * 1000) -- convert to ms
-  if #self.samples > 1000 then
+  if #self.samples > 100 then
     local min, max, median, mean, stdev = stats.stats(self.samples)
     print(string.format('min = %05.2f max = %05.2f median = %05.2f mean = %05.2f stdev = %05.2f', min, max, median, mean, stdev))
     self.samples = {}
@@ -168,11 +168,7 @@ function Game:run()
   while self.window:isOpen() do
     self:poll()
     self:update()
-
-    local a = collectgarbage('count')
     self:render()
-    local b = collectgarbage('count')
-    print(b-a)
     self:gc()
     --self:sample()
   end

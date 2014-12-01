@@ -73,10 +73,45 @@ local function pickRay(camera, screen)
   return ray
 end
 
+-- Returns a function that scales the domain [begin, rend) to [0, 1)
+local function domain(f, min, max)
+  return function(t)
+    local t = clamp(t, min, max)
+    local t = (t-min)/(max-min)
+    return f(t)
+  end
+end
+
+-- Returns a function for a cubic polynomial with coefficients a, b, c, d
+local function cubic(a, b, c, d) 
+  return function(t)
+    return a*math.pow(t, 3) + b*math.pow(t, 2) + c*t + d
+  end
+end
+
+-- Returns a function that outputs a hermite curve for a parameterized input
+-- with domain in [0, 1)
+local function hermite(p0, p1, m0, m1)
+  local a = 2*p0 + m0 - 2*p1 + m1
+  local b = -3*p0 - 2*m0 + 3*p1 - m1
+  local c = m0
+  local d = p0
+  return cubic(a, b, c, d)
+end
+
+-- Mix a and b using factor alpha
+local function mix(min, max, alpha)
+  return min * (1-alpha) + max * alpha
+end
+
 return {
   clamp = clamp,
   rayPlaneIntersect = rayPlaneIntersect,
   screenToWorld = screenToWorld,
   deviceToWorld = derviceToWorld,
   pickRay = pickRay,
+  hermite = hermite,
+  domain = domain,
+  cubic = cubic,
+  mix = mix,
 }

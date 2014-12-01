@@ -66,6 +66,8 @@ process = {
   'Model',
   'Target',
   'EngineFlame',
+  'EngineTrail',
   'Beam',
   'Sparks',
+  'Explosion',
 }

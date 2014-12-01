@@ -18,7 +18,7 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
--- Renders particles as point sprites.
+-- Renders ribbons as a series of point sprites.
 
 local ffi = require('ffi')
 local gl = require('gl')
@@ -33,62 +33,56 @@ local function createDrawBuffer()
   local buffer = graphics.StreamDrawBuffer()
   gl.glBindVertexArray(buffer.vertexArrayId)
   gl.glBindBuffer(gl.GL_ARRAY_BUFFER, buffer.id)
-  struct.defAttribute('graphics_Particle', 0, 'position')
-  struct.defAttribute('graphics_Particle', 1, 'color')
-  struct.defAttribute('graphics_Particle', 2, 'size')
-  struct.defAttribute('graphics_Particle', 3, 'rotation')
+  struct.defAttribute('graphics_RibbonVertex', 0, 'position')
+  struct.defAttribute('graphics_RibbonVertex', 1, 'direction')
+  struct.defAttribute('graphics_RibbonVertex', 2, 'index')
   gl.glBindVertexArray(0)
   return buffer
 end
 
--- Render a set of particles to the screen using the streaming draw buffer
-local function render(g, particles)
-  if not particles:visible() then return end
-  
-  local camera = g.camera
-  local texture = particles.texture
+-- Render a ribbons to the screen using the streaming draw buffer
+local function render(g, ribbon)
+  if not ribbon:visible() then return end
 
-  program = program or asset.open('shader/forward/Particles.prog')
+  local camera = g.camera
+  local texture = ribbon.texture
+
+  program = program or asset.open('shader/forward/Ribbon.prog')
   buffer = buffer or createDrawBuffer()
-  
+
   g:glUseProgram(program.id)
   g:glEnable(gl.GL_BLEND, gl.GL_DEPTH_TEST)
   g:glDepthMask(gl.GL_FALSE)
-  if particles.blendMode == 'alpha' then
-    g:glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-  elseif particles.blendMode == 'additive' then
-    g:glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)
-  else
-    error('invalid particle blend mode')
-  end
+  g:glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)
   g:commit()
-
+  
   gl.glUniform1i(program.tex, 0)
   gl.glActiveTexture(gl.GL_TEXTURE0)
   gl.glBindTexture(gl.GL_TEXTURE_2D, texture.id)
-
-  gl.glUniform1i(program.depthBuffer, 4)
-  -- FIXME: Remove '4' magic number here
-
-  gl.glUniform4fv(program.tint, 1, particles.tint:data()) 
 
   -- Pass matrices to the vertex shader
   local modelView = camera.viewTransform * g.worldTransform 
   gl.glUniformMatrix4fv(program.modelViewMatrix, 1, 0, modelView:data())
   gl.glUniformMatrix4fv(program.projectionMatrix, 1, 0, camera.projectionTransform:data())
-  gl.glUniformMatrix4fv(program.unprojectMatrix, 1, 0, camera.inverseProjectionTransform:data())
 
-  -- Render the particles to the streaming draw buffer
-  buffer:draw(gl.GL_POINTS, particles.particle)
+  gl.glUniform1f(program.width, ribbon.width)
+  gl.glUniform1f(program.minWidth, ribbon.minWidth)
+  gl.glUniform1i(program.count, math.min(ribbon.tail, ribbon.quota))
+  gl.glUniform1i(program.tail, ribbon.tail)
 
-  if particles.clearMode == 'auto' then
-    particles.particle:clear()
-  elseif particles.clearMode == 'manual' then
-  else
-    error('invalid particle clear mode')
-  end
+  local normalMatrix = modelView:inverse():transpose() 
+  local temp = ffi.new('GLfloat[9]', {
+    normalMatrix.d00, normalMatrix.d01, normalMatrix.d02, 
+    normalMatrix.d04, normalMatrix.d05, normalMatrix.d06, 
+    normalMatrix.d08, normalMatrix.d09, normalMatrix.d10, 
+  })
+  gl.glUniformMatrix3fv(program.normalMatrix, 1, 0, temp)
+
+  -- Render the ribbon
+  buffer:draw(gl.GL_TRIANGLES, ribbon.vertex)
+
 end
 
 return {
-  render = render
+  render = render,
 }

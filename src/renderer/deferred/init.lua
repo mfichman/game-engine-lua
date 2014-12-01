@@ -33,13 +33,13 @@ local pointlight = require('renderer.deferred.pointlight')
 local spotlight = require('renderer.deferred.spotlight')
 local particles = require('renderer.forward.particles')
 local billboards = require('renderer.forward.billboards')
+local ribbon = require('renderer.forward.ribbon')
 --[[
 local decal = require('renderer.deferred.decal')
 local shadow = require('renderer.shadow')
 
 local skybox = require('renderer.forward.skybox')
 local transparent = require('renderer.forward.transparent')
-local ribbon = require('renderer.forward.ribbon')
 local quad = require('renderer.forward.quad')
 local text = require('renderer.forward.text')
 local ui = require('renderer.forward.ui')
@@ -149,7 +149,7 @@ function Deferred:render()
   --self:apply(transparent.render, graphics.Model) FIXME
   apply.apply(particles.render, self.context, graphics.Particles)
   apply.apply(billboards.render, self.context, graphics.Billboards)
-  --self:apply(ribbon.render, graphics.Ribbon)
+  apply.apply(ribbon.render, self.context, graphics.Ribbon)
   --self:apply(quad.render, graphics.Quad)
   --self:apply(text.render, graphics.Text)
 

@@ -174,7 +174,7 @@ function Game:run()
     self:update()
     self:render()
     self:gc()
-    --self:sample()
+    self:sample()
   end
   collectgarbage('restart')
 end

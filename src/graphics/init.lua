@@ -36,6 +36,8 @@ return {
   PointLight = require('graphics.pointlight'),
   Program = require('graphics.program'),
   RenderTarget = require('graphics.rendertarget'),
+  Ribbon = require('graphics.ribbon'),
+  RibbonVertex = require('graphics.ribbonvertex'),
   Shader = require('graphics.shader'),
   SpotLight = require('graphics.spotlight'),
   StreamDrawBuffer = require('graphics.streamdrawbuffer'),

@@ -30,9 +30,9 @@ function Particles.new(args)
   assert(args.texture, 'no texture set for particles')
   local self = {
     texture = args.texture,
-    clearMode = 'manual',
-    blendMode = 'additive',
-    tint = vec.Vec4(1, 1, 1, 1),
+    clearMode = args.clearMode or 'manual',
+    blendMode = args.blendMode or 'additive',
+    tint = args.tint or vec.Vec4(1, 1, 1, 1),
     particle = Buffer(nil, nil, 'graphics_Particle'),
   }
   return setmetatable(self, Particles)

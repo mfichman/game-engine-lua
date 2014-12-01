@@ -57,6 +57,7 @@ return {
   HingeConstraint = physics['physics_HingeConstraint_new'],
   RigidBody = metatype('physics_RigidBody', 'physics_RigidBody_new'),
   RigidBodyDesc = ffi.typeof('physics_RigidBodyDesc'),
+  Manifold = metatype('physics_Manifold'),
   NONE = 0,
   BULLET = 0x1,
   SOLID = 0x2,

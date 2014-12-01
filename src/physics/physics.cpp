@@ -151,6 +151,39 @@ vec_Vec3 physics_World_getGravity(physics_World* self) {
     return convert<vec_Vec3>(((btDiscreteDynamicsWorld*)self)->getGravity());
 }
 
+int32_t physics_World_getNumManifolds(physics_World* self) {
+    return ((World*)self)->getDispatcher()->getNumManifolds();
+}
+
+physics_Manifold* physics_World_getManifold(physics_World* self, int32_t i) {
+    return (physics_Manifold*)((World*)self)->getDispatcher()->getManifoldByIndexInternal(i);
+}
+
+int32_t physics_Manifold_getNumContacts(physics_Manifold* self) {
+    return ((btPersistentManifold*)self)->getNumContacts();
+}
+
+physics_RigidBody* physics_Manifold_getBody0(physics_Manifold* self) {
+    return (physics_RigidBody*)((btPersistentManifold*)self)->getBody0();
+}
+
+physics_RigidBody* physics_Manifold_getBody1(physics_Manifold* self) {
+    return (physics_RigidBody*)((btPersistentManifold*)self)->getBody1();
+}
+
+physics_Contact physics_Manifold_getContact(physics_Manifold* self, int32_t i) {
+    btManifoldPoint p = ((btPersistentManifold*)self)->getContactPoint(i);
+    physics_Contact c;
+    c.positionWorldOn0 = convert<vec_Vec3>(p.m_positionWorldOnA);
+    c.positionWorldOn1 = convert<vec_Vec3>(p.m_positionWorldOnB);
+    c.normalWorldOn0 = convert<vec_Vec3>(p.m_normalWorldOnB);
+    c.normalWorldOn1 = convert<vec_Vec3>(p.m_normalWorldOnB);
+    c.normalWorldOn0.x = -c.normalWorldOn0.x;
+    c.normalWorldOn0.y = -c.normalWorldOn0.y;
+    c.normalWorldOn0.z = -c.normalWorldOn0.z;
+    return c;
+}
+
 physics_Shape* physics_SphereShape_new(vec_Scalar radius) {
     return (physics_Shape*)new btSphereShape(radius);
 }

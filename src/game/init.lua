@@ -73,6 +73,7 @@ function Game.new()
     samples = {},
     process = {},
     ticks = 0,
+    tickHandler = {},
   }
 
   self.world:setGravity(vec.Vec3())
@@ -89,6 +90,9 @@ function Game:tick()
   self.world:stepSimulation(self.timestep, 0, self.timestep) 
   self:apply('tick')
   self.ticks = self.ticks+1
+  for i, handler in ipairs(self.tickHandler) do
+    handler()
+  end
 end
 
 -- Render a single frame. 

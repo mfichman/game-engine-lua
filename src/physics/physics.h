@@ -27,6 +27,7 @@ typedef struct physics_Shape physics_Shape;
 typedef struct physics_RigidBody physics_RigidBody;
 typedef struct physics_Constraint physics_Constraint;
 typedef struct physics_CollisionObject physics_CollisionObject;
+typedef struct physics_Manfold physics_Manifold;
 
 typedef struct physics_RigidBodyDesc {
     vec_Scalar mass;
@@ -35,6 +36,13 @@ typedef struct physics_RigidBodyDesc {
     vec_Scalar friction;
     vec_Scalar restitution;
 } physics_RigidBodyDesc;
+
+typedef struct physics_Contact {
+    vec_Vec3 positionWorldOn0;
+    vec_Vec3 positionWorldOn1;
+    vec_Vec3 normalWorldOn0;
+    vec_Vec3 normalWorldOn1;
+} physics_Contact;
 
 __declspec(dllexport) physics_World* physics_World_new();
 __declspec(dllexport) void physics_World_del(physics_World* self);
@@ -48,6 +56,13 @@ __declspec(dllexport) void physics_World_removeConstraint(physics_World* self, p
 __declspec(dllexport) void physics_World_removeCollisionObject(physics_World* self, physics_CollisionObject* object);
 __declspec(dllexport) void physics_World_stepSimulation(physics_World* self, vec_Scalar timeStep, int maxSubSteps, vec_Scalar fixedTimeStep);
 __declspec(dllexport) void physics_World_synchronizeMotionStates(physics_World* self, vec_Scalar remainder, vec_Scalar fixedTimeStep);
+__declspec(dllexport) int32_t physics_World_getNumManifolds(physics_World* self);
+__declspec(dllexport) physics_Manifold* physics_World_getManifold(physics_World* self, int32_t i);
+
+__declspec(dllexport) int32_t physics_Manifold_getNumContacts(physics_Manifold* self);
+__declspec(dllexport) physics_RigidBody* physics_Manifold_getBody0(physics_Manifold* self);
+__declspec(dllexport) physics_RigidBody* physics_Manifold_getBody1(physics_Manifold* self);
+__declspec(dllexport) physics_Contact physics_Manifold_getContact(physics_Manifold* self, int32_t i);
 
 __declspec(dllexport) physics_Shape* physics_SphereShape_new(vec_Scalar radius);
 __declspec(dllexport) physics_Shape* physics_ConvexHullShape_new(uint32_t* index, uint32_t indexCount, vec_Vec3* vertex, uint32_t vertexCount, uint32_t vertexStride);

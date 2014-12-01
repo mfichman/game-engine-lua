@@ -19,6 +19,7 @@
 -- IN THE SOFTWARE.
 
 local math = require('math')
+local vec = require('vec')
 
 -- Returns a random number in the range [min, max)
 local function float(min, max)
@@ -29,7 +30,20 @@ local function int(min, max)
   return math.random(min, max)
 end
 
+local function sphere(radius)
+  local r = float(0, radius)
+  local phi = float(0, 2 * math.pi)
+  local theta = float(0, math.pi)
+
+  return vec.Vec3{
+    x = r * math.sin(theta) * math.cos(phi),
+    y = r * math.sin(theta) * math.sin(phi),
+    z = r * math.cos(theta),
+  }
+end
+
 return {
   float = float,
   int = int,
+  sphere = sphere,
 }

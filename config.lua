@@ -60,10 +60,12 @@ process = {
   'UserInput',
   'Thruster',
   'Launcher',
-  'EngineFlame',
   'Lifetime',
   'Armor',
   'Group',
   'Model',
   'Target',
+  'EngineFlame',
+  'Beam',
+  'Sparks',
 }

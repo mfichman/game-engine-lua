@@ -31,6 +31,7 @@ local stats = require('stats')
 local window = require('window')
 local component = require('component')
 local input = require('input')
+local asset = require('asset')
 
 local Game = {}; Game.__index = Game
 
@@ -75,6 +76,10 @@ function Game.new()
     ticks = 0,
     tickHandler = {},
   }
+
+  for i, name in ipairs(self.config.preload) do
+    asset.open(name)
+  end
 
   self.world:setGravity(vec.Vec3())
   return setmetatable(self, Game)
@@ -174,6 +179,9 @@ function Game:run()
     self:update()
     self:render()
     self:gc()
+    if self.ticks % 500 == 0 then
+      print(collectgarbage('count'))
+    end
     self:sample()
   end
   collectgarbage('restart')

@@ -24,11 +24,14 @@ local game = require('game')
 local dbg = require('dbg')
 local entity = require('entity')
 local vec = require('vec')
+local config = require('config')
+local world = require('world')
 
 local function init()
+  --c = world.Chunk{x = 0, y = 0, kind = 'asteroids'}
+  
+  entity.World{}
   entity.Fighter{}
-  entity.Rock{kind='Rock0', origin=vec.Vec3(-10, 0, -2)}
-  entity.Rock{kind='Rock0', origin=vec.Vec3(10, 0, -2)}
 --  entity.Rock{kind='SmoothSphere'}
 end
 

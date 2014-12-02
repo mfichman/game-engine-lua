@@ -33,8 +33,8 @@ local function createLightCamera(g, light)
   
   -- Transform to the center of the light, then point in the reverse of the
   -- light direction.
-  local lightView = vec.Mat4x4.forward(-light.direction:unit())
-  local lightViewInverse = vec.Mat4x4.forward(light.direction:unit())
+  local lightView = vec.Mat4x4.forward(-light.direction:unit())--:inverse()
+  local lightViewInverse = lightView:inverse()
 
   local sceneCamera = g.camera
   local sceneFar = sceneCamera.far

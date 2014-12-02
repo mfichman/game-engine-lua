@@ -18,21 +18,29 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
--- Make a table const
-local function const(table)
-  local metatable = {
-    __index = function(t, k)
-      return table[k]
-    end,
-    __newindex = function()
-      error('attribute is const!')  
-    end,
-  }
-  return setmetatable({}, metatable)
+local Queue = {}; Queue.__index = Queue
+
+function Queue.new()
+  return setmetatable({first = 0, last = -1}, Queue)
 end
 
-return {
-  const = const,
-  List = require('tablex.list'),
-  Queue = require('tablex.queue'),
-}
+function Queue:push(value)
+  local last = self.last + 1
+  self.last = last
+  self[last] = value
+end
+
+function Queue:pop()
+  local first = self.first
+  if first > self.last then error('list is empty') end
+  local value = self[first]
+  self[first] = nil
+  self.first = first + 1
+  return value
+end
+
+function Queue:len()
+  return self.last - self.first + 1
+end
+
+return Queue.new

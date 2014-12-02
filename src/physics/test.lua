@@ -31,8 +31,8 @@ local body2 = physics.RigidBody(physics.RigidBodyDesc{mass = 1, shape = shape, t
 local constraint = physics.HingeConstraint(body1, body2, t1.origin, t2.origin, vec.Vec3(1), vec.Vec3(1))
 
 world:setGravity(vec.Vec3())
-world:addRigidBody(body1)
-world:addRigidBody(body2)
+world:addRigidBody(body1, 0, 0)
+world:addRigidBody(body2, 0, 0)
 world:addConstraint(constraint)
 
 body1:setLinearVelocity(vec.Vec3(1, 0, 0))

@@ -19,7 +19,7 @@
 -- IN THE SOFTWARE.
 
 display = {
-  vsync = false,
+  vsync = true,
   width = 1280,
   height = 720,
   fullscreen = false,
@@ -57,9 +57,12 @@ mouse = {
 process = {
   'RigidBody',
   'Camera',
-  'UserInput',
+  'UserThrustControl',
+  'UserYawControl',
+  'UserFireControl',
   'Thruster',
   'Launcher',
+  'Drag',
   'Lifetime',
   'Armor',
   'Group',
@@ -70,4 +73,52 @@ process = {
   'Beam',
   'Sparks',
   'Explosion',
+  'Sun',
+  'ChunkCache',
+}
+
+preload = {
+  'texture/Blue.png',
+  'texture/BulletYellow.png',
+  'texture/DestroyerHullDiffuse.png',
+  'texture/ExplosionGold.png',
+  'texture/Flame2Gold.png',
+  'texture/GradientYellow.png',
+  'texture/IncandescentGold.png',
+  'texture/IncandescentOrange.png',
+  'texture/White.png',
+
+  'mesh/Dagger.obj',
+  'mesh/Debris0.obj',
+  'mesh/Debris1.obj',
+  'mesh/Debris2.obj',
+  'mesh/Destroyer.obj',
+  'mesh/EscapePod.obj',
+  'mesh/Fighter.obj',
+  'mesh/LightShapes.obj',
+  'mesh/Missile.obj',
+  'mesh/Quad.obj',
+  'mesh/Rock0.obj',
+  'mesh/Rock1.obj',
+  'mesh/SmoothSphere.obj',
+
+  'material/Dagger.mtl',
+  'material/Debris0.mtl',
+  'material/Debris1.mtl',
+  'material/Debris2.mtl',
+  'material/Destroyer.mtl',
+  'material/EscapePod.mtl',
+  'material/Fighter.mtl',
+  'material/LightShapes.mtl',
+  'material/Missile.mtl',
+  'material/Quad.mtl',
+  'material/Rock0.mtl',
+  'material/Rock1.mtl',
+  'material/SmoothSphere.mtl',
+}
+
+chunk = {
+  cachesize = 16,
+  size = 64,
+  pitch = 2,
 }

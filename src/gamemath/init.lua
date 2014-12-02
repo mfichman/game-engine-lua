@@ -60,7 +60,7 @@ local function screenToWorld(camera, screen)
   return deviceToWorld(camera, device)
 end
 
--- Returns a world-space picking ray that passes from a point in screen space
+-- Returns a world-space picking ray that passes from a point in world space
 -- through the camera. Returns {origin = ?, vector = ?}.
 local function pickRay(camera, screen)
   -- Find a ray from the mouse to the camera in world space, and then intersect
@@ -108,7 +108,7 @@ return {
   clamp = clamp,
   rayPlaneIntersect = rayPlaneIntersect,
   screenToWorld = screenToWorld,
-  deviceToWorld = derviceToWorld,
+  deviceToWorld = deviceToWorld,
   pickRay = pickRay,
   hermite = hermite,
   domain = domain,

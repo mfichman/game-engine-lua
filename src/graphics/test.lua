@@ -44,12 +44,10 @@ assert(b.count == 12)
 b:sync()
 b:clear()
 assert(b.count == 0)
-b:del()
 
 -- Texture
 local t = graphics.Texture(8, 8, ffi.new('GLuint[64]'))
 assert(t.id ~= 0)
-t:del()
 
 -- Program
 local source = [[
@@ -78,7 +76,6 @@ assert(gl.glGetError() ==0)
 -- Mesh
 local m = graphics.Mesh()
 m:sync()
-m:del()
 
 -- Camera
 local c = graphics.Camera()
@@ -135,4 +132,3 @@ assert(gl.glGetError() == 0)
 
 local sdb = graphics.StreamDrawBuffer(1024)
 sdb:reset()
-sdb:del()

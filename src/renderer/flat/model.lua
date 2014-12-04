@@ -32,14 +32,8 @@ local function render(g, model)
   gl.glUseProgram(program.id)
 
   -- Pass the model matrix to the vertex shader
---[[
   local transform = g.camera.transform * g.worldTransform
   gl.glUniformMatrix4fv(program.transform, 1, 0, transform:data())
-]]
-
-  gl.glUniformMatrix4fv(program.projectionMatrix, 1, 0, g.camera.projectionTransform:data())
-  gl.glUniformMatrix4fv(program.viewMatrix, 1, 0, g.camera.viewTransform:data())
-  gl.glUniformMatrix4fv(program.worldMatrix, 1, 0, g.worldTransform:data())
 
   -- Render the mesh
   gl.glBindVertexArray(mesh.id)

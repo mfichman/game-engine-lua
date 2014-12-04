@@ -24,10 +24,8 @@ local gl = require('gl')
 local RenderTarget = {}; RenderTarget.__index = RenderTarget
 
 function RenderTarget.new(width, height, format)
-  local id = ffi.new('GLint[1]')
-  gl.glGenTextures(1, id)
-
-  local self = { id=id[0] }
+  local self = { handle = gl.Handle(gl.glGenTextures, gl.glDeleteTextures) }
+  self.id = self.handle[0]
 
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.id)
   gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST)
@@ -46,13 +44,5 @@ function RenderTarget.new(width, height, format)
 
   return setmetatable(self, RenderTarget)
 end
-
-function RenderTarget:del()
-  local id = ffi.new('GLint[1]', self.id) 
-  gl.glDeleteTextures(1, id)
-  self.id = 0
-end
-
-RenderTarget.__gc = RenderTarget.del
 
 return RenderTarget.new

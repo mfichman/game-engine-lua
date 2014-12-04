@@ -29,31 +29,20 @@ function StreamDrawBuffer.new(size)
   local self = {
     size = size or 8 * bit.lshift(1, 20), -- 8 MB
     offset = 0,
+    handle = gl.Handle(gl.glGenBuffers, gl.glDeleteBuffers),
     id = 0,
-    vertexArrayId,
+    vertexArrayHandle = gl.Handle(gl.glGenVertexArrays, gl.glDeleteVertexArrays),
+    vertexArrayId = 0,
   }
 
-  local id = ffi.new('GLint[1]')
-  gl.glGenBuffers(1, id)
-  self.id = id[0]
-  gl.glGenVertexArrays(1, id)
-  self.vertexArrayId = id[0]
+  self.id = self.handle[0]
+  self.vertexArrayId = self.vertexArrayHandle[0]
 
   setmetatable(self, StreamDrawBuffer)
   self:reset()
 
   return self
 end
-
-function StreamDrawBuffer:del()
-  local id = ffi.new('GLint[1]')
-  id[0] = self.id
-  gl.glDeleteBuffers(1, id)
-  id[0] = self.vertexArrayId
-  gl.glDeleteVertexArrays(1, id)
-end
-
-StreamDrawBuffer.__gc = StreamDrawBuffer.del
 
 -- Orphan and re-create the buffer
 function StreamDrawBuffer:reset()

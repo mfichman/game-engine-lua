@@ -30,7 +30,9 @@ local body1 = physics.RigidBody(physics.RigidBodyDesc{mass = 1, shape = shape, t
 local body2 = physics.RigidBody(physics.RigidBodyDesc{mass = 1, shape = shape, transform = t2})
 local constraint = physics.HingeConstraint(body1, body2, t1.origin, t2.origin, vec.Vec3(1), vec.Vec3(1))
 
+
 world:setGravity(vec.Vec3())
+
 world:addRigidBody(body1, 0, 0)
 world:addRigidBody(body2, 0, 0)
 world:addConstraint(constraint)
@@ -47,9 +49,4 @@ assert(body2:getPosition().x > 1)
 world:removeConstraint(constraint)
 world:removeRigidBody(body1)
 world:removeRigidBody(body2)
-body1:del()
-body2:del()
-shape:del()
-world:del()
-
 

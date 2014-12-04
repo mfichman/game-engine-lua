@@ -22,6 +22,7 @@
 
 #include <cstdint>
 #include <cassert>
+#include <cstdlib>
 extern "C" {
     #include <vec/vec.h>
     #include <physics/physics.h>
@@ -32,6 +33,8 @@ extern "C" {
 
 template <typename T, typename V> T convert(V* val);
 template <typename T, typename V> T convert(V const& val);
+
+static size_t memUsage = 0;
 
 struct MotionState : public btMotionState {
     MotionState(btTransform const& transform) : transform(transform) {}
@@ -90,6 +93,21 @@ template <> inline vec_Quat convert<vec_Quat>(btQuaternion const& val) {
     return ret;
 }
 
+// Override operator new so we can track mem usage
+void* ::operator new(std::size_t size) {
+    memUsage += size;
+    size_t* ptr = (size_t*)std::malloc(size+sizeof(size));
+    ptr[0] = size;
+    return ptr+1;
+}
+
+void ::operator delete(void* obj) {
+    size_t* ptr = ((size_t*)obj)-1;
+    size_t size = ptr[0];
+    memUsage -= size;
+    return std::free(ptr);
+}
+
 physics_World* physics_World_new() {
     btDefaultCollisionConfiguration* config = new btDefaultCollisionConfiguration;
     btCollisionDispatcher* dispatcher = new btCollisionDispatcher(config);
@@ -113,6 +131,10 @@ void physics_World_del(physics_World* self) {
 
 void physics_World_setGravity(physics_World* self, vec_Vec3 const* gravity) {
     ((btDiscreteDynamicsWorld*)self)->setGravity(convert<btVector3>(gravity));
+}
+
+size_t physics_World_getMemUsage(physics_World* self) {
+    return memUsage;
 }
 
 void physics_World_addRigidBody(physics_World* self, physics_RigidBody* body, uint16_t group, uint16_t mask) {
@@ -234,7 +256,6 @@ physics_Constraint* physics_HingeConstraint_new(physics_RigidBody* b1, physics_R
 void physics_Constraint_del(physics_Constraint* self) {
     delete (btTypedConstraint*)self;
 }
-
 
 physics_RigidBody* physics_RigidBody_new(physics_RigidBodyDesc* desc) {
     vec_Quat* const r = &desc->transform.rotation;

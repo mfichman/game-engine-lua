@@ -35,13 +35,10 @@ local function metatype(class, ctor)
   function mt.__index(t, k)
     return symbol(string.format('%s_%s', class, k))
   end
-  function mt.__gc(t)
-    return t:destroy()
-  end
 
   local t = ffi.metatype(ffi.typeof(class), mt)
   return function(...)
-    return symbol(ctor)(...)
+    return ffi.gc(symbol(ctor)(...), t.destroy)
   end
 end
 

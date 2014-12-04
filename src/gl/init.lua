@@ -52,4 +52,12 @@ local function index(t, k)
     return fn
 end
 
-return setmetatable({}, {__index = index})
+-- Initialize a new handle using the given handle creation function.  Wrap the
+-- handle in a gc object, so that it's GC'd when no longer referenced
+local function Handle(gen, delete)
+  local id = ffi.new('GLint[1]') 
+  gen(1, id)
+  return ffi.gc(id, function(id) delete(1, id) end)
+end
+
+return setmetatable({Handle=Handle}, {__index = index})

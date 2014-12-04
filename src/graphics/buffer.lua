@@ -22,6 +22,7 @@ local ffi = require('ffi')
 local gl = require('gl')
 local math = require('math')
 
+
 local Buffer = {}; Buffer.__index = Buffer
 
 -- Create a new attribute or index buffer that is an array of the elements 
@@ -37,6 +38,7 @@ function Buffer.new(target, usage, kind)
   self.stride = ffi.sizeof(kind)
   self.element = self.kind(self.capacity)
   self.id = 0
+  self.handle = 0
   return setmetatable(self, Buffer)
 end
 
@@ -88,9 +90,8 @@ end
 function Buffer:sync()
   if self.status == 'synced' then return end
   if self.id == 0 then
-    local id = ffi.new('GLint[1]')
-    gl.glGenBuffers(1, id)
-    self.id = id[0]
+    self.handle = gl.Handle(gl.glGenBuffers, gl.glDeleteBuffers)
+    self.id = self.handle[0]
   end
   local size = self.stride * self.count
   gl.glBindBuffer(self.target, self.id)
@@ -103,14 +104,5 @@ function Buffer:clear()
   self.count = 0
   self.status = 'dirty'
 end
-
--- Free the buffer and release the hardware handle
-function Buffer:del()
-  local id = ffi.new('GLint[1]', self.id) 
-  gl.glDeleteBuffers(1, id)
-  self.id = 0
-end
-
-Buffer.__gc = Buffer.del
 
 return Buffer.new

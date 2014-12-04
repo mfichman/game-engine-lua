@@ -28,11 +28,8 @@ local config = require('config')
 local world = require('world')
 
 local function init()
-  --c = world.Chunk{x = 0, y = 0, kind = 'asteroids'}
-  
   entity.World{}
-  entity.Fighter{}
---  entity.Rock{kind='SmoothSphere'}
+  entity.Fighter{teamId = 1}
 end
 
 xpcall(init, dbg.start)

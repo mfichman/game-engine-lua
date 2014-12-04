@@ -51,5 +51,6 @@ return {
   material = require('asset.material'),
   program = require('asset.program'),
   shader = require('asset.shader'),
+  loaded = loaded,
 }
 

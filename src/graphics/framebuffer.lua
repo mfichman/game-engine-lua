@@ -27,15 +27,14 @@ local MAXDRAWBUFFER = 8
 
 -- Manages an offscreen frame buffer
 function FrameBuffer.new() 
-  local id = ffi.new('GLint[1]')
-  gl.glGenFramebuffers(1, id)
-
   local self = {
     drawBuffer = {},
     drawBufferAttachment = ffi.new('GLint[?]', MAXDRAWBUFFER),
     drawBufferAttachmentCount = 0,
-    id = id[0],
+    handle = gl.Handle(gl.glGenFramebuffers, gl.glDeleteFramebuffers),
+    id = 0,
   }
+  self.id = self.handle[0]
   return setmetatable(self, FrameBuffer)
 end
 
@@ -83,13 +82,5 @@ end
 function FrameBuffer:disable()
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0)
 end
-
-function FrameBuffer:del()
-  local id = ffi.new('GLint[1]', self.id) 
-  gl.glDeleteFramebuffers(1, id)
-  self.id = 0
-end
-
-FrameBuffer.__gc = FrameBuffer.del
 
 return FrameBuffer.new

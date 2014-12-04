@@ -80,8 +80,8 @@ function Game.new()
   for i, name in ipairs(self.config.preload) do
     asset.open(name)
   end
-
   self.world:setGravity(vec.Vec3())
+
   return setmetatable(self, Game)
 end
 
@@ -105,8 +105,6 @@ function Game:render()
   self:apply('render')
   self.renderer:render() 
   self.graphics:finish()
-  self.window:display()
-  assert(gl.glGetError() == 0)
 end
 
 -- Handle physics update. Execute fixed-time ticks to bring the physics state
@@ -137,14 +135,18 @@ function Game:update()
     self:tick()
   end
 
+  if substeps > 2 then
+    print('warning: > 1 substeps')
+  end
+
   -- Call Bullet to do intepolation once per frame.
   self.world:synchronizeMotionStates(self.accumulator, self.timestep)
   self:apply('update')
 end
 
 -- Handle input and step the simulation as necessary
-local event = sfml.Event() -- FIXME: Optimization to prevent JIT escape
 function Game:poll()
+  local event = sfml.Event()
   while self.window:pollEvent(event) == 1 do
     if event.type == sfml.EvtClosed then os.exit(0) end
   end
@@ -158,31 +160,54 @@ function Game:sample()
     print(string.format('min = %05.2f max = %05.2f median = %05.2f mean = %05.2f stdev = %05.2f', min, max, median, mean, stdev))
     self.samples = {}
   end
+  if self.ticks % 500 == 0 then
+    local luaMem = math.floor(collectgarbage('count'))
+    local physicsMem = math.floor(self.world:getMemUsage()/1024)
+    print(('luaMem = %.0fK physicsMem = %.0fK'):format(luaMem, physicsMem))
+  end
 end
 
 function Game:gc()
-  if self.delta < self.timestep/4 then
-    collectgarbage('step', 1)
+  -- Allocate 5 ms for GC; skip GC if there aren't 5 ms left in the frame
+  local start = self.clock:getElapsedTime():asSeconds()
+  local remaining = self.timestep - start 
+  local budget = .005
+  if remaining > budget then
+    collectgarbage('step', 2)
+  else
+    print('warning: skipped gc')
   end
 end
 
 -- Run the game
 function Game:run()
   collectgarbage('stop')
-  for i, v in ipairs(config.process) do
-    table.insert(self.process, component[v])
+  for i, name in ipairs(config.process) do -- FIXME
+    table.insert(self.process, component[name])
   end
 
   self.clock:restart()
   while self.window:isOpen() do
+    -- The order of the operations here is very sensitive for performance
+    -- reasons, especially with vsync enabled.  Poll is done immediately before
+    -- update to reduce input lag. 
     self:poll()
     self:update()
-    self:render()
-    self:gc()
-    if self.ticks % 500 == 0 then
-      print(collectgarbage('count'))
-    end
+    -- GC and other low-priority tasks are executed before render, so that they
+    -- execute before any possible blocking/synchronization by OpenGL. Since
+    -- any OpenGL command can block due to a full driver queue, or framebuffer
+    -- swap, we have to finish all computation before running OpenGL commands.
+    self:gc() 
     self:sample()
+    -- Render is done after update, to reduce output lag following a physics
+    -- world update. 
+    self:render()
+    -- The backbuffer swap is ALWAYS last, because if vsync is enabled, then
+    -- the process will go to sleep.
+    self.window:display()
+    -- glGetError stalls the pipeline until prior commands are finished; it
+    -- should be delayed until last.
+    assert(gl.glGetError() == 0)
   end
   collectgarbage('restart')
 end
@@ -199,13 +224,6 @@ function Game:Entity(metatable)
   table[id] = metatable
   return table[id]
 end
-
-function Game:del()
-  sfml.Window_destroy(self.window)  
-  self.window = nil
-end
-
-Game.__gc = Game.del
 
 return Game.new() -- singleton
 

@@ -25,14 +25,12 @@ local Texture = {}; Texture.__index = Texture
 
 -- Create a new texture with the given texture data
 function Texture.new(width, height, pixel)
-  local id = ffi.new('GLint[1]')
-  gl.glGenTextures(1, id)
-
   local self = {
     width = width,
     height = height,
-    id = id[0],
+    handle = gl.Handle(gl.glGenTextures, gl.glDeleteTextures),
   }
+  self.id = self.handle[0]
 
   local pixel = ffi.cast('void*', pixel)
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.id)
@@ -45,14 +43,5 @@ function Texture.new(width, height, pixel)
 
   return setmetatable(self, Texture)
 end
-
--- Free the buffer and release the hardware handle
-function Texture:del()
-  local id = ffi.new('GLint[1]', self.id) 
-  gl.glDeleteTextures(1, id)
-  self.id = 0
-end
-
-Texture.__gc = Texture.del
 
 return Texture.new

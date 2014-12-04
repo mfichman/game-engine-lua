@@ -19,7 +19,6 @@
 -- IN THE SOFTWARE.
 
 local gl = require('gl')
-local ffi = require('ffi')
 
 local DepthRenderTarget = {}; DepthRenderTarget.__index = DepthRenderTarget
 
@@ -27,16 +26,15 @@ function DepthRenderTarget.new(width, height)
   local self = {
     width = width,
     height = height,
+    handle = gl.Handle(gl.glGenFramebuffers, gl.glDeleteFramebuffers),
     id = 0,
+    depthBufferHandle = gl.Handle(gl.glGenTextures, gl.glDeleteTextures),
     depthBuffer = 0,
   }
   setmetatable(self, DepthRenderTarget)
 
-  local id = ffi.new('GLint[1]')
-  
   -- Initialize texture, including filtering options
-  gl.glGenTextures(1, id)
-  self.depthBuffer = id[0]
+  self.depthBuffer = self.depthBufferHandle[0]
   gl.glBindTexture(gl.GL_TEXTURE_2D, self.depthBuffer)
   gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE)
   gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_EDGE)
@@ -54,8 +52,7 @@ function DepthRenderTarget.new(width, height)
   gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_DEPTH_COMPONENT24, width, height, 0, gl.GL_DEPTH_COMPONENT, gl.GL_FLOAT, nil);
 
   -- Generate and attach framebuffer
-  gl.glGenFramebuffers(1, id)
-  self.id = id[0]
+  self.id = self.handle[0]
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.id);
   gl.glFramebufferTexture2D(gl.GL_FRAMEBUFFER, gl.GL_DEPTH_ATTACHMENT, gl.GL_TEXTURE_2D, self.depthBuffer, 0)
 
@@ -69,16 +66,6 @@ function DepthRenderTarget.new(width, height)
 
   return self
 end
-
-function DepthRenderTarget:del()
-  local id = ffi.new('GLint[1]')
-  id[0] = self.id
-  gl.glDeleteFramebuffers(1, id)
-  id[0] = self.depthBuffer
-  gl.glDeleteTextures(1, id)
-end
-
-DepthRenderTarget.__gc = DepthRenderTarget.del
 
 function DepthRenderTarget:enable()
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.id)

@@ -19,4 +19,3 @@
 -- IN THE SOFTWARE.
 
 local game = require('game')
-game:del()

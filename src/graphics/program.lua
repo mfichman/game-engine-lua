@@ -23,15 +23,21 @@ local gl = require('gl')
 
 local Program = {}; Program.__index = Program
 
+local function destroy(handle)
+  gl.glDeleteProgram(handle[0]) 
+end
+
 -- Create a new OpenGL program from a vertex, fragment, and optional geometry
 -- shader; link the program
 function Program.new(fragment, vertex, geometry) 
+  
   local self = {
     id = gl.glCreateProgram(),
     fragment = fragment,
     vertex = vertex,
     geometry = geometry,
   }
+  self.handle = ffi.gc(ffi.new('GLint[1]', self.id), destroy)
   if #{fragment, vertex, geometry} == 0 then
     error('no shaders attached to program')
   end
@@ -92,14 +98,5 @@ function Program:link()
     self[name] = gl.glGetUniformLocation(self.id, buf)
   end
 end
-
--- Free up the program's resources
-function Program:del()
-  gl.glDeleteProgram(self.id)
-  self.id = 0
-end
-
--- Free up the program's resources
-Program.__gc = Program.del
 
 return Program.new

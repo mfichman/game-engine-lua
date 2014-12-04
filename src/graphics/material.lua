@@ -36,8 +36,13 @@ function Material.new(args)
     hardness = args.hardnesss or 40,
     opacity = args.opacity or 1,
     blendMode = args.blendMode or 'alpha',
+    name = args.name,
   }
   return setmetatable(self, Material)
+end
+
+function Material:clone()
+  return Material.new(self)
 end
 
 return Material.new

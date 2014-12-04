@@ -30,4 +30,12 @@ function Model.new(args)
   return setmetatable(self, Model)
 end
 
+function Model:clone()
+  return Model.new{
+    material = self.material:clone(),
+    mesh = self.mesh,
+    program = self.program,
+  }
+end
+
 return Model.new

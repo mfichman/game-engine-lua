@@ -46,6 +46,7 @@ typedef struct physics_Contact {
 
 __declspec(dllexport) physics_World* physics_World_new();
 __declspec(dllexport) void physics_World_del(physics_World* self);
+__declspec(dllexport) size_t physics_World_getMemUsage(physics_World* self);
 __declspec(dllexport) void physics_World_setGravity(physics_World* self, vec_Vec3 const* gravity);
 __declspec(dllexport) vec_Vec3 physics_World_getGravity(physics_World* self);
 __declspec(dllexport) void physics_World_addRigidBody(physics_World* self, physics_RigidBody* body, uint16_t group, uint16_t mask);

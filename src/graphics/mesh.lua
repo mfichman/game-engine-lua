@@ -88,9 +88,8 @@ function Mesh:sync()
 
   updateTangents(self)
   if self.id == 0 then
-    local id = ffi.new('GLint[1]')
-    gl.glGenVertexArrays(1, id)
-    self.id = id[0]
+    self.handle = gl.Handle(gl.glGenVertexArrays, gl.glDeleteVertexArrays)
+    self.id = self.handle[0]
   end
   self.vertex:sync()
   self.index:sync() 
@@ -107,13 +106,5 @@ function Mesh:sync()
   gl.glBindVertexArray(0)
   self.status = 'synced'
 end
-
-function Mesh:del()
-  local id = ffi.new('GLint[1]', self.id) 
-  gl.glDeleteVertexArrays(1, id)
-  self.id = 0
-end
-
-Mesh.__gc = Mesh.del
 
 return Mesh.new

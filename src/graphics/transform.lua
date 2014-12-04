@@ -22,13 +22,13 @@ local vec = require('vec')
 
 local Transform = {}; Transform.__index = Transform
 
-function Transform.new()
+function Transform.new(args)
   local self = {
     component = {},
-    origin = vec.Vec3(),
-    rotation = vec.Quat(),
-    shadowMode = 'shadowed',
-    renderMode = 'visible',
+    origin = args and args.origin or vec.Vec3(),
+    rotation = args and args.rotation or vec.Quat(),
+    shadowMode = args and args.shadowMode or 'shadowed',
+    renderMode = args and args.renderMode or 'visible',
   }
   return setmetatable(self, Transform)
 end
@@ -47,6 +47,14 @@ function Transform:componentDel(comp)
       return
     end
   end
+end
+
+function Transform:clone()
+  local clone = Transform.new(self)
+  for i, component in ipairs(self.component) do
+    clone:componentIs(component:clone())
+  end
+  return clone
 end
 
 return Transform.new

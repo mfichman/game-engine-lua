@@ -25,7 +25,7 @@ local path = require('path')
 local physics = ffi.load('physics')
 ffi.cdef(path.open('physics/physics.h'):read('*all'))
 
-local function metatype(class, ctor, attr)
+local function metatype(class)
   local mt = {}
   local cache = {}
 
@@ -36,28 +36,30 @@ local function metatype(class, ctor, attr)
     return cache[k] 
   end
 
-  function mt.__gc(t)
-    return t:del()
-  end
+  return ffi.metatype(ffi.typeof(class), mt)
+end
 
-  local t = ffi.metatype(ffi.typeof(class), mt)
+local function ctor(mt, ctor)
   return function(...)
-    return physics[ctor](...)
+    return ffi.gc(physics[ctor](...), mt.del)
   end
 end
 
-metatype('physics_Shape')
-metatype('physics_Constraint')
+local Shape = metatype('physics_Shape')
+local Constraint = metatype('physics_Constraint')
+local World = metatype('physics_World')
+local Manifold = metatype('physics_Manifold')
+local RigidBody = metatype('physics_RigidBody')
 
 return {
-  World = metatype('physics_World', 'physics_World_new'),
-  SphereShape = physics['physics_SphereShape_new'],
-  CompoundShape = physics['physics_CompoundShape_new'],
-  ConvexHullShape = physics['physics_ConvexHullShape_new'],
-  HingeConstraint = physics['physics_HingeConstraint_new'],
-  RigidBody = metatype('physics_RigidBody', 'physics_RigidBody_new'),
+  World = ctor(World, 'physics_World_new'),
+  SphereShape = ctor(Shape, 'physics_SphereShape_new'),
+  CompoundShape = ctor(Shape, 'physics_CompoundShape_new'),
+  ConvexHullShape = ctor(Shape, 'physics_ConvexHullShape_new'),
+  HingeConstraint = ctor(Constraint, 'physics_HingeConstraint_new'),
+  RigidBody = ctor(RigidBody, 'physics_RigidBody_new'),
   RigidBodyDesc = ffi.typeof('physics_RigidBodyDesc'),
-  Manifold = metatype('physics_Manifold'),
+  Manifold = Manifold,
   NONE = 0,
   BULLET = 0x1,
   SOLID = 0x2,

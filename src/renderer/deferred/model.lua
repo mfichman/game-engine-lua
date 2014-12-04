@@ -30,9 +30,7 @@ local program, white, blue
 local function mesh(g, mesh)
   mesh:sync()
 
-  -- FIXME: Uncomment to calculate transforms on CPU instead of GPU
   -- Calculate the normal matrix and pass it to the vertex shader
-  --[[
   local normalMatrix = (g.camera.viewTransform * g.worldTransform):inverse():transpose()
   local temp = ffi.new('GLfloat[9]', {
     normalMatrix.d00, normalMatrix.d01, normalMatrix.d02, 
@@ -45,12 +43,6 @@ local function mesh(g, mesh)
   -- Pass the model matrix to the vertex shader
   gl.glUniformMatrix3fv(program.normalMatrix, 1, 0, temp)
   gl.glUniformMatrix4fv(program.transform, 1, 0, transform:data()) 
-]]
-
-  -- Pass matrices to the vertex shader
-  gl.glUniformMatrix4fv(program.projectionMatrix, 1, 0, g.camera.projectionTransform:data())
-  gl.glUniformMatrix4fv(program.viewMatrix, 1, 0, g.camera.viewTransform:data())
-  gl.glUniformMatrix4fv(program.worldMatrix, 1, 0, g.worldTransform:data())
 
   gl.glBindVertexArray(mesh.id)
   gl.glDrawElements(gl.GL_TRIANGLES, mesh.index.count, gl.GL_UNSIGNED_INT, nil)

@@ -24,6 +24,10 @@ local io = require('io')
 
 local Shader = {}; Shader.__index = Shader
 
+local function destroy(handle)
+  gl.glDeleteShader(handle[0]) 
+end
+
 -- Create a new OpenGL shader 
 function Shader.new(kind, source)
   local self = {
@@ -37,6 +41,7 @@ end
 function Shader:compile()
   if self.id then return end
   self.id = gl.glCreateShader(self.kind)
+  self.handle = ffi.gc(ffi.new('GLint[1]', self.id), destroy)
 
   local cstr = ffi.new('GLchar[?]', self.source:len()+1)
   ffi.copy(cstr, self.source)
@@ -63,13 +68,5 @@ function Shader:log()
     return ffi.string(log)     
   end
 end
-
--- Free up the shader's resources
-function Shader:del()
-  gl.glDeleteShader(self.id)
-  self.id = 0
-end
-
-Shader.__gc = Shader.del
 
 return Shader.new

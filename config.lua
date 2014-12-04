@@ -31,7 +31,7 @@ log = {
 }
 
 chunk = {
-  cachesize = 16,
+  cachesize = 8,
   size = 64,
   pitch = 2,
 }
@@ -98,9 +98,12 @@ preload = {
   'mesh/LightShapes.obj',
   'mesh/Missile.obj',
   'mesh/Quad.obj',
-  'mesh/Rock0.obj',
-  'mesh/Rock1.obj',
-  'mesh/SmoothSphere.obj',
+  'mesh/LargeRock0.obj',
+  'mesh/LargeRock1.obj',
+  'mesh/SmallRock0.obj',
+  'mesh/SmallRock1.obj',
+  'mesh/MediumRock0.obj',
+  'mesh/MediumRock1.obj',
 
   'material/Dagger.mtl',
   'material/Debris0.mtl',
@@ -112,13 +115,11 @@ preload = {
   'material/LightShapes.mtl',
   'material/Missile.mtl',
   'material/Quad.mtl',
-  'material/Rock0.mtl',
-  'material/Rock1.mtl',
-  'material/SmoothSphere.mtl',
+  'material/LargeRock0.mtl',
+  'material/LargeRock1.mtl',
+  'material/SmallRock0.mtl',
+  'material/SmallRock1.mtl',
+  'material/MediumRock0.mtl',
+  'material/MediumRock1.mtl',
 }
 
-chunk = {
-  cachesize = 16,
-  size = 64,
-  pitch = 2,
-}

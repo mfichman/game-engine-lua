@@ -42,10 +42,10 @@ local function params(g, light)
   gl.glUniform1f(program.cutoff, math.cos(math.pi * light.cutoff / 180))
   gl.glUniform1f(program.power, light.power)
 
-  -- Transform the light direction from world space into view space
-  local transform = g.worldTransform * g.camera.viewTransform
-  local direction = transform:rotation() * light.direction:unit()
-  gl.glUniform3fv(program.direction, 1, direction:data())
+  -- Transform the light direction from model space into view space
+  local transform = g.camera.viewTransform * g.worldTransform
+  local direction = transform:rotation() * light.direction
+  gl.glUniform3fv(program.direction, 1, direction:unit():data())
 end
 
 -- Shadow mapping. Set the shadow map buffer and light matrix

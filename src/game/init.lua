@@ -32,6 +32,7 @@ local window = require('window')
 local component = require('component')
 local input = require('input')
 local asset = require('asset')
+local profiler = require('profiler')
 
 local Game = {}; Game.__index = Game
 
@@ -187,21 +188,21 @@ function Game:run()
   end
 
   self.clock:restart()
-  while self.window:isOpen() do
+  profiler.start()
+  for i=1,1000 do
+  --while self.window:isOpen() do
     -- The order of the operations here is very sensitive for performance
     -- reasons, especially with vsync enabled.  Poll is done immediately before
     -- update to reduce input lag. 
     self:poll()
     self:update()
-    -- GC and other low-priority tasks are executed before render, so that they
-    -- execute before any possible blocking/synchronization by OpenGL. Since
-    -- any OpenGL command can block due to a full driver queue, or framebuffer
-    -- swap, we have to finish all computation before running OpenGL commands.
-    self:gc() 
-    self:sample()
     -- Render is done after update, to reduce output lag following a physics
     -- world update. 
     self:render()
+    -- GC and other low-priority tasks are executed after render, so that they
+    -- only run if there is time left in the frame.
+    self:gc() 
+    self:sample()
     -- The backbuffer swap is ALWAYS last, because if vsync is enabled, then
     -- the process will go to sleep.
     self.window:display()
@@ -209,6 +210,9 @@ function Game:run()
     -- should be delayed until last.
     assert(gl.glGetError() == 0)
   end
+  profiler.stop()
+  profiler.show()
+  require('dbg').start()
   collectgarbage('restart')
 end
 

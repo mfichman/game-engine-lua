@@ -27,10 +27,10 @@ local vec = require('vec')
 local config = require('config')
 local world = require('world')
 
-local function init()
+local function main()
   entity.World{}
   entity.Fighter{teamId = 1}
+  game:run()
 end
 
-xpcall(init, dbg.start)
-xpcall(function() game:run() end, dbg.start)
+xpcall(main, dbg.start)

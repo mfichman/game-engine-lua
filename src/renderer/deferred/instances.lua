@@ -18,33 +18,13 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local vec = require('vec')
+-- Renders instance meshes
+
+local ffi = require('ffi')
 local gl = require('gl')
+local graphics = require('graphics')
+local asset = require('asset')
+local struct = require('graphics.struct')
 
-local Buffer = require('graphics.buffer')
-local Billboard = require('graphics.billboard')
+local program, buffer
 
-local Billboards = {}; Billboards.__index = Billboards
-
--- Creates a new set of billboards. Each billboard is a quad that faces in the
--- direction of its normal vector. All billboards use the same texture, blend
--- modes, etc. so that they can all be drawn in the same batch.
-function Billboards.new(args)
-  assert(args.texture, 'no texture set for billboards')
-  local self = {
-    width = args.width or 1,
-    height = args.height or 1,
-    texture = args.texture,
-    clearMode = args.clearMode or 'manual',
-    blendMode = args.blendMore or 'additive',
-    tint = args.tint or vec.Color(1, 1, 1, 1),
-    billboard = Buffer(nil, nil, 'graphics_Billboard')
-  }
-  return setmetatable(self, Billboards)
-end
-
-function Billboards:visible()
-  return self.texture and self.billboard.count > 0
-end
-
-return Billboards.new

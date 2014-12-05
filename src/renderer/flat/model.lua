@@ -28,7 +28,7 @@ local function render(g, model)
   local mesh = model.mesh
   mesh:sync()
 
-  program = program or asset.open('shader/Flat.prog')
+  program = program or asset.open('shader/flat/Model.prog')
   gl.glUseProgram(program.id)
 
   -- Pass the model matrix to the vertex shader

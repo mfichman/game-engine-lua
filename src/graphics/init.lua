@@ -26,6 +26,8 @@ return {
   Context = require('graphics.context'),
   DepthRenderTarget = require('graphics.depthrendertarget'),
   FrameBuffer = require('graphics.framebuffer'),
+  Instance = require('graphics.instance'),
+  Instances = require('graphics.instances'),
   HemiLight = require('graphics.hemilight'),
   Material = require('graphics.material'),
   Mesh = require('graphics.mesh'),

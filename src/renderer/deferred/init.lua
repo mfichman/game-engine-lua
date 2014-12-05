@@ -28,6 +28,7 @@ local Deferred = {}; Deferred.__index = Deferred
 local Shadow = require('renderer.shadow')
 
 local model = require('renderer.deferred.model')
+local instances = require('renderer.deferred.instances')
 local hemilight = require('renderer.deferred.hemilight')
 local pointlight = require('renderer.deferred.pointlight')
 local spotlight = require('renderer.deferred.spotlight')
@@ -103,6 +104,7 @@ function Deferred:render()
   self.frameBuffer:enable()
   gl.glClear(bit.bor(gl.GL_COLOR_BUFFER_BIT, gl.GL_DEPTH_BUFFER_BIT, gl.GL_STENCIL_BUFFER_BIT))
   apply.apply(model.render, self.context, graphics.Model)
+  apply.apply(instances.render, self.context, graphics.Instances)
   self.frameBuffer:disable()
 
   -- In passes 1b/2, only write to pixels that were previously written to in

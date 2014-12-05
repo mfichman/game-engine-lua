@@ -23,7 +23,7 @@ local ffi = require('ffi')
 ffi.cdef[[
   typedef struct graphics_Instance {
     vec_Quat rotation;
-    vec_Vec3 position;
+    vec_Vec3 origin;
   } graphics_Instance;
 ]]
 

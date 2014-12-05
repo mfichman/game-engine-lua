@@ -43,7 +43,7 @@ local function createLightCamera(g, light)
   sceneCamera.far = sceneCamera.near+light.shadowViewDistance 
   sceneCamera:update()
 
-  local transform = lightViewInverse * sceneCamera.transform:inverse()
+  local transform = lightViewInverse * sceneCamera.viewProjectionMatrix:inverse()
   sceneCamera.far = sceneFar
   sceneCamera:update()
   
@@ -61,7 +61,7 @@ local function createLightCamera(g, light)
   -- Set up parameters for the virtual light camera
   local lightCamera = graphics.Camera()
   lightCamera.mode = 'ortho'
-  lightCamera.viewTransform = lightView
+  lightCamera.viewMatrix = lightView
   lightCamera.near = nil
   lightCamera.far = nil
   lightCamera.left = nil 
@@ -108,7 +108,7 @@ local function render(g, light)
     0., .5, 0., 0.,
     0., 0., .5, 0.,
     .5, .5, .5, 1.)
-  local lightMatrix = lightBias * lightCamera.transform
+  local lightMatrix = lightBias * lightCamera.viewProjectionMatrix
   light.transform = lightMatrix
 
   -- Set the viewport to be equal in dimensions to the shadow target.

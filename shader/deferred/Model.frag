@@ -20,7 +20,7 @@ uniform float hardness;
 
 in vec3 normal;
 in vec3 tangent;
-in vec2 texCoord;
+in vec2 texcoord;
 
 layout(location=0) out vec3 material;
 layout(location=1) out vec4 specular;
@@ -35,7 +35,7 @@ void main() {
     vec3 Ke = emissiveColor;
 
 	// Get the normal from the normal map texture and unpack it
-	vec3 Tn = normalize((texture(normalMap, texCoord) * 2. - 1.).xyz);	
+	vec3 Tn = normalize((texture(normalMap, texcoord) * 2. - 1.).xyz);	
 
 	// Create the TBN matrix from the normalized T and N vectors
 	vec3 N = normalize(normal);
@@ -44,9 +44,9 @@ void main() {
 	mat3 TBN = mat3(T, B, N);
 
 	// Sample the diffuse and specular texture
-	vec3 Td = texture(diffuseMap, texCoord).rgb;
-	vec3 Ts = texture(specularMap, texCoord).rgb;
-    vec3 Te = texture(emissiveMap, texCoord).rgb;
+	vec3 Td = texture(diffuseMap, texcoord).rgb;
+	vec3 Ts = texture(specularMap, texcoord).rgb;
+    vec3 Te = texture(emissiveMap, texcoord).rgb;
 
 	// Save diffuse material parameters
 	material = Td * Kd;

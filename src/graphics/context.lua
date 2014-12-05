@@ -32,7 +32,7 @@ function Context.new(width, height)
   assert(height, 'height is nil')
   local self = {
     camera = Camera(),
-    worldTransform = vec.Mat4.identity(),
+    worldMatrix = vec.Mat4.identity(),
     program = 0,
     op = {}, -- array of objects submitted for rendering in this frame
     state = {enabled = {}},
@@ -46,15 +46,25 @@ end
 -- If a Transform object is submitted, then propagate its transform to all of
 -- its children.
 function Context:submit(node, worldTransform)
-  local worldTransform = worldTransform or vec.Transform()
+  --local worldTransform = worldTransform or vec.Transform()
   if Transform == node.new then
-    local tx = worldTransform * vec.Transform(node.origin, node.rotation)
+    local tx
+    if worldTransform then
+      tx = worldTransform * vec.Transform(node.origin, node.rotation)
+    else
+      tx = vec.Transform(node.origin, node.rotation)
+    end
     for _, c in ipairs(node.component) do
       self:submit(c, tx)
     end
   else
-    local tx = worldTransform
-    table.insert(self.op, RenderOp(node, vec.Mat4.transform(tx.rotation, tx.origin)))
+    local worldMatrix
+    if worldTransform then
+      worldMatrix = vec.Mat4.transform(worldTransform.rotation, worldTransform.origin)
+    else
+      worldMatrix = vec.Mat4.identity()
+    end
+    table.insert(self.op, RenderOp(node, worldMatrix))
   end
 end
 

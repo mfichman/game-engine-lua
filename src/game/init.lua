@@ -188,9 +188,9 @@ function Game:run()
   end
 
   self.clock:restart()
-  --profiler.start()
-  --for i=1,1000 do
-  while self.window:isOpen() do
+  profiler.start()
+  for i=1,1000 do
+  --while self.window:isOpen() do
     -- The order of the operations here is very sensitive for performance
     -- reasons, especially with vsync enabled.  Poll is done immediately before
     -- update to reduce input lag. 
@@ -210,9 +210,9 @@ function Game:run()
     -- should be delayed until last.
     assert(gl.glGetError() == 0)
   end
-  --profiler.stop()
-  --profiler.show()
-  --require('dbg').start()
+  profiler.stop()
+  profiler.show()
+  require('dbg').start()
   collectgarbage('restart')
 end
 

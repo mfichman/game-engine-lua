@@ -10,12 +10,12 @@
 uniform sampler2D tex;
 uniform vec4 tint;
 
-in vec2 texCoord;
+in vec2 texcoord;
 in vec4 color;
 
 out vec4 colorOut;
 
 void main() {
-    colorOut = tint * color * texture(tex, texCoord);
+    colorOut = tint * color * texture(tex, texcoord);
 }
 

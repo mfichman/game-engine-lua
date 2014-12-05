@@ -23,7 +23,7 @@
 local function apply(render, g, kind)
   for i, op in ipairs(g.op) do
     if op.node.new == kind then
-      g.worldTransform = op.worldTransform
+      g.worldMatrix = op.worldMatrix
       render(g, op.node)
     end
   end

@@ -61,16 +61,16 @@ local function render(g, ribbon)
   gl.glBindTexture(gl.GL_TEXTURE_2D, texture.id)
 
   -- Pass matrices to the vertex shader
-  local modelView = camera.viewTransform * g.worldTransform 
-  gl.glUniformMatrix4fv(program.modelViewMatrix, 1, 0, modelView:data())
-  gl.glUniformMatrix4fv(program.projectionMatrix, 1, 0, camera.projectionTransform:data())
+  local worldViewMatrix = camera.viewMatrix * g.worldMatrix 
+  gl.glUniformMatrix4fv(program.worldViewMatrix, 1, 0, worldViewMatrix:data())
+  gl.glUniformMatrix4fv(program.projectionMatrix, 1, 0, camera.projectionMatrix:data())
 
   gl.glUniform1f(program.width, ribbon.width)
   gl.glUniform1f(program.minWidth, ribbon.minWidth)
   gl.glUniform1i(program.count, math.min(ribbon.tail, ribbon.quota))
   gl.glUniform1i(program.tail, ribbon.tail)
 
-  local normalMatrix = modelView:inverse():transpose() 
+  local normalMatrix = worldView:inverse():transpose() 
   local temp = ffi.new('GLfloat[9]', {
     normalMatrix.d00, normalMatrix.d01, normalMatrix.d02, 
     normalMatrix.d04, normalMatrix.d05, normalMatrix.d06, 

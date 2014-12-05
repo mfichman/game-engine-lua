@@ -4,26 +4,14 @@
  * Matt Fichman                                                              *
  * February, 2011                                                            *
  *****************************************************************************/
- 
-#version 330
+
+#version 330 
 #pragma include "shader/Mesh.vert"
+#pragma include "shader/Instance.vert"
 
-uniform mat4 worldViewProjectionMatrix;
-uniform mat3 normalMatrix;
-
-out vec3 normal;
-out vec3 tangent;
-out vec2 texcoord;
-
-/* Deferred render shader with normal, specular, and diffuse mapping */
+/* Very fast simple solid-color shader for rendering to depth */
 void main() {
 	// Transform the vertex to get the clip-space position of the vertex
-	gl_Position = worldViewProjectionMatrix * vec4(positionIn, 1);
-
-	// Transform the normal and tangent by the normal matrix
-	normal = normalMatrix * normalIn;
-	tangent = normalMatrix * tangentIn;
-
-	// Simply copy the texture coordinates over to the fragment shader
-	texcoord = texcoordIn;
+    vec3 positionWorld = mulquat(rotation, positionIn) + origin;
+	gl_Position = viewProjectionMatirx * vec4(positionWorld, 1);
 }

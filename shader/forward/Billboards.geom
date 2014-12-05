@@ -22,7 +22,7 @@ in Vertex {
     float height;
 } vertex[];
 
-out vec2 texCoord;
+out vec2 texcoord;
 out vec4 color;
 
 void main() {
@@ -33,18 +33,18 @@ void main() {
     color = vertex[0].color;
 
     gl_Position = transform * vec4(pos - f + r, 1);
-    texCoord = vec2(0, 1);
+    texcoord = vec2(0, 1);
     EmitVertex();
 
     gl_Position = transform * vec4(pos - f - r, 1);
-    texCoord = vec2(0, 0);
+    texcoord = vec2(0, 0);
     EmitVertex();
 
     gl_Position = transform * vec4(pos + f + r, 1);
-    texCoord = vec2(1, 1);
+    texcoord = vec2(1, 1);
     EmitVertex();
 
     gl_Position = transform * vec4(pos + f - r, 1);
-    texCoord = vec2(1, 0);
+    texcoord = vec2(1, 0);
     EmitVertex();
 }

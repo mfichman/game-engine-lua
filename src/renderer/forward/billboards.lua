@@ -69,8 +69,8 @@ local function render(g, billboards)
   gl.glUniform4fv(program.tint, 1, billboards.tint:data())
   
   -- Pass matrices to the shader
-  local transform = camera.transform * g.worldTransform
-  gl.glUniformMatrix4fv(program.transform, 1, 0, transform:data())
+  local worldViewProjectionMatrix = camera.viewProjectionMatrix * g.worldMatrix
+  gl.glUniformMatrix4fv(program.worldViewProjectionMatrix, 1, 0, worldViewProjectionMatrix:data())
 
   -- Render the billboards
   buffer:draw(gl.GL_POINTS, billboards.billboard)

@@ -47,7 +47,7 @@ local function deviceToWorld(camera, device)
   local device = vec.Vec4(device.x, device.y, device.z, 1)
 
   -- World coordinates; do perspective divide
-  local world = camera.transform:inverse() * device  
+  local world = camera.viewProjectionMatrix:inverse() * device  
   return world/world.w
 end
 
@@ -65,7 +65,7 @@ end
 local function pickRay(camera, screen)
   -- Find a ray from the mouse to the camera in world space, and then intersect
   -- the ray with the z = 0 plane. Point the thruster in that direction.
-  local cameraWorld = camera.viewTransform:inverse() * vec.Vec4(0, 0, 0, 1)
+  local cameraWorld = camera.viewMatrix:inverse() * vec.Vec4(0, 0, 0, 1)
   local ray = {}
   ray.origin = screenToWorld(camera, screen)
   ray.direction = (ray.origin-cameraWorld):unit()

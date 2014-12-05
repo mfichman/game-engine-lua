@@ -9,7 +9,7 @@
 
 uniform sampler2D tex;
 uniform sampler2D depthBuffer;
-uniform mat4 unprojectMatrix; // From clip space to view space
+uniform mat4 projectionInvMatrix; // From clip space to view space
 uniform vec4 tint;
 
 in float alpha;
@@ -33,7 +33,7 @@ void main() {
 
     float depth = texture(depthBuffer, viewport).r;
     vec3 clip = vec3(normalized, 2. * depth - 1.);
-    vec4 view = unprojectMatrix * vec4(clip, 1.);
+    vec4 view = projectionInvMatrix * vec4(clip, 1.);
     view /= view.w;
 
     float scale = 4.f;

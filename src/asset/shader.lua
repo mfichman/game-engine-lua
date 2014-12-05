@@ -45,7 +45,7 @@ function open(name)
 
   local fd = path.open(name)
   local source = fd:read('*all')
-  source = source:gsub('#pragma%s+include%s+"(.*)"', include)
+  source = source:gsub('#pragma%s+include%s+"(.-)"', include)
   fd:close()
   return graphics.Shader(kind, source)
 end

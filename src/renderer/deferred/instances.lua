@@ -71,8 +71,8 @@ local function render(g, instances)
   instances:sync()
   local mesh = instances.model.mesh
   local count = instances.instance.count
-  gl.glUniformMatrix4fv(program.viewProjectionMatrix, 1, 0, g.camera.transform:data()) 
-  gl.glUniformMatrix4fv(program.viewMatrix, 1, 0, g.camera.viewTransform:data()) 
+  gl.glUniformMatrix4fv(program.viewProjectionMatrix, 1, 0, g.camera.viewProjectionMatrix:data()) 
+  gl.glUniformMatrix4fv(program.viewMatrix, 1, 0, g.camera.viewMatrix:data()) 
   gl.glBindVertexArray(instances.id)
   gl.glDrawElementsInstanced(gl.GL_TRIANGLES, mesh.index.count, gl.GL_UNSIGNED_INT, nil, count)
   gl.glBindVertexArray(0)

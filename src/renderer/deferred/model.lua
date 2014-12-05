@@ -31,18 +31,18 @@ local function mesh(g, mesh)
   mesh:sync()
 
   -- Calculate the normal matrix and pass it to the vertex shader
-  local normalMatrix = (g.camera.viewTransform * g.worldTransform):inverse():transpose()
+  local normalMatrix = (g.camera.viewMatrix * g.worldMatrix):inverse():transpose()
   local temp = ffi.new('GLfloat[9]', {
     normalMatrix.d00, normalMatrix.d01, normalMatrix.d02, 
     normalMatrix.d04, normalMatrix.d05, normalMatrix.d06, 
     normalMatrix.d08, normalMatrix.d09, normalMatrix.d10, 
   })
 
-  local transform = g.camera.transform * g.worldTransform
+  local worldViewProjectionMatrix = g.camera.viewProjectionMatrix * g.worldMatrix
 
   -- Pass the model matrix to the vertex shader
   gl.glUniformMatrix3fv(program.normalMatrix, 1, 0, temp)
-  gl.glUniformMatrix4fv(program.transform, 1, 0, transform:data()) 
+  gl.glUniformMatrix4fv(program.worldViewProjectionMatrix, 1, 0, worldViewProjectionMatrix:data()) 
 
   gl.glBindVertexArray(mesh.id)
   gl.glDrawElements(gl.GL_TRIANGLES, mesh.index.count, gl.GL_UNSIGNED_INT, nil)

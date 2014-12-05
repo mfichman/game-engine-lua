@@ -7,7 +7,7 @@
 
 #version 330
 
-uniform mat4 modelViewMatrix;
+uniform mat4 worldViewMatrix;
 uniform mat4 projectionMatrix;
 uniform mat3 normalMatrix;
 uniform float width;
@@ -19,7 +19,7 @@ layout(location=0) in vec3 positionIn;
 layout(location=1) in vec3 directionIn;
 layout(location=2) in int indexIn;
 
-out vec2 texCoord;
+out vec2 texcoord;
 out float alpha;
 
 void main() {
@@ -30,7 +30,7 @@ void main() {
     // basically causes the triangle strip vertices to alternate in zig-zag
     // fashion to either side of the center points of the ribbon.
 
-    vec4 pos = modelViewMatrix * vec4(positionIn, 1); 
+    vec4 pos = worldViewMatrix * vec4(positionIn, 1); 
     float w = minWidth + (width-minWidth) * t;
     vec3 forward = normalize(normalMatrix * directionIn);
     vec3 look = normalize(pos.xyz);
@@ -38,6 +38,6 @@ void main() {
 
     gl_Position = projectionMatrix * vec4(pos + vec4(right * side * w / 2, 0));
 
-    texCoord = vec2(.5, indexIn % 2);
+    texcoord = vec2(.5, indexIn % 2);
     alpha = 4 * t;
 }

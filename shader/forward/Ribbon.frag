@@ -9,11 +9,11 @@
 
 uniform sampler2D tex;
 
-in vec2 texCoord;
+in vec2 texcoord;
 in float alpha;
 out vec4 color;
 
 void main() {
-    color = texture(tex, texCoord);
+    color = texture(tex, texcoord);
     color.a *= alpha;
 }

@@ -5,13 +5,19 @@
  * February, 2011                                                            *
  *****************************************************************************/
 
-#version 330 
-#pragma include "shader/Mesh.vert"
+uniform mat4 viewProjectionMatrix;
+uniform mat4 viewMatrix;
 
-uniform mat4 worldViewProjectionMatrix;
+layout(location=4) in vec4 rotation;
+layout(location=5) in vec3 origin;
 
-/* Very fast simple solid-color shader for rendering to depth */
-void main() {
-	// Transform the vertex to get the clip-space position of the vertex
-	gl_Position = worldViewProjectionMatrix * vec4(positionIn, 1);
+/* Transform a vector by a quaternion */
+vec3 mulquat(vec4 self, vec3 v) {
+    // OpenGL quat: x y z w
+    // Lua quat: w x y z
+    vec3 qv = self.yzw;
+    vec3 uv = cross(qv, v);
+    vec3 uuv = cross(qv, uv);
+    return v+((uv*self.x)+uuv)*2;
 }
+ 

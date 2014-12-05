@@ -43,8 +43,8 @@ local function params(g, light)
   gl.glUniform1f(program.power, light.power)
 
   -- Transform the light direction from model space into view space
-  local transform = g.camera.viewTransform * g.worldTransform
-  local direction = transform:rotation() * light.direction
+  local worldViewMatrix = g.camera.viewMatrix * g.worldMatrix
+  local direction = worldViewMatrix:rotation() * light.direction
   gl.glUniform3fv(program.direction, 1, direction:unit():data())
 end
 
@@ -61,7 +61,7 @@ local function shadowMap(g, light)
 
   -- Set the light matrix in the shader, which transforms from view => light
   -- space. This matrix is used for shadow mapping
-  local viewToLightTransform = light.transform * g.camera.inverseViewTransform
+  local viewToLightTransform = light.transform * g.camera.viewInvMatrix
   gl.glUniformMatrix4fv(program.light, 1, 0, viewToLightTransform.data)
 end
 

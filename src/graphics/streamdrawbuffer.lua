@@ -27,7 +27,7 @@ local StreamDrawBuffer = {}; StreamDrawBuffer.__index = StreamDrawBuffer
 -- Create a new buffer that streams data to the GPU using buffer orphaning.
 function StreamDrawBuffer.new(size)
   local self = {
-    size = size or 8 * bit.lshift(1, 20), -- 8 MB
+    size = size or 64 * bit.lshift(1, 10), -- 64K
     offset = 0,
     handle = gl.Handle(gl.glGenBuffers, gl.glDeleteBuffers),
     id = 0,

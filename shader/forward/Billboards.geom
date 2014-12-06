@@ -7,7 +7,7 @@
 
 #version 330
 
-uniform mat4 transform;
+uniform mat4 worldViewProjectionMatrix;
 
 layout (points) in;
 layout (triangle_strip) out;
@@ -32,19 +32,19 @@ void main() {
 
     color = vertex[0].color;
 
-    gl_Position = transform * vec4(pos - f + r, 1);
+    gl_Position = worldViewProjectionMatrix * vec4(pos - f + r, 1);
     texcoord = vec2(0, 1);
     EmitVertex();
 
-    gl_Position = transform * vec4(pos - f - r, 1);
+    gl_Position = worldViewProjectionMatrix * vec4(pos - f - r, 1);
     texcoord = vec2(0, 0);
     EmitVertex();
 
-    gl_Position = transform * vec4(pos + f + r, 1);
+    gl_Position = worldViewProjectionMatrix * vec4(pos + f + r, 1);
     texcoord = vec2(1, 1);
     EmitVertex();
 
-    gl_Position = transform * vec4(pos + f - r, 1);
+    gl_Position = worldViewProjectionMatrix * vec4(pos + f - r, 1);
     texcoord = vec2(1, 0);
     EmitVertex();
 }

@@ -94,15 +94,15 @@ template <> inline vec_Quat convert<vec_Quat>(btQuaternion const& val) {
 }
 
 // Override operator new so we can track mem usage
-void* ::operator new(std::size_t size) {
+void* operator new(std::size_t size) throw(std::bad_alloc) {
     memUsage += size;
-    size_t* ptr = (size_t*)std::malloc(size+sizeof(size));
+    size_t* ptr = (size_t*)std::malloc(size+2*sizeof(size));
     ptr[0] = size;
-    return ptr+1;
+    return ptr+2;
 }
 
-void ::operator delete(void* obj) {
-    size_t* ptr = ((size_t*)obj)-1;
+void operator delete(void* obj) throw() {
+    size_t* ptr = ((size_t*)obj)-2;
     size_t size = ptr[0];
     memUsage -= size;
     return std::free(ptr);
@@ -133,7 +133,7 @@ void physics_World_setGravity(physics_World* self, vec_Vec3 const* gravity) {
     ((btDiscreteDynamicsWorld*)self)->setGravity(convert<btVector3>(gravity));
 }
 
-size_t physics_World_getMemUsage(physics_World* self) {
+int32_t physics_World_getMemUsage(physics_World* self) {
     return memUsage;
 }
 
@@ -216,7 +216,7 @@ physics_Shape* physics_ConvexHullShape_new(uint32_t* index, uint32_t indexCount,
 
     indexedMesh.m_numTriangles = indexCount/3;
     indexedMesh.m_triangleIndexBase = (uint8_t const*)index;
-    indexedMesh.m_triangleIndexStride = sizeof(uint32_t)*3;
+    indexedMesh.m_triangleIndexStride = sizeof(*index)*3;
     indexedMesh.m_numVertices = vertexCount;
     indexedMesh.m_vertexBase = (uint8_t const*)vertex;
     indexedMesh.m_vertexStride = vertexStride;
@@ -262,7 +262,8 @@ physics_RigidBody* physics_RigidBody_new(physics_RigidBodyDesc* desc) {
     vec_Vec3* const o = &desc->transform.origin;
     
     btRigidBody::btRigidBodyConstructionInfo info(0, 0, 0);
-    info.m_motionState = new MotionState(btTransform(convert<btQuaternion>(r), convert<btVector3>(o)));
+    btTransform transform(convert<btQuaternion>(r), convert<btVector3>(o));
+    info.m_motionState = new MotionState(transform);
     info.m_collisionShape = (btCollisionShape*)desc->shape;
     info.m_friction = desc->friction;
     info.m_restitution = desc->restitution;

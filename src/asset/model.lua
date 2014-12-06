@@ -24,6 +24,7 @@ local path = require('path')
 local loaded = require('asset.loaded')
 local physics = require('physics')
 local ffi = require('ffi')
+local bit = require('bit')
 
 -- Returns a vertex from the cache, if it exists in the cache. Otherwise, inserts
 -- a new vertex into the vertex buffer and returns its index.
@@ -32,6 +33,7 @@ local function vertex(context, key)
 
   local i, j, k = key:match('(%d+)/(%d+)/(%d+)')
   local index = context.model.mesh.vertex.count
+  assert(index < bit.lshift(1, 16), 'index is larger than 16 bits')
 
   local vertex = graphics.MeshVertex{
     position = context.position[tonumber(i)],

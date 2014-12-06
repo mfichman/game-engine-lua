@@ -70,7 +70,7 @@ local function render(g, ribbon)
   gl.glUniform1i(program.count, math.min(ribbon.tail, ribbon.quota))
   gl.glUniform1i(program.tail, ribbon.tail)
 
-  local normalMatrix = worldView:inverse():transpose() 
+  local normalMatrix = worldViewMatrix:inverse():transpose() 
   local temp = ffi.new('GLfloat[9]', {
     normalMatrix.d00, normalMatrix.d01, normalMatrix.d02, 
     normalMatrix.d04, normalMatrix.d05, normalMatrix.d06, 

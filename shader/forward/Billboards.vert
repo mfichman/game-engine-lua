@@ -7,9 +7,6 @@
 
 #version 330
 
-uniform mat4 worldViewProjectionMatrix;
-uniform mat4 normalMatrix;
-
 layout(location=0) in vec3 positionIn;
 layout(location=1) in vec3 forwardIn;
 layout(location=2) in vec3 rightIn;

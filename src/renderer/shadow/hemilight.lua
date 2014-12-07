@@ -108,6 +108,7 @@ local function render(g, light)
     0., .5, 0., 0.,
     0., 0., .5, 0.,
     .5, .5, .5, 1.)
+  -- Transfrom from clip space to texture space (0, 1) x (0, 1)
   local lightMatrix = lightBias * lightCamera.viewProjectionMatrix
   light.transform = lightMatrix
 

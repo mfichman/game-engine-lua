@@ -49,7 +49,7 @@ function DepthRenderTarget.new(width, height)
   gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_COMPARE_FUNC, gl.GL_LEQUAL)
 
   -- Establish texture size
-  gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_DEPTH_COMPONENT24, width, height, 0, gl.GL_DEPTH_COMPONENT, gl.GL_FLOAT, nil);
+  gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_DEPTH_COMPONENT16, width, height, 0, gl.GL_DEPTH_COMPONENT, gl.GL_FLOAT, nil);
 
   -- Generate and attach framebuffer
   self.id = self.handle[0]

@@ -46,7 +46,6 @@ end
 -- If a Transform object is submitted, then propagate its transform to all of
 -- its children.
 function Context:submit(node, worldTransform)
-  --local worldTransform = worldTransform or vec.Transform()
   if Transform == node.new then
     local tx
     if worldTransform then

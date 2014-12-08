@@ -22,6 +22,7 @@ local struct = require('graphics.struct')
 local ffi = require('ffi')
 local vec = require('vec')
 local gl = require('gl')
+local types = require('types')
 
 local Buffer = require('graphics.buffer')
 local MeshVertex = require('graphics.meshvertex')
@@ -78,6 +79,7 @@ function Mesh.new()
     vertex = Buffer(gl.GL_ARRAY_BUFFER, gl.GL_STATIC_DRAW, 'graphics_MeshVertex'),
     status = 'dirty',
     id = 0,
+    bounds = types.Box(), min = vec.Vec3(),
   }
   return setmetatable(self, Mesh)
 end

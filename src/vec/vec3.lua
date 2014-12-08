@@ -60,6 +60,10 @@ function Vec3:__mul(other)
   return Vec3.new(self.x*other, self.y*other, self.z*other)
 end
 
+function Vec3:__div(other)
+  return Vec3.new(self.x/other, self.y/other, self.z/other)
+end
+
 function Vec3:len(other)
   return math.sqrt(self:len2())
 end

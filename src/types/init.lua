@@ -30,6 +30,10 @@ function Box.new(args)
   return setmetatable(self, Box)
 end
 
+function Box:center()
+  return (self.min+self.max)/2
+end
+
 return {
   Box = Box.new,
 }

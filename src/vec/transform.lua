@@ -27,13 +27,17 @@ local Transform = {}; Transform.__index = Transform
 local TransformType = ffi.typeof('vec_Transform')
   
 function Transform.new(origin, rotation)
-  return TransformType{origin = origin or Vec3(), rotation = rotation or Quat()}
+  return TransformType{
+    origin = origin or Vec3(), 
+    rotation = rotation or Quat.identity(),
+  }
 end
 
 local function multransform(self, other)
   return Transform.new(
     self.rotation * other.origin + self.origin,
-    self.rotation * other.rotation)
+    self.rotation * other.rotation
+  )
 end
 
 local function mulvec3(self, other)

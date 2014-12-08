@@ -27,7 +27,7 @@ local settings = sfml.ContextSettings()
 settings.depthBits = 24
 settings.stencilBits = 0
 settings.majorVersion = 3
-settings.minorVersion = 2
+settings.minorVersion = 3
 
 local context = sfml.Context()
 if ffi.os == 'Windows' then
@@ -36,7 +36,7 @@ if ffi.os == 'Windows' then
 end
 
 assert(asset.open('texture/White.png'))
-assert(asset.open('shader/Flat.frag'))
+assert(asset.open('shader/flat/Model.frag'))
 
 local m = asset.open('mesh/Quad.obj')
 assert(m)
@@ -64,7 +64,7 @@ assert(m.mesh.vertex)
 assert(m.mesh.index)
 
 
-local m = asset.open('mesh/Rock0.obj')
+local m = asset.open('mesh/LargeRock0.obj')
 assert(m)
 assert(m.new == graphics.Transform)
 
@@ -77,9 +77,9 @@ assert(m.material.diffuseColor.r > .32)
 assert(m.material.specularColor.r == 0)
 assert(m.material.opacity == 1)
 
-local m = asset.open('mesh/Rock0.shape')
+local m = asset.open('mesh/LargeRock0.shape')
 assert(m)
 
-local m = asset.open('mesh/Rock0.shape/Cube')
+local m = asset.open('mesh/LargeRock0.shape/Cube')
 assert(m)
 

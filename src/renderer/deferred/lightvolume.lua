@@ -81,7 +81,7 @@ local function cone(g, program, radius, cutoff, direction)
   local sz = radius
 
   -- Transform the light to point in the correct direction
-  local rotate = vec.Mat4.forward(-direction)
+  local rotate = vec.Mat4.fromForwardVector(-direction)
   local scale = vec.Mat4.scale(sx, sy, sz)
   local worldMatrix = g.worldMatrix * rotate * scale  
   local worldViewProjectionMatrix = g.camera.viewProjectionMatrix * worldMatrix

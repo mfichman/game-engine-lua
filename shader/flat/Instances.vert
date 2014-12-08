@@ -12,6 +12,6 @@
 /* Very fast simple solid-color shader for rendering to depth */
 void main() {
 	// Transform the vertex to get the clip-space position of the vertex
-    vec3 positionWorld = mulquat(rotation, positionIn) + origin;
-	gl_Position = viewProjectionMatirx * vec4(positionWorld, 1);
+   vec3 positionWorld = mulquat(rotation, positionIn) + origin;
+	gl_Position = viewProjectionMatrix * vec4(positionWorld, 1);
 }

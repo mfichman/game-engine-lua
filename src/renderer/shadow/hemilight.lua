@@ -22,7 +22,8 @@ local gl = require('gl')
 local bit = require('bit')
 local graphics = require('graphics')
 local vec = require('vec')
-local flat = require('renderer.flat.model')
+local model = require('renderer.flat.model')
+local instances = require('renderer.flat.instances')
 local apply = require('renderer.apply')
 
 -- Set up the virtual light camera. This is an orthographic camera that faces
@@ -122,7 +123,8 @@ local function render(g, light)
   g.camera = lightCamera
 
   -- FIXME: Render flat here
-  apply.apply(flat.render, g, graphics.Model)
+  apply.apply(model.render, g, graphics.Model)
+  apply.apply(instances.render, g, graphics.Instances)
   
   light.shadowMap:disable()
   gl.glViewport(0, 0, sceneCamera.viewport.width, sceneCamera.viewport.height)

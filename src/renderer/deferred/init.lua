@@ -37,8 +37,6 @@ local billboards = require('renderer.forward.billboards')
 local ribbon = require('renderer.forward.ribbon')
 --[[
 local decal = require('renderer.deferred.decal')
-local shadow = require('renderer.shadow')
-
 local skybox = require('renderer.forward.skybox')
 local transparent = require('renderer.forward.transparent')
 local quad = require('renderer.forward.quad')

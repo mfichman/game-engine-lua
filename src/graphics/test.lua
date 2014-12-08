@@ -51,15 +51,15 @@ assert(t.id ~= 0)
 
 -- Program
 local source = [[
-  #version 330
-  uniform vec3 position;
-  uniform vec3 rotation;
-  out vec3 out1;
-  out vec3 out2;
-  void main() {
-    out1 = position;
-    out2 = rotation;
-  }
+#version 330
+uniform vec3 position;
+uniform vec3 rotation;
+out vec3 out1;
+out vec3 out2;
+void main() {
+  out1 = position;
+  out2 = rotation;
+}
 ]]
 
 local f = graphics.Shader(gl.GL_FRAGMENT_SHADER, source)

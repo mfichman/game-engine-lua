@@ -5,4 +5,4 @@
  * February, 2011                                                            *
  *****************************************************************************/
 
-#pragma include "shader/flag/Model.frag"
+#pragma include "shader/flat/Model.frag"

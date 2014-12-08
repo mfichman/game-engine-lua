@@ -28,9 +28,7 @@ local Mat3 = require('vec.mat3')
 local Mat4x4 = {}; Mat4x4.__index = Mat4x4
 local Mat4x4Type = ffi.typeof('vec_Mat4x4')
 
-function Mat4x4.new(...)
-  return Mat4x4Type(...)
-end
+Mat4x4.new = Mat4x4Type
 
 function Mat4x4.frustum(left, right, bottom, top, near, far)
   local l, r, b, t, n, f = left, right, bottom, top, near, far
@@ -50,7 +48,16 @@ function Mat4x4.perspective(fov, aspect, near, far)
   return Mat4x4.frustum(left, right, bottom, top, near, far)
 end
 
-function Mat4x4.look(eye, at, up)
+function Mat4x4.ortho(left, right, bottom, top, near, far)
+  local l, r, b, t, n, f = left, right, bottom, top, near, far
+  return Mat4x4.new(
+    2/(r-l),  0,        0,        0,
+    0,        2/(t-b),  0,        0,
+    0,        0,        -2/(f-n), 0,
+    -(r+l)/(r-l), -(t+b)/(t-b), -(f+n)/(f-n), 1)
+end
+
+function Mat4x4.lookAt(eye, at, up)
   local zaxis = (eye - at):unit()
   local xaxis = up:cross(zaxis):unit()
   local yaxis = zaxis:cross(xaxis):unit()
@@ -61,21 +68,12 @@ function Mat4x4.look(eye, at, up)
       -xaxis:dot(eye), -yaxis:dot(eye), -zaxis:dot(eye), 1)
 end
 
-function Mat4x4.axes(xaxis, yaxis, zaxis)
+function Mat4x4.fromAxes(xaxis, yaxis, zaxis)
   return Mat4x4.new(
       xaxis.x, yaxis.x, zaxis.x, 0,
       xaxis.y, yaxis.y, zaxis.y, 0,
       xaxis.z, yaxis.z, zaxis.z, 0,
       0, 0, 0, 1)
-end
-
-function Mat4x4.ortho(left, right, bottom, top, near, far)
-  local l, r, b, t, n, f = left, right, bottom, top, near, far
-  return Mat4x4.new(
-    2/(r-l),  0,        0,        0,
-    0,        2/(t-b),  0,        0,
-    0,        0,        -2/(f-n), 0,
-    -(r+l)/(r-l), -(t+b)/(t-b), -(f+n)/(f-n), 1)
 end
 
 function Mat4x4.identity()
@@ -102,7 +100,7 @@ function Mat4x4.scale(x, y, z)
     0, 0, 0, 1)
 end
 
-function Mat4x4.forward(forward)
+function Mat4x4.fromForwardVector(forward)
   local zaxis = forward:unit()
   local xaxis = forward:orthogonal():cross(zaxis):unit()
   local yaxis = zaxis:cross(xaxis):unit()

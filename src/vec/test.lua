@@ -105,7 +105,7 @@ assert(v3 == vec.Vec2(2, 4))
 -- Matrix
 local m = vec.Mat4.frustum(-10, 10, -10, 10, -10, 10)
 local m = vec.Mat4.perspective(90, 1, 1, 100)
-local m = vec.Mat4.look(vec.Vec3(10, 9, 8), vec.Vec3(1, 2, 3), vec.Vec3(0, 1, 0))
+local m = vec.Mat4.lookAt(vec.Vec3(10, 9, 8), vec.Vec3(1, 2, 3), vec.Vec3(0, 1, 0))
 local m = vec.Mat4.ortho(-10, 100, -10, 10, -10, 10)
 local m = vec.Mat4.identity()
 local m = vec.Mat4.translate(vec.Vec3(1, 2, 3))
@@ -119,7 +119,7 @@ local m = a * b
 
 local v3 = m * vec.Vec4(1, 2, 3, 4)
 
-local m = vec.Mat4.look(vec.Vec3(0, -15, 30), vec.Vec3(0, 0, 0), vec.Vec3(0, 1, 0))
+local m = vec.Mat4.lookAt(vec.Vec3(0, -15, 30), vec.Vec3(0, 0, 0), vec.Vec3(0, 1, 0))
 local v4 = m * vec.Vec4(0, 0, 0, 1)
 assert(v4.x == 0)
 assert(v4.y == 0)
@@ -144,8 +144,8 @@ assert(d.z == 14)
 
 
 -- Transform
-local t = vec.Transform(v, vec.Quat())
-local r = vec.Transform(vec.Vec3(), vec.Quat())
+local t = vec.Transform(v, vec.Quat.identity())
+local r = vec.Transform(vec.Vec3(), vec.Quat.identity())
 
 local result = t * r
 assert(result.origin.x == 25)

@@ -18,43 +18,30 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-local vec = require('vec')
+local asset = require('asset')
+local gl = require('gl')
 
-local Transform = {}; Transform.__index = Transform
+local program
 
-function Transform.new(args)
-  local self = {
-    component = {},
-    origin = args and args.origin or vec.Vec3(),
-    rotation = args and args.rotation or vec.Quat.identity(),
-    shadowMode = args and args.shadowMode or 'shadowed',
-    renderMode = args and args.renderMode or 'visible',
-  }
-  return setmetatable(self, Transform)
+local function render(g, instances)
+  if instances.model.material.opacity < 1 then return end
+  if not instances:visible() then return end
+
+  program = program or asset.open('shader/flat/Instances.prog')
+  white = white or asset.open('texture/White.png')
+  blue = blue or asset.open('texture/Blue.png')
+
+  gl.glUseProgram(program.id)
+
+  instances:sync()
+  local mesh = instances.model.mesh
+  local count = instances.instance.count
+  gl.glUniformMatrix4fv(program.viewProjectionMatrix, 1, 0, g.camera.viewProjectionMatrix:data()) 
+  gl.glBindVertexArray(instances.id)
+  gl.glDrawElementsInstanced(gl.GL_TRIANGLES, mesh.index.count, gl.GL_UNSIGNED_INT, nil, count)
+  gl.glBindVertexArray(0)
 end
 
-function Transform:componentIs(comp)
-  assert(comp)
-  table.insert(self.component, comp)
-  return comp
-end
-
-function Transform:componentDel(comp)
-  assert(comp)
-  for i, v in ipairs(self.component) do
-    if v == comp then
-      table.remove(self.component, i)
-      return
-    end
-  end
-end
-
-function Transform:clone()
-  local clone = Transform.new(self)
-  for i, component in ipairs(self.component) do
-    clone:componentIs(component:clone())
-  end
-  return clone
-end
-
-return Transform.new
+return {
+  render=render,
+}

@@ -25,17 +25,23 @@ local Quat = {}; Quat.__index = Quat
 local QuatType = ffi.typeof('vec_Quat')
 local Vec3 = require('vec.vec3')
 
-function Quat.new(w, x, y, z)
-  if w then
-    return QuatType(w, x, y, z)
-  else
-    return QuatType(1, 0, 0, 0)
-  end
+Quat.new = QuatType
+
+function Quat.identity() 
+  return Quat.new(1, 0, 0, 0)
 end
 
-function Quat.look(xaxis, yaxis, zaxis)
+function Quat.fromAxisAngle(axis, angle)
+  return Quat.new{
+    w = math.cos(angle/2),
+    x = math.sin(angle/2)*axis.x,
+    y = math.sin(angle/2)*axis.y,
+    z = math.sin(angle/2)*axis.z,
+  }
+end
+
+function Quat.lookAt(xaxis, yaxis, zaxis)
   assert(false)
-  
 end
 
 function Quat:len(other)
@@ -119,50 +125,4 @@ function Quat:__eq(other)
 end
 
 ffi.metatype(QuatType, Quat)
-return Quat.new
-
---[[
-  local kRot = ffi.new('vec_Scalar[3][3]', 
-    {xaxis.x, yaxis.x, zaxis.x},
-    {xaxis.y, yaxis.y, zaxis.y},
-    {xaxis.z, yaxis.z, zaxis.z})
-  local fTrace = kRot[0][0]+kRot[1][1]+kRot[2][2]
-  local fRoot;
-  local self = Quat.new()
-
-  if fTrace > 0 then
-    -- |w| > 1/2, may as well choose w > 1/2
-    fRoot = math.sqrt(fTrace + 1) -- 2w
-    self.w = 0.5*fRoot
-    fRoot = 0.5/fRoot  -- 1/(4w)
-    self.x = (kRot[2][1]-kRot[1][2])*fRoot
-    self.y = (kRot[0][2]-kRot[2][0])*fRoot
-    self.z = (kRot[1][0]-kRot[0][1])*fRoot
-  else
-    -- |w| <= 1/2
-    local s_iNext = ffi.new('int[3]', 1, 2, 0)
-    local i = 0
-    if kRot[1][1] > kRot[0][0] then
-      i = 1
-    end
-    if kRot[2][2] > kRot[i][i] then
-      i = 2
-    end
-    local j = s_iNext[i];
-    local k = s_iNext[j];
-
-    fRoot = math.sqrt(kRot[i][i]-kRot[j][j]-kRot[k][k]+1)
-
-    local apkQuat = {}
-    apkQuat[i] = 0.5*fRoot
-    fRoot = 0.5/fRoot
-    self.w = (kRot[k][j]-kRot[j][k])*fRoot
-    apkQuat[j] = (kRot[j][i]+kRot[i][j])*fRoot
-    apkQuat[k] = (kRot[k][i]+kRot[i][k])*fRoot
-
-    self.x = apkQuat[0]
-    self.y = apkQuat[1]
-    self.z = apkQuat[2]
-  end
-  return self
-]]
+return Quat

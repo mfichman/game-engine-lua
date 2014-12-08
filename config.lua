@@ -19,9 +19,11 @@
 -- IN THE SOFTWARE.
 
 display = {
-  vsync = false,
-  width = 1280,
-  height = 720,
+  vsync = true,
+  width = 2560,
+  height = 1440,
+  width = 1920,
+  height = 1200,
   fullscreen = false,
 }
 

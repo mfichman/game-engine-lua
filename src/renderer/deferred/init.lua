@@ -1,22 +1,8 @@
--- Copyright (c) 2014 Matt Fichman
---
--- Permission is hereby granted, free of charge, to any person obtaining a copy
--- of this software and associated documentation files (the "Software"), to
--- deal in the Software without restriction, including without limitation the
--- rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
--- sell copies of the Software, and to permit persons to whom the Software is
--- furnished to do so, subject to the following conditions:
--- 
--- The above copyright notice and this permission notice shall be included in
--- all copies or substantial portions of the Software.
--- 
--- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
--- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
--- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
--- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
--- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
--- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
--- IN THE SOFTWARE.
+-- ========================================================================= --
+-- Copyright (c)                                                             -- 
+-- Matt Fichman <matt.fichman@gmail.com>                                     --
+-- December, 2014                                                            --
+-- ========================================================================= --
 
 local gl = require('gl')
 local bit = require('bit')
@@ -24,7 +10,6 @@ local graphics = require('graphics')
 local apply = require('renderer.apply')
 
 local Deferred = {}; Deferred.__index = Deferred
-
 local Shadow = require('renderer.shadow')
 
 local model = require('renderer.deferred.model')
@@ -45,22 +30,25 @@ local ui = require('renderer.forward.ui')
 ]]
 
 function Deferred.new(context)
-  assert(context, 'no context set')
-  local self = setmetatable({}, Deferred)
-  self.context = context
-
   local width, height = context.camera.viewport.width, context.camera.viewport.height
-  self.diffuseBuffer = graphics.RenderTarget(width, height, gl.GL_RGB)
-  self.specularBuffer = graphics.RenderTarget(width, height, gl.GL_RGBA)
-  self.normalBuffer = graphics.RenderTarget(width, height, gl.GL_RGB16F)
-  self.emissiveBuffer = graphics.RenderTarget(width, height, gl.GL_RGB)
-  self.depthBuffer = graphics.RenderTarget(width, height, gl.GL_DEPTH24_STENCIL8)
-  self.finalBuffer = graphics.RenderTarget(width, height, gl.GL_RGBA)
+
+  local self = {
+    context = context,
+    diffuseBuffer = graphics.RenderTarget(width, height, gl.GL_RGB),
+    specularBuffer = graphics.RenderTarget(width, height, gl.GL_RGBA),
+    normalBuffer = graphics.RenderTarget(width, height, gl.GL_RGB16F),
+    emissiveBuffer = graphics.RenderTarget(width, height, gl.GL_RGB),
+    depthBuffer = graphics.RenderTarget(width, height, gl.GL_DEPTH24_STENCIL8),
+    finalBuffer = graphics.RenderTarget(width, height, gl.GL_RGBA),
+    frameBuffer = graphics.FrameBuffer(),
+    decalFrameBuffer = graphics.FrameBuffer(),
+    finalFrameBuffer = graphics.FrameBuffer(),
+    shadow = Shadow(context),
+  }
 
   -- Buffer order is important below! The 0th draw buffer corresponds to the
   -- 1st texture in the lighting pass, and to the 0th output of the pixel 
   -- shaders in the material pass. 
-  self.frameBuffer = graphics.FrameBuffer()
   self.frameBuffer:drawBufferEnq(self.diffuseBuffer)
   self.frameBuffer:drawBufferEnq(self.specularBuffer)
   self.frameBuffer:drawBufferEnq(self.normalBuffer)
@@ -69,20 +57,16 @@ function Deferred.new(context)
   self.frameBuffer:stencilBufferIs(self.depthBuffer)
   self.frameBuffer:check() 
 
-  self.decalFrameBuffer = graphics.FrameBuffer()
   self.decalFrameBuffer:drawBufferEnq(self.diffuseBuffer)
   self.decalFrameBuffer:depthBufferIs(self.depthBuffer)
   self.decalFrameBuffer:check()
 
-  self.finalFrameBuffer = graphics.FrameBuffer()
   self.finalFrameBuffer:drawBufferEnq(self.finalBuffer)
   self.finalFrameBuffer:depthBufferIs(self.depthBuffer)
   self.finalFrameBuffer:stencilBufferIs(self.depthBuffer)
   self.finalFrameBuffer:check()
 
-  self.shadow = Shadow(context)
-
-  return self
+  return setmetatable(self, Deferred)
 end
 
 function Deferred:render()

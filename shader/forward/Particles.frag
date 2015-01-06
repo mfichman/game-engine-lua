@@ -39,7 +39,7 @@ void main() {
     float scale = 4.f;
     float fade = clamp((viewZ - view.z) * scale, 0, 1);
 
-	colorOut = color * tint * texture(tex, vec2(s, t));
+    colorOut = color * tint * texture(tex, vec2(s, t));
     colorOut.a *= fade; // Soft particles
 }
 

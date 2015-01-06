@@ -11,24 +11,10 @@
 --                                                                            --
 -- ========================================================================== --
 
-package.path = './src/?.lua;./src/?/init.lua;'..package.path
+ffi = require('ffi')
+path = require('path')
 
-local os = require('os')
+ffi.cdef(path.open('freetype/freetype.h'):read('*all'))
+freetype = ffi.load('freetype')
 
-local test = {
-  'src/asset/test.lua',
-  'src/game/test.lua',
-  'src/graphics/test.lua',
-  'src/path/test.lua',
-  'src/sandbox/test.lua',
-  'src/vec/test.lua',
-  'src/physics/test.lua',
-  'src/tablex/test.lua',
-  'src/item/test.lua',
-  'src/freetype/test.lua',
-}
-
-for i, test in ipairs(test) do
-  print(test)
-  dofile(test)
-end
+return freetype

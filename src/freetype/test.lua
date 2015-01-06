@@ -11,24 +11,13 @@
 --                                                                            --
 -- ========================================================================== --
 
-package.path = './src/?.lua;./src/?/init.lua;'..package.path
+local freetype = require('freetype')
+local ffi = require('ffi')
 
-local os = require('os')
+local library = ffi.new('FT_Library[1]')
+local face = ffi.new('FT_Face[1]')
 
-local test = {
-  'src/asset/test.lua',
-  'src/game/test.lua',
-  'src/graphics/test.lua',
-  'src/path/test.lua',
-  'src/sandbox/test.lua',
-  'src/vec/test.lua',
-  'src/physics/test.lua',
-  'src/tablex/test.lua',
-  'src/item/test.lua',
-  'src/freetype/test.lua',
-}
-
-for i, test in ipairs(test) do
-  print(test)
-  dofile(test)
-end
+freetype.FT_Init_FreeType(library)
+freetype.FT_New_Face(library[0], 'font/Norwester.ttf', 0, face)
+freetype.FT_Done_Face(face[0])
+freetype.FT_Done_FreeType(library[0])

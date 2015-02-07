@@ -27,18 +27,16 @@ local spotlight = require('renderer.deferred.spotlight')
 local particles = require('renderer.forward.particles')
 local billboards = require('renderer.forward.billboards')
 local ribbon = require('renderer.forward.ribbon')
+local text = require('renderer.forward.text')
+local quad = require('renderer.forward.quad')
 --[[
 local decal = require('renderer.deferred.decal')
 local skybox = require('renderer.forward.skybox')
 local transparent = require('renderer.forward.transparent')
-local quad = require('renderer.forward.quad')
-local text = require('renderer.forward.text')
-local ui = require('renderer.forward.ui')
 ]]
 
 function Deferred.new(context)
-  local width, height = context.camera.viewport.width, context.camera.viewport.height
-
+  local width, height = context.viewport.width, context.viewport.height
   local self = {
     context = context,
     diffuseBuffer = graphics.RenderTarget(width, height, gl.GL_RGB),
@@ -141,8 +139,8 @@ function Deferred:render()
   apply.apply(particles.render, self.context, graphics.Particles)
   apply.apply(billboards.render, self.context, graphics.Billboards)
   apply.apply(ribbon.render, self.context, graphics.Ribbon)
-  --self:apply(quad.render, graphics.Quad)
-  --self:apply(text.render, graphics.Text)
+  apply.apply(text.render, self.context, graphics.Text)
+  apply.apply(quad.render, self.context, graphics.Quad)
 
   -- Pass 5: Text/UI rendering...?
   --self:apply(ui.render, graphics.Ui) FIXME
@@ -151,8 +149,8 @@ function Deferred:render()
   gl.glDepthMask(gl.GL_TRUE)
 
   -- Blit final framebuf to screen
-  local width = self.context.camera.viewport.width
-  local height = self.context.camera.viewport.height
+  local width = self.context.viewport.width
+  local height = self.context.viewport.height
   gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, self.finalFrameBuffer.id)
   gl.glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, gl.GL_COLOR_BUFFER_BIT, gl.GL_NEAREST)
   gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, 0)

@@ -55,6 +55,7 @@ void main() {
 }
 ]]
 
+--[[
 local f = graphics.Shader(gl.GL_FRAGMENT_SHADER, source)
 local v = graphics.Shader(gl.GL_VERTEX_SHADER, '#version 330\nvoid main() {}')
 local g = graphics.Shader(gl.GL_GEOMETRY_SHADER, '#version 330\nvoid main() {}')
@@ -65,6 +66,7 @@ gl.glUseProgram(p.id)
 local x = ffi.new('GLfloat[3]')
 gl.glUniform3fv(p.position, 1, x)
 assert(gl.glGetError() ==0)
+]]
 
 -- Mesh
 local m = graphics.Mesh()
@@ -106,7 +108,7 @@ node.origin = vec.Vec3(1, 2, 3)
 node.name = '2'
 node:componentIs(nested)
 
-ctx:submit(node)
+ctx:submit(node, c)
 
 assert(#ctx.op == 1)
 assert(ctx.op[1])
@@ -116,12 +118,16 @@ assert(ctx.op[1].node.new == graphics.Model)
 --assert(ctx.op[1].worldMatrix.origin.z == 9)
 
 local asset = require('asset')
-local p = asset.open('shader/deferred/Model.prog')
+--local p = asset.open('shader/deferred/Model.prog')
 local arr = ffi.new('GLfloat[3]')
 
-gl.glUseProgram(p.id)
-gl.glUniform3fv(p.diffuseColor, 1, arr)
-assert(gl.glGetError() == 0)
+--gl.glUseProgram(p.id)
+--gl.glUniform3fv(p.diffuseColor, 1, arr)
+--assert(gl.glGetError() == 0)
 
 local sdb = graphics.StreamDrawBuffer(1024)
 sdb:reset()
+
+
+-- Font
+local font = graphics.Font('font/Norwester.ttf', 10, 'fixed')

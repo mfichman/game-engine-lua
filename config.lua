@@ -20,6 +20,10 @@ display = {
   fullscreen = false,
 }
 
+render = {
+  shadowmapsize = 4096,
+}
+
 log = {
   cpu = false,
   memory = false,
@@ -70,6 +74,7 @@ process = {
   'Explosion',
   'Sun',
   'ChunkCache',
+  'Hud',
 }
 
 preload = {

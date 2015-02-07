@@ -34,7 +34,9 @@ function Vec2:__sub(other)
 end
 
 function Vec2:__mul(other)
-  if type(self) == 'number' then
+  if type(self) == 'cdata' and type(other) == 'cdata' then
+    return Vec2.new(self.x*other.x, self.y*other.y)
+  elseif type(self) == 'number' then
     other, self = self, other
   end
   return Vec2.new(self.x*other, self.y*other)

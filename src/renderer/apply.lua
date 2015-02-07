@@ -11,10 +11,11 @@
 --                                                                            --
 -- ========================================================================== --
 
-local function apply(render, g, kind)
+local function apply(render, g, kind, camera)
   for i, op in ipairs(g.op) do
     if op.node.new == kind then
       g.worldMatrix = op.worldMatrix
+      g.camera = camera or op.camera
       render(g, op.node)
     end
   end

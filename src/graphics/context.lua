@@ -17,28 +17,27 @@ local vec = require('vec')
 local Context = {}; Context.__index = Context
 local Transform = require('graphics.transform')
 local RenderOp = require('graphics.renderop')
-local Camera = require('graphics.camera')
 
 -- Creates a rendering context, which tracks/caches graphics pipeline state.
 function Context.new(width, height)
   assert(width, 'width is nil')
   assert(height, 'height is nil')
   local self = {
-    camera = Camera(),
+    viewport = vec.Vec2(width, height),
     worldMatrix = vec.Mat4.identity(),
     program = 0,
     op = {}, -- array of objects submitted for rendering in this frame
     state = {enabled = {}},
     committed = {enabled = {}},
   }
-  self.camera.viewport = vec.Vec2(width, height)
   return setmetatable(self, Context) 
 end
 
 -- Submit a node to the rendering pipline using the given model transform. 
 -- If a Transform object is submitted, then propagate its transform to all of
 -- its children.
-function Context:submit(node, worldTransform)
+function Context:submit(node, camera, worldTransform)
+  assert(camera, "missing camera")
   if Transform == node.new then
     local tx
     if worldTransform then
@@ -47,7 +46,7 @@ function Context:submit(node, worldTransform)
       tx = vec.Transform(node.origin, node.rotation)
     end
     for _, c in ipairs(node.component) do
-      self:submit(c, tx)
+      self:submit(c, camera, tx)
     end
   else
     local worldMatrix
@@ -56,7 +55,7 @@ function Context:submit(node, worldTransform)
     else
       worldMatrix = vec.Mat4.identity()
     end
-    table.insert(self.op, RenderOp(node, worldMatrix))
+    table.insert(self.op, RenderOp(node, camera, worldMatrix))
   end
 end
 

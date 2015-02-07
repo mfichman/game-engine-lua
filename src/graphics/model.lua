@@ -13,6 +13,9 @@
 
 local Model = {}; Model.__index = Model
 
+-- Creates a new model. A model is a mesh that has an attached material that 
+-- defines the color and texture of the mesh, as well as a GPU program that 
+-- provides further optional customization of the mesh's appearance.
 function Model.new(args)
   local args = args or {}
   local self = {
@@ -23,6 +26,8 @@ function Model.new(args)
   return setmetatable(self, Model)
 end
 
+-- Creates a copy of the model and returns it. The mesh object is not
+-- deep-copied, because doing so is expensive.
 function Model:clone()
   return Model.new{
     material = self.material:clone(),

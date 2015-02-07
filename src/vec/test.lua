@@ -103,7 +103,7 @@ local m = vec.Mat4.ortho(-10, 100, -10, 10, -10, 10)
 local m = vec.Mat4.identity()
 local m = vec.Mat4.translate(vec.Vec3(1, 2, 3))
 local m = vec.Mat4.scale(1, 2, 3)
-local m = vec.Mat4.rotate(vec.Quat(1, 2, 3, 8))
+local m = vec.Mat4.rotate(vec.Quat.new(1, 2, 3, 8))
 local m = vec.Mat4.perspective(90, 1, 1, 100):inverse()
 
 local a = vec.Mat4.translate(vec.Vec3(1, 2, 3))
@@ -123,12 +123,12 @@ assert(v4.y == -15)
 assert(v4.z == 30)
 
 -- Quaternion
-local q = vec.Quat(1, 2, 3, 4)
+local q = vec.Quat.new(1, 2, 3, 4)
 local v = q * vec.Vec3(1, 2, 3)
 assert(v.x == 25)
 assert(v.y == 2)
 assert(v.z == -9)
-local p = vec.Quat(2, 2, 0, 0)
+local p = vec.Quat.new(2, 2, 0, 0)
 local d = p * q
 assert(d.w == -2)
 assert(d.x == 6)

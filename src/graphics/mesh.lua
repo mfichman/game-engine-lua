@@ -82,21 +82,21 @@ function Mesh:sync()
   if self.status == 'synced' then return end
 
   updateTangents(self)
-  if self.id == 0 then
-    self.handle = gl.Handle(gl.glGenVertexArrays, gl.glDeleteVertexArrays)
-    self.id = self.handle[0]
-  end
   self.vertex:sync()
   self.index:sync() 
 
-  gl.glBindVertexArray(self.id)
-  gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, self.index.id)
-  gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vertex.id)
-  struct.defAttribute('graphics_MeshVertex', 0, 'position')
-  struct.defAttribute('graphics_MeshVertex', 1, 'normal')
-  struct.defAttribute('graphics_MeshVertex', 2, 'tangent')
-  struct.defAttribute('graphics_MeshVertex', 3, 'texcoord')
-  gl.glBindVertexArray(0)
+  if self.id == 0 then
+    self.handle = gl.Handle(gl.glGenVertexArrays, gl.glDeleteVertexArrays)
+    self.id = self.handle[0]
+    gl.glBindVertexArray(self.id)
+    gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, self.index.id)
+    gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vertex.id)
+    struct.defAttribute('graphics_MeshVertex', 0, 'position')
+    struct.defAttribute('graphics_MeshVertex', 1, 'normal')
+    struct.defAttribute('graphics_MeshVertex', 2, 'tangent')
+    struct.defAttribute('graphics_MeshVertex', 3, 'texcoord')
+    gl.glBindVertexArray(0)
+  end
   self.status = 'synced'
 end
 

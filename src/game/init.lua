@@ -36,8 +36,9 @@ local Game = {}; Game.__index = Game
 local function processTable(table, event)
   for id, component in pairs(table.component) do
     if type(component) == 'cdata' then return end
-    if not component[event] then return end
-    component[event](component, id)
+    local handler = component[event]
+    if not handler then return end
+    handler(component, id)
   end 
 end
 
@@ -53,9 +54,21 @@ end
 
 -- Create a new game object
 function Game.new()
+  local viewport = vec.Vec2(config.display.width, config.display.height)
   local context = graphics.Context(config.display.width, config.display.height)
   local self = {
     window = window.Window(),
+    camera = graphics.Camera{viewport = viewport},
+    uicamera = graphics.Camera{
+      viewport = viewport,
+      mode = 'ortho',
+      top = 0,
+      bottom = 1,
+      left = 0,
+      right = viewport.width/viewport.height,
+      far = 0,
+      near = 1,
+    },
     db = db.Database(),
     input = input.Map(),
     config = config,
@@ -70,6 +83,7 @@ function Game.new()
     ticks = 0,
     tickHandler = {},
   }
+  self.uicamera:update()
 
   for i, name in ipairs(self.config.preload) do
     asset.open(name)
@@ -80,14 +94,14 @@ function Game.new()
 end
 
 -- Call 'event' on each component in the game database.
-function Game:apply(event)
+function Game:sendEvent(event)
   processDb(self.db, event, self.process)
 end
 
 -- Increment the game by one tick (send the 'tick' event to all components)
 function Game:tick()
   self.world:stepSimulation(self.timestep, 0, self.timestep) 
-  self:apply('tick')
+  self:sendEvent('tick')
   self.ticks = self.ticks+1
   for i, handler in ipairs(self.tickHandler) do
     handler()
@@ -96,7 +110,7 @@ end
 
 -- Render a single frame. 
 function Game:render()
-  self:apply('render')
+  self:sendEvent('render')
   self.renderer:render() 
   self.graphics:finish()
 end
@@ -135,14 +149,20 @@ function Game:update()
 
   -- Call Bullet to do intepolation once per frame.
   self.world:synchronizeMotionStates(self.accumulator, self.timestep)
-  self:apply('update')
+  self:sendEvent('update')
 end
 
 -- Handle input and step the simulation as necessary
 function Game:poll()
   local event = sfml.Event()
   while self.window:pollEvent(event) == 1 do
-    if event.type == sfml.EvtClosed then os.exit(0) end
+    if event.type == sfml.EvtClosed then 
+      os.exit(0) 
+    elseif event.type == sfml.EvtMouseButtonPressed then
+      self:sendEvent('mouseDown')
+    elseif event.type == sfml.EvtMouseButtonReleased then
+      self:sendEvent('mouseUp')
+    end
   end
 end
 

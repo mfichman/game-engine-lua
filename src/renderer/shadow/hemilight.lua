@@ -53,7 +53,7 @@ local function createLightCamera(g, light)
   } 
 
   -- Set up parameters for the virtual light camera
-  local lightCamera = graphics.Camera()
+  local lightCamera = graphics.Camera{}
   lightCamera.mode = 'ortho'
   lightCamera.viewMatrix = lightView
   lightCamera.near = nil
@@ -113,15 +113,13 @@ local function render(g, light)
   g:glEnable(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST)
   g:glCullFace(gl.GL_FRONT)
   g:commit()
-  g.camera = lightCamera
 
   -- FIXME: Render flat here
-  apply.apply(model.render, g, graphics.Model)
-  apply.apply(instances.render, g, graphics.Instances)
+  apply.apply(model.render, g, graphics.Model, lightCamera)
+  apply.apply(instances.render, g, graphics.Instances, lightCamera)
   
   light.shadowMap:disable()
   gl.glViewport(0, 0, sceneCamera.viewport.width, sceneCamera.viewport.height)
-  g.camera = sceneCamera
 end
 
 return {

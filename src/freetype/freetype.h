@@ -751,3 +751,7 @@ FT_Matrix_Multiply( __const FT_Matrix*  a,
                     FT_Matrix*        b );
 extern  FT_Error 
 FT_Matrix_Invert( FT_Matrix*  matrix );
+
+enum {
+   FT_LOAD_RENDER = (1 << 2)
+};

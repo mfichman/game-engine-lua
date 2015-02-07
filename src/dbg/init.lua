@@ -29,11 +29,15 @@ local function getline(path, line)
   local source = sources[path]
   if not source then
     local fd = io.open(path)
+    if not fd then
+      return 'error: source not available'
+    end
     source = {}
     for line in fd:lines() do
       table.insert(source, line)
     end
     sources[path] = source
+    fd:close()
   end
   return source[line]
 end
@@ -185,6 +189,10 @@ end
 local function list()
   local info = debug.getinfo(startlevel()+level, 'Slf')
   local line = info.currentline
+  if info.short_src == '[C]' then
+    print('error: source not available (C function)')
+    return true
+  end
   local text = {}
   local len = tostring(line+8):len()
   for i = -8,8 do

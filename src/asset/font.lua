@@ -1,6 +1,6 @@
 -- ========================================================================== --
 --                                                                            --
--- Copyright (c) 2014 Matt Fichman <matt.fichman@gmail.com>                   --
+-- Copyright (c) 2015 Matt Fichman <matt.fichman@gmail.com>                   --
 --                                                                            --
 -- This file is part of Quadrant.  It is subject to the license terms in the  --
 -- LICENSE.md file found in the top-level directory of this software package  --
@@ -11,15 +11,12 @@
 --                                                                            --
 -- ========================================================================== --
 
-local ffi = require('ffi')
+local graphics = require('graphics')
 
-ffi.cdef[[
-  typedef struct graphics_MeshVertex {
-    vec_Vec3 position;
-    vec_Vec3 normal;
-    vec_Vec3 tangent;
-    vec_Vec2 texcoord;
-  } graphics_MeshVertex;
-]]
+function open(name, size, kind)
+  return graphics.Font(name, size, kind)
+end
 
-return ffi.typeof('graphics_MeshVertex')
+return {
+  open = open,
+}

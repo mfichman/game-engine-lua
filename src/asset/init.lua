@@ -21,15 +21,16 @@ local loaders = {
   ['%.vert$'] = require('asset.shader'),
   ['%.geom$'] = require('asset.shader'),
   ['%.frag$'] = require('asset.shader'),
+  ['%.ttf$'] = require('asset.font'),
 }
 
 local loaded = require('asset.loaded')
 
-local function open(name)
+local function open(name, ...)
   if loaded[name] then return loaded[name] end
   for pattern, loader in pairs(loaders) do
     if name:match(pattern) then
-      local asset = loader.open(name)
+      local asset = loader.open(name, ...)
       loaded[name] = asset
       return asset
     end

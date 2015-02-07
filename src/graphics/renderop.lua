@@ -15,10 +15,11 @@ local RenderOp = {}; RenderOp.__index = RenderOp
 
 -- A render op encapsulates everything needed for a single draw command: the
 -- object to be rendered, the complete transform set and the Z value.
-function RenderOp.new(node, worldMatrix)
+function RenderOp.new(node, camera, worldMatrix)
   local self = {
     worldMatrix = worldMatrix,
     node = node,
+    camera = camera,
   }
   return setmetatable(self, RenderOp)
 end

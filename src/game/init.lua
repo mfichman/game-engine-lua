@@ -54,26 +54,12 @@ end
 
 -- Create a new game object
 function Game.new()
-  local viewport = vec.Vec2(config.display.width, config.display.height)
-  local context = graphics.Context(config.display.width, config.display.height)
   local self = {
     window = window.Window(),
-    camera = graphics.Camera{viewport = viewport},
-    uicamera = graphics.Camera{
-      viewport = viewport,
-      mode = 'ortho',
-      top = 0,
-      bottom = 1,
-      left = 0,
-      right = viewport.width/viewport.height,
-      far = 0,
-      near = 1,
-    },
     db = db.Database(),
     input = input.Map(),
     config = config,
-    graphics = context,
-    renderer = renderer.Deferred(context),
+    renderer = renderer.Deferred(graphics.context),
     world = physics.World(),
     clock = sfml.Clock(),
     accumulator = 0,
@@ -83,13 +69,11 @@ function Game.new()
     ticks = 0,
     tickHandler = {},
   }
-  self.uicamera:update()
 
   for i, name in ipairs(self.config.preload) do
     asset.open(name)
   end
   self.world:setGravity(vec.Vec3())
-
   return setmetatable(self, Game)
 end
 
@@ -112,7 +96,7 @@ end
 function Game:render()
   self:sendEvent('render')
   self.renderer:render() 
-  self.graphics:finish()
+  graphics.finish()
 end
 
 -- Handle physics update. Execute fixed-time ticks to bring the physics state

@@ -11,6 +11,30 @@
 --                                                                            --
 -- ========================================================================== --
 
+local config = require('config')
+local vec = require('vec')
+
+local Context = require('graphics.context')
+local Camera = require('graphics.camera')
+
+local viewport = vec.Vec2(config.display.width, config.display.height)
+local context = Context(viewport.width, viewport.height)
+local camera = Camera{viewport = viewport}
+
+camera:update()
+
+-- Render a graphics node with the given transform. Recursively render any
+-- attached children as well.
+local function render(node, worldTransform)
+  context:submit(node, camera, worldTransform)
+end
+
+-- Finish rendering the scene.
+local function finish()
+  context:finish()
+end
+
+
 return {
   Billboard = require('graphics.billboard'),
   Billboards = require('graphics.billboards'),
@@ -41,4 +65,8 @@ return {
   Text = require('graphics.text'),
   Texture = require('graphics.texture'),
   Transform = require('graphics.transform'),
+  camera = camera,
+  context = context,
+  render = render,
+  finish = finish,
 }

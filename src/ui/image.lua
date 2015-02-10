@@ -12,33 +12,30 @@
 -- ========================================================================== --
 
 local graphics = require('graphics')
-local layout = require('ui.layout')
 local vec = require('vec')
 local game = require('game')
+local asset = require('asset')
 
+local Component = require('ui.Component')
 local Image = {}; Image.__index = Image
 
 -- Renders an image in the user interface.
 function Image.new(args) 
-  local basis = args.basis or vec.Vec2()
-  local basisOffset = vec.Vec2(basis.x, -basis.y)+vec.Vec2(-.5, .5)
-  local size = vec.Vec2(args.size.x, -args.size.y)
-  local position = layout.layout(args.parent, basisOffset, args.position, size)
-  local self = {
-    position = layout.layout(args.parent, basis, args.position, args.size),
-    quad = graphics.Quad{
-      mode = 'normal',
-      width = size.x, 
-      height = size.y,
-      texture = args.texture,
-      tint = args.tint,
-    },
-    size = args.size,
-    z = args.z or -1,
+  -- Calculate the pivot to render the image at the right location
+  args.pivot = args.pivot or vec.Vec2()
+  args.pivot = vec.Vec2(args.pivot.x, -args.pivot.y)+vec.Vec2(-.5, .5)
+  args.size = args.size or vec.Vec2(1, 1)
+  args.size = vec.Vec2(args.size.x, -args.size.y)
+
+  local self = Component(args)
+
+  self.node = graphics.Quad{
+    mode = 'normal',
+    width = self.size.x, 
+    height = self.size.y,
+    texture = asset.open(args.texture),
+    tint = args.tint,
   }
-  local origin = vec.Vec3(position.x, position.y, self.z)
-  local transform = vec.Transform(origin)
-  game.graphics:submit(self.quad, game.uicamera, transform)
   return setmetatable(self, Image)
 end
 

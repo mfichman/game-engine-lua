@@ -14,8 +14,8 @@
 local game = require('game')
 local graphics = require('graphics')
 local vec = require('vec')
-local layout = require('ui.layout')
 
+local Component = require('ui.Component')
 local Label = {}; Label.__index = Label
 
 -- Cache text objects for rendering
@@ -46,17 +46,13 @@ end
 
 -- Render a text object relative to the parent
 function Label.new(args)
-  local text = cachedText(args.font, args.text, args.height)
-  local size = vec.Vec2(text:width(), args.height)
-  local self = {
-    text = text,
-    position = layout.layout(args.parent, args.basis, args.position, size),
-    size = size,
-    z = args.z or -1,
-  }
-  local origin = vec.Vec3(self.position.x, self.position.y, self.z)
-  local transform = vec.Transform(origin)
-  game.graphics:submit(self.text, game.uicamera, transform)
+  local parent = args.parent.size or vec.Vec2(1, 1)
+  local text = cachedText(args.font, args.text, parent.y*args.height)
+  args.size = vec.Vec2(args.height*text:width(), args.height)
+
+  local self = Component(args)
+  self.node = text
+
   return setmetatable(self, Label)
 end
 

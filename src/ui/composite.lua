@@ -11,14 +11,23 @@
 --                                                                            --
 -- ========================================================================== --
 
-local vec = require('vec')
+local Component = require('ui.component')
+local Composite = {}; Composite.__index = Composite
 
-local Component = require('ui.Component')
-local Panel = {}; Panel.__index = Panel
-
-function Panel.new(args)
+function Composite.new(args)
   local self = Component(args)
-  return setmetatable(self, Panel)
+  local component = {}
+  local ui = require('ui')
+
+  for i, v in ipairs(args) do
+    local kind = ui[v[1]]
+    v.parent = self
+    table.insert(component, kind(v))
+  end
+
+  self.component = component
+
+  return self
 end
 
-return Panel.new
+return Composite.new

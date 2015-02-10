@@ -11,14 +11,31 @@
 --                                                                            --
 -- ========================================================================== --
 
+local graphics = require('graphics')
 local vec = require('vec')
+local game = require('game')
 
-local Component = require('ui.Component')
-local Panel = {}; Panel.__index = Panel
+local Component = {}; Component.__index = Component
 
-function Panel.new(args)
-  local self = Component(args)
-  return setmetatable(self, Panel)
+-- Renders a UI component in the user interface
+function Component.new(args)
+  local parent = args.parent or {position = vec.Vec2(), size = vec.Vec2(1, 1)}
+  local pivot = args.pivot or vec.Vec2()
+  local size = parent.size * (args.size or vec.Vec2(1, 1))
+  local position = args.position or vec.Vec2()
+  local origin = parent.position+parent.size*position-pivot*size
+  local transform = vec.Transform(vec.Vec3(origin.x, origin.y, -1))
+  local component = {}
+
+  local self = {
+    transform = transform,
+    parent = parent,
+    pivot = pivot,
+    size = size,
+    position = position,
+    click = args.click,
+  } 
+  return self
 end
 
-return Panel.new
+return Component.new

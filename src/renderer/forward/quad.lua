@@ -22,7 +22,7 @@ local function render(g, quad)
   local camera = g.camera
   local texture = quad.texture
 
-  if not mesh then asset.open('mesh/Quad.obj/Quad') end
+  if not mesh then asset.open('mesh/Quad.obj') end
   program = program or asset.open('shader/forward/Quad.prog')
   mesh = mesh or asset.open('mesh/Quad.obj/Quad')
 

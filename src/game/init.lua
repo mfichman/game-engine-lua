@@ -27,7 +27,19 @@ local input = require('input')
 local asset = require('asset')
 local profiler = require('profiler')
 
-local Game = {}; Game.__index = Game
+-- Initialize game variables
+window = window.Window()
+db = db.Database()
+input = input.Map()
+renderer = renderer.Deferred(graphics.context)
+world = physics.World()
+clock = sfml.Clock()
+accumulator = 0
+timestep = 1/60
+samples = {}
+process = {}
+ticks = 0
+tickHandler = {}
 
 -- Call 'event' on each row in the table. If the first row in the table does 
 -- not have 'event' as a member, then skip all other components in the table as
@@ -52,62 +64,45 @@ local function processDb(db, event, process)
   end
 end
 
--- Create a new game object
-function Game.new()
-  local self = {
-    window = window.Window(),
-    db = db.Database(),
-    input = input.Map(),
-    config = config,
-    renderer = renderer.Deferred(graphics.context),
-    world = physics.World(),
-    clock = sfml.Clock(),
-    accumulator = 0,
-    timestep = 1/60,
-    samples = {},
-    process = {},
-    ticks = 0,
-    tickHandler = {},
-  }
-
-  for i, name in ipairs(self.config.preload) do
+-- Initialize the game
+local function init()
+  for i, name in ipairs(config.preload) do
     asset.open(name)
   end
-  self.world:setGravity(vec.Vec3())
-  return setmetatable(self, Game)
+  world:setGravity(vec.Vec3())
 end
 
 -- Call 'event' on each component in the game database.
-function Game:sendEvent(event)
-  processDb(self.db, event, self.process)
+local function sendEvent(event)
+  processDb(db, event, process)
 end
 
 -- Increment the game by one tick (send the 'tick' event to all components)
-function Game:tick()
-  self.world:stepSimulation(self.timestep, 0, self.timestep) 
-  self:sendEvent('tick')
-  self.ticks = self.ticks+1
-  for i, handler in ipairs(self.tickHandler) do
+local function tick()
+  world:stepSimulation(timestep, 0, timestep) 
+  sendEvent('tick')
+  ticks = ticks+1
+  for i, handler in ipairs(tickHandler) do
     handler()
   end
 end
 
 -- Render a single frame. 
-function Game:render()
-  self:sendEvent('render')
-  self.renderer:render() 
+local function render()
+  sendEvent('render')
+  renderer:render() 
   graphics.finish()
 end
 
 -- Handle physics update. Execute fixed-time ticks to bring the physics state
 -- up as close to current time as possible. Then, interpolate positions of
 -- objects using the remaining time.
-function Game:update()
-  self.delta = self.clock:getElapsedTime():asSeconds()
-  self.accumulator = self.accumulator + self.delta
-  self.clock:restart()
+local function update()
+  delta = clock:getElapsedTime():asSeconds()
+  accumulator = accumulator + delta
+  clock:restart()
 
-  local substeps, remainder = math.modf(self.accumulator/self.timestep)
+  local substeps, remainder = math.modf(accumulator/timestep)
   
   -- Clamp substeps to drop ticks if the physics engine gets too far behind.
   -- The game doesn't get stuck in the substep loop for a long time if the
@@ -116,7 +111,7 @@ function Game:update()
     print(string.format('warning: dropping %d frames', substeps-8))
     substeps = 8
   end
-  self.accumulator = remainder*self.timestep
+  accumulator = remainder*timestep
 
   -- Run Bullet with maxSubSteps = 0, which causes Bullet to step by exactly do
   -- one substep of exactly timestep seconds. The code in this function handles
@@ -124,7 +119,7 @@ function Game:update()
   -- Bullet to do it. After each step, fire a 'tick' event, so that components
   -- that must update each frame are notified.
   for i = 1,substeps do
-    self:tick()
+    tick()
   end
 
   if substeps > 2 then
@@ -132,43 +127,43 @@ function Game:update()
   end
 
   -- Call Bullet to do intepolation once per frame.
-  self.world:synchronizeMotionStates(self.accumulator, self.timestep)
-  self:sendEvent('update')
+  world:synchronizeMotionStates(accumulator, timestep)
+  sendEvent('update')
 end
 
 -- Handle input and step the simulation as necessary
-function Game:poll()
+local function poll()
   local event = sfml.Event()
-  while self.window:pollEvent(event) == 1 do
+  while window:pollEvent(event) == 1 do
     if event.type == sfml.EvtClosed then 
       os.exit(0) 
     elseif event.type == sfml.EvtMouseButtonPressed then
-      self:sendEvent('mouseDown')
+      sendEvent('mouseDown')
     elseif event.type == sfml.EvtMouseButtonReleased then
-      self:sendEvent('mouseUp')
+      sendEvent('mouseUp')
     end
   end
 end
 
 -- Sample performance data
-function Game:sample()
-  table.insert(self.samples, self.delta * 1000) -- convert to ms
-  if #self.samples > 100 then
-    local min, max, median, mean, stdev = stats.stats(self.samples)
+local function sample()
+  table.insert(samples, delta * 1000) -- convert to ms
+  if #samples > 100 then
+    local min, max, median, mean, stdev = stats.stats(samples)
     print(string.format('min = %05.2f max = %05.2f median = %05.2f mean = %05.2f stdev = %05.2f', min, max, median, mean, stdev))
-    self.samples = {}
+    samples = {}
   end
-  if self.ticks % 500 == 0 then
+  if ticks % 500 == 0 then
     local luaMem = math.floor(collectgarbage('count'))
-    local physicsMem = math.floor(self.world:getMemUsage()/1024)
+    local physicsMem = math.floor(world:getMemUsage()/1024)
     print(('luaMem = %.0fK physicsMem = %.0fK'):format(luaMem, physicsMem))
   end
 end
 
-function Game:gc()
+local function gc()
   -- Allocate 5 ms for GC; skip GC if there aren't 5 ms left in the frame
-  local start = self.clock:getElapsedTime():asSeconds()
-  local remaining = self.timestep - start 
+  local start = clock:getElapsedTime():asSeconds()
+  local remaining = timestep - start 
   local budget = .005
   if remaining > budget then
     collectgarbage('step', 2)
@@ -178,31 +173,31 @@ function Game:gc()
 end
 
 -- Run the game
-function Game:run()
+local function run()
   collectgarbage('stop')
   for i, name in ipairs(config.process) do -- FIXME
-    table.insert(self.process, component[name])
+    table.insert(process, component[name])
   end
 
-  self.clock:restart()
+  clock:restart()
   --profiler.start()
   --for i=1,1000 do
-  while self.window:isOpen() do
+  while window:isOpen() do
     -- The order of the operations here is very sensitive for performance
     -- reasons, especially with vsync enabled.  Poll is done immediately before
     -- update to reduce input lag. 
-    self:poll()
-    self:update()
+    poll()
+    update()
     -- Render is done after update, to reduce output lag following a physics
     -- world update. 
-    self:render()
+    render()
     -- GC and other low-priority tasks are executed after render, so that they
     -- only run if there is time left in the frame.
-    self:gc() 
-    self:sample()
+    gc() 
+    sample()
     -- The backbuffer swap is ALWAYS last, because if vsync is enabled, then
     -- the process will go to sleep.
-    self.window:display()
+    window:display()
     -- glGetError stalls the pipeline until prior commands are finished; it
     -- should be delayed until last.
     assert(gl.glGetError() == 0)
@@ -212,18 +207,31 @@ function Game:run()
   collectgarbage('restart')
 end
 
-function Game:Table(kind)
+local function Table(kind)
   local kind = component[kind]
-  return self.db:tableIs(kind)
+  return db:tableIs(kind)
 end
 
-function Game:Entity(metatable)
+local function Entity(metatable)
   assert(metatable, 'metatable is nil')
-  local id = self.db:newEntityId()
-  local table = self.db:tableIs(component.Entity)
+  local id = db:newEntityId()
+  local table = db:tableIs(component.Entity)
   table[id] = metatable
   return table[id]
 end
 
-return Game.new() -- singleton
+init()
+
+return {
+  Table = Table,
+  Entity = Entity,
+  run = run,
+  db = db,
+  timestep = timestep,
+  ticks = function() return ticks end,
+  input = input,
+  window = window,
+  world = world,
+  tickHandler = tickHandler,
+}
 

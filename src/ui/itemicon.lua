@@ -31,7 +31,7 @@ function ItemIcon.new(args)
 
       {'Image', 
         texture = 'texture/White.png', 
-        tint = vec.Color(1, 1, 1, .3),
+        tint = vec.Color(1, 1, 1, .2),
         size = vec.Vec2(.9, .9), 
         position = vec.Vec2(.5, .5), 
         pivot = vec.Vec2(.5, .5)

@@ -32,7 +32,7 @@ function Component.new(args)
     parent = parent,
     pivot = pivot,
     size = size,
-    position = position,
+    position = origin,
     click = args.click,
   } 
   return self

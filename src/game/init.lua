@@ -141,6 +141,10 @@ local function poll()
       sendEvent('mouseDown')
     elseif event.type == sfml.EvtMouseButtonReleased then
       sendEvent('mouseUp')
+    elseif event.type == sfml.EvtKeyPressed then
+      sendEvent('keyDown')
+    elseif event.type == sfml.EvtKeyReleased then
+      sendEvent('keyUp')
     end
   end
 end

@@ -184,7 +184,7 @@ local function run()
   end
 
   clock:restart()
-  --profiler.start()
+  profiler.start()
   --for i=1,1000 do
   while window:isOpen() do
     -- The order of the operations here is very sensitive for performance

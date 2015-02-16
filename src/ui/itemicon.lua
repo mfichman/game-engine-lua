@@ -20,7 +20,7 @@ local ItemIcon = {}; ItemIcon.__index = ItemIcon
 -- Create an item icon; displays the item's image, along with the quantity as
 -- a text label.
 function ItemIcon.new(args)
-  local font = asset.open('font/Norwester.ttf', 64, 'fixed')
+  local font = asset.open('font/Norwester.ttf', 32, 'fixed')
 
   local self = {
     position = args.position,

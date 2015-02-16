@@ -15,6 +15,7 @@ local sfml = require('sfml')
 
 local Binding = {}; Binding.__index = Binding
 
+-- A single mapping from an action to a mouse/button key
 function Binding.new(args)
   local self = {
     key = args.key,

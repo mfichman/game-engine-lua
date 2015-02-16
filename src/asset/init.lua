@@ -27,11 +27,12 @@ local loaders = {
 local loaded = require('asset.loaded')
 
 local function open(name, ...)
-  if loaded[name] then return loaded[name] end
+  local path = table.concat({name, ...})
+  if loaded[path] then return loaded[path] end
   for pattern, loader in pairs(loaders) do
     if name:match(pattern) then
       local asset = loader.open(name, ...)
-      loaded[name] = asset
+      loaded[path] = asset
       return asset
     end
   end

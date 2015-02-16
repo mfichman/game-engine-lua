@@ -33,6 +33,6 @@ if config.debug then
   xpcall(main, dbg.start)
 else
   xpcall(main, dbg.dump)
-  local data = dbg.read(io.open('core'))
+  local data = dbg.read(io.open('core', 'rb'))
   dbg.start()
 end

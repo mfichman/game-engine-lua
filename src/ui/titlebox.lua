@@ -34,7 +34,7 @@ function TitleBox.new(args)
     -- Render title  
     kind = 'Label',
     text = args.text,
-    font = asset.open('font/Norwester.ttf', 64, 'fixed'),
+    font = asset.open('font/Norwester.ttf', 72, 'fixed'),
     pivot = vec.Vec2(0, 1),
     position = vec.Vec2(.005, 0),
     height = .07,

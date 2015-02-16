@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <cassert>
 #include <cstdlib>
+#include <vector>
 extern "C" {
     #include <vec/vec.h>
     #include <physics/physics.h>
@@ -58,6 +59,31 @@ struct World : public btDiscreteDynamicsWorld {
         m_fixedTimeStep = fixedTimeStep;
         btDiscreteDynamicsWorld::synchronizeMotionStates();
     }
+};
+
+struct SensorCallback : public btCollisionWorld::ContactResultCallback {
+public:
+   SensorCallback(btCollisionObject* sensor, std::vector<void*>& userData)
+      : sensor_(sensor), userData_(userData) {
+
+      userData_.clear();
+   }
+
+   virtual btScalar addSingleResult(btManifoldPoint& cp,
+      btCollisionObjectWrapper const* obj0, int pardId0, int index0,
+      btCollisionObjectWrapper const* obj1, int pardId1, int index1) {
+
+      if(obj0->m_collisionObject==sensor_) {
+         userData_.push_back(obj1->m_collisionObject->getUserPointer());
+      } else {
+         userData_.push_back(obj0->m_collisionObject->getUserPointer());
+      } 
+      return 0;
+   }
+
+private:
+   btCollisionObject* sensor_;
+   std::vector<void*>& userData_; 
 };
 
 template <> inline btVector3 convert<btVector3>(vec_Vec3 const* val) {
@@ -181,6 +207,22 @@ physics_Manifold* physics_World_getManifold(physics_World* self, int32_t i) {
     return (physics_Manifold*)((World*)self)->getDispatcher()->getManifoldByIndexInternal(i);
 }
 
+
+void** physics_World_contactTest(physics_World* self, physics_Shape* shape, vec_Transform* transform) {
+   static std::vector<void*> userData;
+
+   btCollisionObject sensor;
+   sensor.setCollisionShape((btCollisionShape*)shape);
+   sensor.getWorldTransform().setOrigin(convert<btVector3>(&transform->origin));
+   sensor.getWorldTransform().setRotation(convert<btQuaternion>(&transform->rotation));
+   sensor.setCollisionFlags(sensor.getCollisionFlags()|btCollisionObject::CF_NO_CONTACT_RESPONSE);
+   
+   SensorCallback callback(&sensor, userData);
+   ((World*)self)->contactTest(&sensor, callback);
+   userData.push_back(0);
+   return &userData[0];
+}
+
 int32_t physics_Manifold_getNumContacts(physics_Manifold* self) {
     return ((btPersistentManifold*)self)->getNumContacts();
 }
@@ -208,6 +250,10 @@ physics_Contact physics_Manifold_getContact(physics_Manifold* self, int32_t i) {
 
 physics_Shape* physics_SphereShape_new(vec_Scalar radius) {
     return (physics_Shape*)new btSphereShape(radius);
+}
+
+physics_Shape* physics_CylinderShape_new(vec_Vec3* halfExtents) {
+    return (physics_Shape*)new btCylinderShapeZ(convert<btVector3>(halfExtents));
 }
 
 physics_Shape* physics_ConvexHullShape_new(uint32_t* index, uint32_t indexCount, vec_Vec3* vertex, uint32_t vertexCount, uint32_t vertexStride) {

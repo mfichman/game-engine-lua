@@ -11,36 +11,38 @@
 --                                                                            --
 -- ========================================================================== --
 
-local graphics = require('graphics')
 local vec = require('vec')
-local game = require('game')
 local asset = require('asset')
+local Composite = require('ui.composite')
 
-local Component = require('ui.Component')
-local Image = {}; Image.__index = Image
+local TitleBox = {}; TitleBox.__index = TitleBox
 
--- Renders an image in the user interface.
-function Image.new(args) 
-  -- Calculate the pivot to render the image at the right location
-  args.pivot = args.pivot or vec.Vec2()
-  args.pivot = vec.Vec2(args.pivot.x, -args.pivot.y)+vec.Vec2(-.5, .5)
-  args.size = args.size or vec.Vec2(1, 1)
-  args.size = vec.Vec2(args.size.x, -args.size.y)
+-- Renders a title and a border around another component
+function TitleBox.new(args)
+  table.insert(args, {
+    -- Render background image
+    kind = 'Image', 
+    texture = 'texture/White.png', 
+    tint = vec.Color(1, 1, 1, .03),
+    size = vec.Vec2(1, 1), 
+    position = vec.Vec2(.5, .5), 
+    pivot = vec.Vec2(.5, .5),
+    padding = {top = .1, bottom = .02, left = .02, right = .02},
+  })
+  
+  table.insert(args, {
+    -- Render title  
+    kind = 'Label',
+    text = args.text,
+    font = asset.open('font/Norwester.ttf', 64, 'fixed'),
+    pivot = vec.Vec2(0, 1),
+    position = vec.Vec2(.005, 0),
+    height = .07,
+    sizing = 'absolute',
+  })
 
-  local self = Component(args)
-  local padding = args.padding or {top = 0, bottom = 0, left = 0, right = 0}
-
-  self.node = graphics.Quad{
-    mode = 'normal',
-    width = self.size.x+padding.left+padding.right, 
-    height = self.size.y-padding.top-padding.bottom,
-    texture = asset.open(args.texture),
-    tint = args.tint,
-  }
-  self.transform.origin.x = self.transform.origin.x+(padding.right-padding.left)/2
-  self.transform.origin.y = self.transform.origin.y+(padding.bottom-padding.top)/2
-
-  return setmetatable(self, Image)
+  local self = Composite(args)
+  return setmetatable(self, TitleBox)
 end
 
-return Image.new
+return TitleBox.new

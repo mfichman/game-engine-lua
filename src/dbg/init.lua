@@ -14,6 +14,7 @@
 local debug = require('debug')
 local io = require('io')
 local os = require('os')
+
 local level = 1
 local input = io.input()
 local output = io.output()
@@ -22,6 +23,8 @@ local env = {}
 local sources = {}
 local lastcmd 
 local start
+local dump
+local dumpref
 local step
 
 -- Returns the source line at line
@@ -46,8 +49,10 @@ end
 local function startlevel()
   local level = 0
   while true do
-    local fn = debug.getinfo(level).func
-    if fn == start then
+    local info = debug.getinfo(level)
+    if info.func == start then
+      return level
+    elseif info.func == dump then
       return level
     else
       level = level+1
@@ -77,9 +82,9 @@ end
 -- Returns the upvalue with the name 'k'.
 local function getupvalue(k)
   local level = startlevel()+level
+  local f = debug.getinfo(level, 'f').func
   local i = 1
   while true do
-    local f = debug.getinfo(level, 'f').func
     local name, v = debug.getupvalue(f, i)
     if name == nil then
       return nil
@@ -196,11 +201,13 @@ local function list()
   local text = {}
   local len = tostring(line+8):len()
   for i = -8,8 do
-    local l = line+i
-    if i == 0 then
-      table.insert(text, string.format('>> %'..len..'d | %s', l, getline(info.short_src, line+i)))
+    local str = getline(info.short_src, line+i)
+    if not str then
+      break
+    elseif i == 0 then
+      table.insert(text, string.format('>> %'..len..'d | %s', line+i, str))
     else
-      table.insert(text, string.format('   %'..len..'d | %s', l, getline(info.short_src, line+i)))
+      table.insert(text, string.format('   %'..len..'d | %s', line+i, str))
     end
   end
   print(table.concat(text, '\n'))
@@ -342,8 +349,246 @@ local function setvar(t, k, v)
   end
 end
 
+-- Dump a value, and if the value is a table, recursively dump its fields.
+local function dumpval(fd, index, v)
+  local kind = type(v)
+  if kind == 'string' then
+    fd:uint8(string.byte('r'))
+    fd:uint32(index[v])
+    -- Intern strings to save memory
+  elseif kind == 'table' then
+    fd:uint8(string.byte('r'))
+    fd:uint32(index[v])
+  elseif kind == 'number' then
+    fd:uint8(string.byte('n'))
+    fd:number(v)
+  elseif kind == 'boolean' then
+    fd:uint8(string.byte('b'))    
+    fd:boolean(v)
+  else 
+    fd:uint8(string.byte('r'))
+    fd:uint32(index[tostring(v)])
+    -- CDATA, opaque types, etc. Dump as strings
+  end
+end
+
+-- Recursively dump a table and all its fields
+local function dumptable(fd, index, t)
+  if index[t] then return end
+  local id = fd.id
+  index[t] = id
+  fd.id = id+1
+
+  -- Forward-declare the table
+  fd:uint8(string.byte('t'))
+  fd:uint32(id) 
+  fd:uint32(0)
+
+  -- Output any tables/strings that this table references
+  local n = 0
+  for k,v in pairs(t) do
+    dumpref(fd, index, k)
+    dumpref(fd, index, v)
+    n = n+1
+  end
+
+  -- Output the table definition
+  fd:uint8(string.byte('t'))
+  fd:uint32(id) 
+  fd:uint32(n)
+
+  for k,v in pairs(t) do
+    dumpval(fd, index, k)
+    dumpval(fd, index, v)
+  end
+end
+
+-- Dump an interned string
+local function dumpstr(fd, index, v)
+  if index[v] then return end
+  local id = fd.id
+  index[v] = id
+  fd.id = id+1
+  fd:uint8(string.byte('s'))
+  fd:uint32(id)
+  fd:string(v) 
+end
+
+-- Dump a reference type (string or table)
+function dumpref(fd, index, v)
+  local kind = type(v)
+  if kind == 'table' then
+    dumptable(fd, index, v)
+  elseif kind == 'string' then
+    dumpstr(fd, index, v)
+  elseif kind == 'number' then
+    -- Do nothing
+  elseif kind == 'boolean' then
+    -- Do nothing
+  else
+    dumpstr(fd, index, tostring(v))
+  end
+end
+
+-- Return all upvalues, as a table, with each upvalue indexed by name
+local function getupvalues(level)
+  local level = startlevel()+level
+  local f = debug.getinfo(level, 'f').func
+  local upvalues = {}
+  local i = 1
+  while true do
+    local name, v = debug.getupvalue(f, i)
+    if name == nil then
+      break
+    else
+      upvalues[name] = v
+      i = i+1
+    end
+  end
+  return upvalues
+end
+
+-- Return all locals, as a table, with each local indexed by name
+local function getlocals(level)
+  local level = startlevel()+level
+  local locals = {}
+  local i = 1
+  while true do
+    local name, v = debug.getlocal(level, i)
+    if name == nil then
+      break
+    else
+      locals[name] = v
+      i = i+1
+    end
+  end
+  return locals
+end
+
+-- Return the stack frame at the given level
+local function getframe(level) 
+  local info = debug.getinfo(startlevel()+level)
+  if info then
+    return {
+      info = info,
+      upvalues = getupvalues(level),  
+      locals = getlocals(level),
+    }
+  else 
+    return nil
+  end
+end
+
+-- Return the entire stack, including all locals and upvalues, as a single
+-- table containing an entry for each frame.
+local function getstack()
+  local level = 0
+  local stack = {}
+  while true do
+    local frame = getframe(level)
+    if frame then
+      table.insert(stack, frame)
+      level = level+1
+    else
+      break 
+    end
+  end
+  return stack
+end
+
+-- Create a 'core' dump for the process, by serializing all tables to disk,
+-- starting with any variables on the stack.
+function dump(e, line)
+  -- Retrieve references to local variables for each stack frame and insert 
+  -- that info into the core data table 
+  local stack = getstack()
+
+  -- Serialize the core data to disk
+  local binfmt = require('binfmt')
+  local fd = binfmt.Writer(io.open('core', 'w'))
+  local index = {}
+  local core = {
+    trace = debug.traceback(e, 2),
+    stack = stack,
+  }
+  fd.id = 1
+  dumptable(fd, index, core)
+  fd:close()
+end
+
+-- Read a value
+local function readval(fd, index)
+  local kind = string.char(fd:uint8())
+  if kind == 's' then
+    return fd:string()
+  elseif kind == 'n' then
+    return fd:number()
+  elseif kind == 'b' then
+    return fd:boolean()
+  elseif kind == 'r' then
+    local id = tonumber(fd:uint32())
+    local ref = index[id]
+    if not ref then start() end
+    assert(ref)
+    return ref
+  else
+    error('unknown type: '..string.byte(kind))
+  end
+end
+
+-- Read an interned string
+local function readstr(fd, index)
+  local id = fd:uint32()
+  local v = fd:string()
+  index[id] = v
+  return v 
+end
+
+-- Read a table
+local function readtable(fd, index)
+  local id = fd:uint32()
+  local n = fd:uint32()
+  local t = index[id] or {}
+  index[id] = t
+
+  for i=1,n do
+    local k = readval(fd, index)
+    local v = readval(fd, index) 
+    t[k] = v
+  end
+  return t
+end
+
+-- Read a reference
+local function readref(fd, index)
+  local kind = string.char(fd:uint8())
+  if kind == 't' then
+    return readtable(fd, index)
+  elseif kind == 's' then
+    return readstr(fd, index)
+  else
+    error('unknown ref type: '..string.byte(kind))
+  end
+
+end
+
+-- Read a core dump for a process
+local function read(fd)
+  local binfmt = require('binfmt')
+  local fd = binfmt.Reader(fd)
+  local index = {}
+  local data
+  while not fd:eof() do
+    data = readref(fd, index)
+  end
+  fd:close()
+  return data
+end
+
 setmetatable(env, {__index = getvar, __newindex = setvar})
 
 return {
   start = start,
+  dump = dump,
+  read = read,
 }

@@ -47,7 +47,16 @@ end
 -- Render a text object relative to the parent
 function Label.new(args)
   local parent = args.parent.size or vec.Vec2(1, 1)
-  local text = cachedText(args.font, args.text, parent.y*args.height)
+  local height = args.height or 1
+  if not args.sizing or args.sizing == 'relative' then
+    height = parent.height * height
+  elseif args.sizing == 'absolute' then
+    -- Do not scale by parent size
+  else
+    error('invalid sizing mode')
+  end
+
+  local text = cachedText(args.font, args.text, height)
   args.size = vec.Vec2(args.height*text:width(), args.height)
 
   local self = Component(args)

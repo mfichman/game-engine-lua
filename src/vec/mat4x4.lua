@@ -283,6 +283,11 @@ function Mat4x4:rotation()
     self.d08, self.d09, self.d10)
 end
 
+-- Return origin
+function Mat4x4:origin()
+  return Vec3(self.d11, self.d12, self.d13)
+end
+
 function Mat4x4:data()
   return ffi.cast('vec_Scalar*', self)
 end

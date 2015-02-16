@@ -11,23 +11,26 @@
 --                                                                            --
 -- ========================================================================== --
 
-local Component = require('ui.component')
-local Composite = {}; Composite.__index = Composite
+local binfmt = require('binfmt')
+local ffi = require('ffi')
 
-function Composite.new(args)
-  local self = Component(args)
-  local component = {}
-  local ui = require('ui')
-
-  for i, v in ipairs(args) do
-    local kind = ui[v.kind]
-    v.parent = self
-    table.insert(component, kind(v))
-  end
-
-  self.component = component
-
-  return self
+local n = 40000
+local str = ffi.new('char[?]',n)
+for i=0,n-1 do
+  str[i] = i
 end
+local str = ffi.string(str,n)
 
-return Composite.new
+local fd = binfmt.Writer(io.open('out','wb'))
+fd:uint64(0x1212)
+fd:uint8(8)
+fd:string('foo12341234123412341234')
+fd:string(str)
+fd:close()
+
+local fd = binfmt.Reader(io.open('out'))
+assert(fd:uint64()==0x1212)
+assert(fd:uint8()==8)
+assert(fd:string()=='foo12341234123412341234')
+assert(fd:string()==str)
+fd:close()

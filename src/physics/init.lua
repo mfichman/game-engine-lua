@@ -47,6 +47,7 @@ local RigidBody = metatype('physics_RigidBody')
 return {
   World = ctor(World, 'physics_World_new'),
   SphereShape = ctor(Shape, 'physics_SphereShape_new'),
+  CylinderShape = ctor(Shape, 'physics_CylinderShape_new'),
   CompoundShape = ctor(Shape, 'physics_CompoundShape_new'),
   ConvexHullShape = ctor(Shape, 'physics_ConvexHullShape_new'),
   HingeConstraint = ctor(Constraint, 'physics_HingeConstraint_new'),

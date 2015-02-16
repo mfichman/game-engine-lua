@@ -11,23 +11,18 @@
 --                                                                            --
 -- ========================================================================== --
 
-local Component = require('ui.component')
-local Composite = {}; Composite.__index = Composite
+local ffi = require('ffi')
 
-function Composite.new(args)
-  local self = Component(args)
-  local component = {}
-  local ui = require('ui')
+ffi.cdef[[
+typedef struct FILE FILE;
+int fwrite(const void* ptr, size_t size, size_t nitems, FILE* file);
+int fread(void* ptr, size_t size, size_t nitems, FILE* file);
+int fgetc(FILE* file);
+int ungetc(int c, FILE* file);
+int feof(FILE* file);
+]]
 
-  for i, v in ipairs(args) do
-    local kind = ui[v.kind]
-    v.parent = self
-    table.insert(component, kind(v))
-  end
-
-  self.component = component
-
-  return self
-end
-
-return Composite.new
+return {
+  Writer = require('binfmt.writer'),
+  Reader = require('binfmt.reader'),
+}

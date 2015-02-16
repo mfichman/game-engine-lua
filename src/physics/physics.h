@@ -59,6 +59,7 @@ __declspec(dllexport) void physics_World_stepSimulation(physics_World* self, vec
 __declspec(dllexport) void physics_World_synchronizeMotionStates(physics_World* self, vec_Scalar remainder, vec_Scalar fixedTimeStep);
 __declspec(dllexport) int32_t physics_World_getNumManifolds(physics_World* self);
 __declspec(dllexport) physics_Manifold* physics_World_getManifold(physics_World* self, int32_t i);
+__declspec(dllexport) void** physics_World_contactTest(physics_World* self, physics_Shape* shape, vec_Transform* transform);
 
 __declspec(dllexport) int32_t physics_Manifold_getNumContacts(physics_Manifold* self);
 __declspec(dllexport) physics_RigidBody* physics_Manifold_getBody0(physics_Manifold* self);
@@ -66,6 +67,7 @@ __declspec(dllexport) physics_RigidBody* physics_Manifold_getBody1(physics_Manif
 __declspec(dllexport) physics_Contact physics_Manifold_getContact(physics_Manifold* self, int32_t i);
 
 __declspec(dllexport) physics_Shape* physics_SphereShape_new(vec_Scalar radius);
+__declspec(dllexport) physics_Shape* physics_CylinderShape_new(vec_Vec3* halfExtents);
 __declspec(dllexport) physics_Shape* physics_ConvexHullShape_new(uint32_t* index, uint32_t indexCount, vec_Vec3* vertex, uint32_t vertexCount, uint32_t vertexStride);
 __declspec(dllexport) physics_Shape* physics_CompoundShape_new();
 __declspec(dllexport) void physics_Shape_addChildShape(physics_Shape* self, vec_Transform* transform, physics_Shape* child);

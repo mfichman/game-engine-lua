@@ -23,29 +23,32 @@ function ItemIcon.new(args)
   local font = asset.open('font/Norwester.ttf', 64, 'fixed')
 
   local self = {
-      position = args.position,
-      pivot = args.pivot,
-      parent = args.parent,
-      size = args.size,
-      click = args.click,
-
-      {'Image', 
-        texture = 'texture/White.png', 
-        tint = vec.Color(1, 1, 1, .2),
-        size = vec.Vec2(.9, .9), 
-        position = vec.Vec2(.5, .5), 
-        pivot = vec.Vec2(.5, .5)
-      },
+    position = args.position,
+    pivot = args.pivot,
+    parent = args.parent,
+    size = args.size,
+    click = args.click,
   }
 
+  table.insert(self, {
+    kind = 'Image', 
+    texture = 'texture/White.png', 
+    tint = vec.Color(1, 1, 1, .2),
+    size = vec.Vec2(.9, .9), 
+    position = vec.Vec2(.5, .5), 
+    pivot = vec.Vec2(.5, .5)
+  })
+
   if args.item then
-    table.insert(self, {'Image', 
+    table.insert(self, {
+      kind = 'Image', 
       texture = args.item.kind.texture, 
       size = vec.Vec2(.9, .9), 
       position = vec.Vec2(.5, .5), 
       pivot = vec.Vec2(.5, .5)
     })
-    table.insert(self, {'Label', 
+    table.insert(self, {
+      kind = 'Label', 
       position = vec.Vec2(.08, .08),
       text = tostring(args.item.quantity),
       font = font, 

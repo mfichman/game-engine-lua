@@ -26,6 +26,7 @@ local test = {
   'src/tablex/test.lua',
   'src/item/test.lua',
   'src/freetype/test.lua',
+  'src/binfmt/test.lua',
 }
 
 for i, test in ipairs(test) do

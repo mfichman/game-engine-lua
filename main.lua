@@ -1,3 +1,4 @@
+#!/usr/local/bin/rlwrap luajit
 -- ========================================================================== --
 --                                                                            --
 -- Copyright (c) 2014 Matt Fichman <matt.fichman@gmail.com>                   --
@@ -13,6 +14,7 @@
 
 package.path = './src/?.lua;./src/?/init.lua;'..package.path
 
+local config = require('config')
 local game = require('game')
 local dbg = require('dbg')
 local entity = require('entity')
@@ -27,4 +29,10 @@ local function main()
   game.run()
 end
 
-xpcall(main, dbg.start)
+if config.debug then
+  xpcall(main, dbg.start)
+else
+  xpcall(main, dbg.dump)
+  local data = dbg.read(io.open('core'))
+  dbg.start()
+end

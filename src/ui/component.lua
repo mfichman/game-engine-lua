@@ -21,7 +21,14 @@ local Component = {}; Component.__index = Component
 function Component.new(args)
   local parent = args.parent or {position = vec.Vec2(), size = vec.Vec2(1, 1)}
   local pivot = args.pivot or vec.Vec2()
-  local size = parent.size * (args.size or vec.Vec2(1, 1))
+  local size = args.size or vec.Vec2(1, 1)
+  if not args.sizing or args.sizing == 'relative' then
+    size = parent.size * size
+  elseif args.sizing == 'absolute' then
+    -- Do not scale by parent size
+  else
+    error('invalid sizing mode')
+  end
   local position = args.position or vec.Vec2()
   local origin = parent.position+parent.size*position-pivot*size
   local transform = vec.Transform(vec.Vec3(origin.x, origin.y, -1))

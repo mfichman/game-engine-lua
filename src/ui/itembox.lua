@@ -11,23 +11,36 @@
 --                                                                            --
 -- ========================================================================== --
 
-local Component = require('ui.component')
-local Composite = {}; Composite.__index = Composite
+local vec = require('vec')
+local Composite = require('ui.composite')
 
-function Composite.new(args)
-  local self = Component(args)
-  local component = {}
-  local ui = require('ui')
+local ItemBox = {}; ItemBox.__index = ItemBox
 
-  for i, v in ipairs(args) do
-    local kind = ui[v.kind]
-    v.parent = self
-    table.insert(component, kind(v))
-  end
+function ItemBox.new(args)
+  args.size = vec.Vec2(args.box.rows*.1, args.box.cols*.1),
 
-  self.component = component
+  table.insert(args, {
+    kind = 'TitleBox',
+    text = args.text,
+  }) 
 
-  return self
+  -- Render a grid cell for each item in the gride
+  table.insert(args, {
+    kind = 'Grid',
+    rows = args.box.rows,
+    cols = args.box.cols,
+    item = function(i)
+      return {
+        kind = 'ItemIcon',
+        item = args.box.item[i+1],
+        click = function()
+          args.click(i+1)
+        end
+      }
+    end
+  })
+  local self = Composite(args)
+  return setmetatable(self, ItemBox)
 end
 
-return Composite.new
+return ItemBox.new

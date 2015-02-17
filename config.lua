@@ -17,8 +17,8 @@ display = {
   vsync = true,
 --  width = 2560,
 --  height = 1440,
-  width = 1200,
-  height = 800,
+  width = 1920,
+  height = 1080,
   fullscreen = false,
 }
 

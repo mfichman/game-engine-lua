@@ -22,6 +22,7 @@ local entity = require('entity')
 local function main()
   entity.World{}
   entity.Fighter{teamId = 1}
+  entity.CommTower{}
 --  entity.Cruiser{teamId = 1, kind = 'Destroyer'}
   game.run()
 end

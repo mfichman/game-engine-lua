@@ -18,9 +18,6 @@ local config = require('config')
 local game = require('game')
 local dbg = require('dbg')
 local entity = require('entity')
-local vec = require('vec')
-local config = require('config')
-local world = require('world')
 
 local function main()
   entity.World{}
@@ -33,6 +30,4 @@ if config.debug then
   xpcall(main, dbg.start)
 else
   xpcall(main, dbg.dump)
-  local data = dbg.read(io.open('core', 'rb'))
-  dbg.start()
 end

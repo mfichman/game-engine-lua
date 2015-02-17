@@ -11,12 +11,14 @@
 --                                                                            --
 -- ========================================================================== --
 
+debug = true
+
 display = {
-  vsync = false,
-  width = 2560,
-  height = 1440,
---  width = 1680,
---  height = 1050,
+  vsync = true,
+--  width = 2560,
+--  height = 1440,
+  width = 1200,
+  height = 800,
   fullscreen = false,
 }
 
@@ -31,8 +33,8 @@ log = {
 
 chunk = {
   cachesize = 8,
-  size = 64,
-  pitch = 2,
+  size = 64, -- size in world units of a chunk
+  pitch = 2, -- size of each cell in a chunk
 }
 
 key = {
@@ -54,6 +56,7 @@ mouse = {
 }
 
 process = {
+  'Entity',
   'RigidBody',
   'Camera',
   'UserControl',
@@ -64,6 +67,7 @@ process = {
   'Lifetime',
   'Armor',
   'Group',
+  'Terrain',
   'Model',
   'Target',
   'EngineFlame',

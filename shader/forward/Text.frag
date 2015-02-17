@@ -37,10 +37,8 @@ void standard() {
 
 void main() {
     if (sdf) {
-//        signedDistanceField();
+        signedDistanceField();
     } else {
         standard();
     }
-        standard();
-   //colorOut = vec4(1);
 }

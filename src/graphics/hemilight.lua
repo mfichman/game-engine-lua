@@ -37,7 +37,7 @@ function HemiLight:radiusOfEffect()
   local a = self.quadraticAttenuation
   local b = self.linearAttenuation
   local c = self.constantAttenuation
-  local minIntensity = 0.02
+  local minIntensity = 0.01
   if a ~= 0 then
     -- Quadratic equation to find distance at which intensity is below the
     -- threshold

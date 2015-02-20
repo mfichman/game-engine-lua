@@ -44,14 +44,14 @@ local function createLightCamera(g, light)
   sceneCamera:update()
   
   local frustum = {
-    transform * vec.Vec4(-1, 1, -1, 1), -- near top left
-    transform * vec.Vec4(1, 1, -1, 1), -- near top right
-    transform * vec.Vec4(1, -1, -1, 1), -- near bottom left
-    transform * vec.Vec4(-1, -1, -1, 1), -- near bottom right
-    transform * vec.Vec4(-1, 1, 1, 1), -- far top left
-    transform * vec.Vec4(1, 1, 1, 1), -- far top right
-    transform * vec.Vec4(1, -1, 1, 1), -- far bottom left
-    transform * vec.Vec4(-1, -1, 1, 1), -- far bottom right
+    transform * vec.Vec4(1, 1, 1, 1),
+    transform * vec.Vec4(1, 1, -1, 1),
+    transform * vec.Vec4(1, -1, 1, 1), 
+    transform * vec.Vec4(1, -1, -1, 1),
+    transform * vec.Vec4(-1, 1, 1, 1),
+    transform * vec.Vec4(-1, 1, -1, 1), 
+    transform * vec.Vec4(-1, -1, 1, 1),
+    transform * vec.Vec4(-1, -1, -1, 1),
   } 
 
   -- Set up parameters for the virtual light camera
@@ -77,11 +77,15 @@ local function createLightCamera(g, light)
 
   -- Include objects behind/off to the side of the camera...note that this
   -- will not work for all scenes. FIXME: Make this margin configurable
+  assert(lightCamera.near < lightCamera.far) 
+  assert(lightCamera.bottom < lightCamera.top) 
+  assert(lightCamera.left < lightCamera.right) 
   lightCamera.near = lightCamera.near - 100
-  lightCamera.top = lightCamera.top + 2
+  lightCamera.far = lightCamera.far + 100
   lightCamera.bottom = lightCamera.bottom - 2
-  lightCamera.right = lightCamera.right + 2
+  lightCamera.top = lightCamera.top + 2
   lightCamera.left = lightCamera.left - 2
+  lightCamera.right = lightCamera.right + 2
 
   lightCamera.viewport.width = light.shadowMap.width
   lightCamera.viewport.height = light.shadowMap.height

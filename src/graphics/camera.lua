@@ -23,6 +23,7 @@ function Camera.new(args)
     viewMatrix = vec.Mat4.identity(),
     viewInvMatrix = vec.Mat4.identity(), 
     viewProjectionMatrix = vec.Mat4.identity(),
+    viewProjectionInvMatrix = vec.Mat4.identity(),
     far = args and args.far or 1000,
     near = args and args.near or .1,
     left = args and args.left or 0,

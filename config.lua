@@ -14,7 +14,7 @@
 debug = true
 
 display = {
-  vsync = true,
+  vsync = false,--true,
   width = 2560,
   height = 1440,
 --  width = 1920,

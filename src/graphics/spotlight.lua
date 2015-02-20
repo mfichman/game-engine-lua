@@ -24,7 +24,7 @@ function SpotLight.new(args)
     constantAttenuation = args.constantAttenuation or 1,
     linearAttenuation = args.linearAttenuation or 1,
     quadraticAttenuation = args.quadraticAttenuation or 0,
-    cutoff = args.cutoff or 30,
+    cutoff = args.cutoff or 60,
     power = args.power or 20,
     direction = args.direction or vec.Vec3(0, -1, 0),
   }
@@ -35,7 +35,7 @@ function SpotLight:radiusOfEffect()
   local a = self.quadraticAttenuation
   local b = self.linearAttenuation
   local c = self.constantAttenuation
-  local minIntensity = 0.02
+  local minIntensity = 0.01
   if a ~= 0 then
     -- Quadratic equation to find distance at which intensity is below the
     -- threshold

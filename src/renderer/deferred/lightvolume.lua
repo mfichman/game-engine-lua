@@ -74,7 +74,14 @@ local function cone(g, program, radius, cutoff, direction)
   local sz = radius
 
   -- Transform the light to point in the correct direction
-  local rotate = vec.Mat4.fromForwardVector(-direction)
+  local direction = vec.Vec3(-direction.x, -direction.y, direction.z):unit()
+  -- FIXME: For some reason, the rotation transform for the cone is all screwed
+  -- up. This hacked fix of the direction vector is a workaround. This could be
+  -- a problem in:
+  --  - this function
+  --  - Vec3.orthogonal
+  --  - Mat4.fromForwardVector
+  local rotate = vec.Mat4.fromForwardVector(direction)
   local scale = vec.Mat4.scale(sx, sy, sz)
   local worldMatrix = g.worldMatrix * rotate * scale  
   local worldViewProjectionMatrix = g.camera.viewProjectionMatrix * worldMatrix

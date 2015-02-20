@@ -28,7 +28,7 @@ fd:string('foo12341234123412341234')
 fd:string(str)
 fd:close()
 
-local fd = binfmt.Reader(io.open('out'))
+local fd = binfmt.Reader(io.open('out','rb'))
 assert(fd:uint64()==0x1212)
 assert(fd:uint8()==8)
 assert(fd:string()=='foo12341234123412341234')

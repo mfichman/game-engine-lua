@@ -37,11 +37,12 @@ local function createLightCamera(g, light)
   sceneCamera.far = sceneCamera.near+light.shadowViewDistance 
   sceneCamera:update()
 
+  -- Transform for frustum: device space => world space => light space
+  local transform = lightView * sceneCamera.viewProjectionInvMatrix
+
   sceneCamera.far = sceneFar
   sceneCamera:update()
   
-  -- Transform for frustum: device space => world space => light space
-  local transform = lightView * sceneCamera.viewProjectionInvMatrix
   local frustum = {
     transform * vec.Vec4(-1, 1, -1, 1), -- near top left
     transform * vec.Vec4(1, 1, -1, 1), -- near top right

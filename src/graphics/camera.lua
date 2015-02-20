@@ -51,6 +51,7 @@ function Camera:update()
   self.projectionInvMatrix = self.projectionMatrix:inverse()
   self.viewInvMatrix = self.viewMatrix:inverse()
   self.viewProjectionMatrix = self.projectionMatrix * self.viewMatrix
+  self.viewProjectionInvMatrix = self.viewProjectionMatrix:inverse()
 end
 
 return Camera.new

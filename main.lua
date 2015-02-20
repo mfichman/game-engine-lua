@@ -20,9 +20,13 @@ local dbg = require('dbg')
 local entity = require('entity')
 
 local function main()
+  local graphics = require('graphics')
+  local gamemath = require('gamemath')
+  local vec = require('vec')
+  local component = require('component')
+
   entity.World{}
-  entity.Fighter{teamId = 1}
-  entity.CommTower{}
+--  entity.CommTower{}
 --  entity.Cruiser{teamId = 1, kind = 'Destroyer'}
   game.run()
 end
@@ -32,3 +36,24 @@ if config.debug then
 else
   xpcall(main, dbg.dump)
 end
+
+
+
+--[[
+For shadow debugging
+  local ent = entity.Fighter{teamId = 1}
+  local camera = game.Table('Camera')
+  local camera = camera[ent.id]
+  camera:update(ent.id)
+  local frustum = { -- frustum in screen space
+    gamemath.deviceToWorld(graphics.camera, vec.Vec3(-1, -1, 0)),
+    gamemath.deviceToWorld(graphics.camera, vec.Vec3(-1, 1, 0)),
+    gamemath.deviceToWorld(graphics.camera, vec.Vec3(1, 1, 0)),
+    gamemath.deviceToWorld(graphics.camera, vec.Vec3(1, -1, 0)),
+  } 
+  for i, p in ipairs(frustum) do
+    --entity.Rock{origin = vec.Vec3(p.x, p.y, -1), kind = 'LargeRock0'}
+  end
+  --entity.Rock{origin = vec.Vec3(), rotation = vec.Quat.identity(), kind = 'SmallRock0'}
+]]
+

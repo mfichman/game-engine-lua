@@ -69,6 +69,7 @@ __declspec(dllexport) physics_Contact physics_Manifold_getContact(physics_Manifo
 __declspec(dllexport) physics_Shape* physics_SphereShape_new(vec_Scalar radius);
 __declspec(dllexport) physics_Shape* physics_CylinderShape_new(vec_Vec3* halfExtents);
 __declspec(dllexport) physics_Shape* physics_ConvexHullShape_new(uint32_t* index, uint32_t indexCount, vec_Vec3* vertex, uint32_t vertexCount, uint32_t vertexStride);
+__declspec(dllexport) physics_Shape* physics_BvhTriangleMeshShape_new(uint32_t* index, uint32_t indexCount, vec_Vec3* vertex, uint32_t vertexCount, uint32_t vertexStride);
 __declspec(dllexport) physics_Shape* physics_CompoundShape_new();
 __declspec(dllexport) void physics_Shape_addChildShape(physics_Shape* self, vec_Transform* transform, physics_Shape* child);
 __declspec(dllexport) void physics_Shape_del(physics_Shape* self);

@@ -34,7 +34,7 @@ log = {
 }
 
 chunk = {
-  cachesize = 8,
+  cachesize = 16,
   size = 64, -- size in world units of a chunk
   pitch = 2, -- size of each cell in a chunk
 }
@@ -66,6 +66,7 @@ process = {
   'Launch',
   'Mine',
   'Drag',
+  'Lift',
   'Lifetime',
   'Armor',
   'Group',

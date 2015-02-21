@@ -38,7 +38,7 @@ local function createLightCamera(g, light)
   sceneCamera:update()
 
   -- Transform for frustum: device space => world space => light space
-  local transform = lightView * sceneCamera.viewProjectionInvMatrix
+  local transform = lightViewInverse * sceneCamera.viewProjectionInvMatrix
 
   sceneCamera.far = sceneFar
   sceneCamera:update()

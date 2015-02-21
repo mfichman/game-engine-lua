@@ -31,6 +31,7 @@ extern "C" {
 #include <bullet/btBulletCollisionCommon.h>
 #include <bullet/btBulletDynamicsCommon.h>
 #include <bullet/BulletCollision/CollisionShapes/btShapeHull.h>
+#include <bullet/BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 
 template <typename T, typename V> T convert(V* val);
 template <typename T, typename V> T convert(V const& val);
@@ -59,6 +60,19 @@ struct World : public btDiscreteDynamicsWorld {
         m_fixedTimeStep = fixedTimeStep;
         btDiscreteDynamicsWorld::synchronizeMotionStates();
     }
+};
+
+struct TriangleMeshShape : public btBvhTriangleMeshShape {
+    TriangleMeshShape(btTriangleIndexVertexArray* vertexArray) : 
+         btBvhTriangleMeshShape(vertexArray, false),
+         vertexArray_(vertexArray) {
+    }
+
+    ~TriangleMeshShape() {
+         delete vertexArray_;
+    }
+
+    btTriangleIndexVertexArray* vertexArray_;
 };
 
 struct SensorCallback : public btCollisionWorld::ContactResultCallback {
@@ -279,6 +293,22 @@ physics_Shape* physics_ConvexHullShape_new(uint32_t* index, uint32_t indexCount,
     return (physics_Shape*)shape;
 }
 
+physics_Shape* physics_BvhTriangleMeshShape_new(uint32_t* index, uint32_t indexCount, vec_Vec3* vertex, uint32_t vertexCount, uint32_t vertexStride) {
+    btTriangleIndexVertexArray* vertexArray = new btTriangleIndexVertexArray;
+    btIndexedMesh indexedMesh;
+
+    indexedMesh.m_numTriangles = indexCount/3;
+    indexedMesh.m_triangleIndexBase = (uint8_t const*)index;
+    indexedMesh.m_triangleIndexStride = sizeof(*index)*3;
+    indexedMesh.m_numVertices = vertexCount;
+    indexedMesh.m_vertexBase = (uint8_t const*)vertex;
+    indexedMesh.m_vertexStride = vertexStride;
+    vertexArray->addIndexedMesh(indexedMesh);
+
+    TriangleMeshShape* shape = new TriangleMeshShape(vertexArray);
+    return (physics_Shape*)shape;
+}
+
 physics_Shape* physics_CompoundShape_new() {
     return (physics_Shape*)new btCompoundShape;
 }
@@ -296,7 +326,14 @@ void physics_Shape_del(physics_Shape* self) {
 }
 
 physics_Constraint* physics_HingeConstraint_new(physics_RigidBody* b1, physics_RigidBody* b2, vec_Vec3* pivot1, vec_Vec3* pivot2, vec_Vec3* axis1, vec_Vec3* axis2) {
-    return (physics_Constraint*)new btHingeConstraint(*(btRigidBody*)b1, *(btRigidBody*)b2, convert<btVector3>(pivot1), convert<btVector3>(pivot2), convert<btVector3>(axis1), convert<btVector3>(axis2));
+    btHingeConstraint* constraint = new btHingeConstraint(
+        *(btRigidBody*)b1, 
+        *(btRigidBody*)b2, 
+        convert<btVector3>(pivot1), 
+        convert<btVector3>(pivot2), 
+        convert<btVector3>(axis1), 
+        convert<btVector3>(axis2));
+    return (physics_Constraint*)constraint;
 }
 
 void physics_Constraint_del(physics_Constraint* self) {

@@ -50,6 +50,7 @@ return {
   CylinderShape = ctor(Shape, 'physics_CylinderShape_new'),
   CompoundShape = ctor(Shape, 'physics_CompoundShape_new'),
   ConvexHullShape = ctor(Shape, 'physics_ConvexHullShape_new'),
+  BvhTriangleMeshShape = ctor(Shape, 'physics_BvhTriangleMeshShape_new'),
   HingeConstraint = ctor(Constraint, 'physics_HingeConstraint_new'),
   RigidBody = ctor(RigidBody, 'physics_RigidBody_new'),
   RigidBodyDesc = ffi.typeof('physics_RigidBodyDesc'),

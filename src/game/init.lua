@@ -12,6 +12,7 @@
 -- ========================================================================== --
 
 local sfml = require('sfml')
+local gamemath = require('gamemath')
 local config = require('config')
 local graphics = require('graphics')
 local renderer = require('renderer')
@@ -211,6 +212,15 @@ local function run()
   collectgarbage('restart')
 end
 
+local function mouseTarget()
+  -- Returns the target that the mouse is pointing at
+  local screen = sfml.Mouse_getPosition(window)
+  local ray = gamemath.pickRay(graphics.camera, screen)
+  local zPlaneOrigin = vec.Vec3(0, 0, 0)
+  local zPlaneNormal = vec.Vec3(0, 0, 1)
+  return gamemath.rayPlaneIntersect(ray, zPlaneOrigin, zPlaneNormal)
+end
+
 local function Table(kind)
   local kind = component[kind]
   return db:tableIs(kind)
@@ -237,5 +247,6 @@ return {
   window = window,
   world = world,
   tickHandler = tickHandler,
+  mouseTarget = mouseTarget,
 }
 

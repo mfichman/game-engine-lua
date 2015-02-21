@@ -26,6 +26,7 @@ local function main()
   local component = require('component')
 
   entity.Fighter{teamId = 1}
+--  entity.EscapePod{teamId = 1}
   entity.World{}
 --  entity.CommTower{}
 --  entity.Cruiser{teamId = 1, kind = 'Destroyer'}

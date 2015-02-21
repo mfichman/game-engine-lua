@@ -14,4 +14,5 @@
 return {
   Binding = require('input.binding'),
   Map = require('input.map'),
+  mou,
 }

@@ -29,18 +29,18 @@ local asset = require('asset')
 local profiler = require('profiler')
 
 -- Initialize game variables
-window = window.Window()
-db = db.Database()
-input = input.Map()
-renderer = renderer.Deferred(graphics.context)
-world = physics.World()
-clock = sfml.Clock()
-accumulator = 0
-timestep = 1/60
-samples = {}
-process = {}
-ticks = 0
-tickHandler = {}
+local window = window.Window()
+local db = db.Database()
+local input = input.Map()
+local renderer = renderer.Deferred(graphics.context)
+local world = physics.World()
+local clock = sfml.Clock()
+local accumulator = 0
+local timestep = 1/60
+local samples = {}
+local process = {}
+local ticks = 0
+local tickHandler = {}
 
 -- Call 'event' on each row in the table. If the first row in the table does 
 -- not have 'event' as a member, then skip all other components in the table as
@@ -212,15 +212,6 @@ local function run()
   collectgarbage('restart')
 end
 
-local function mouseTarget()
-  -- Returns the target that the mouse is pointing at
-  local screen = sfml.Mouse_getPosition(window)
-  local ray = gamemath.pickRay(graphics.camera, screen)
-  local zPlaneOrigin = vec.Vec3(0, 0, 0)
-  local zPlaneNormal = vec.Vec3(0, 0, 1)
-  return gamemath.rayPlaneIntersect(ray, zPlaneOrigin, zPlaneNormal)
-end
-
 local function Table(kind)
   local kind = component[kind]
   return db:tableIs(kind)
@@ -247,6 +238,7 @@ return {
   window = window,
   world = world,
   tickHandler = tickHandler,
-  mouseTarget = mouseTarget,
+  gravity = gravity,
+  down = down,
 }
 

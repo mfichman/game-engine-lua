@@ -78,6 +78,12 @@ function Vec3:unit()
   return Vec3.new(self.x/norm, self.y/norm, self.z/norm)
 end
 
+-- Finds the projection of 'self' onto 'other' 
+function Vec3:project(other)
+  --puv = v dot u / |v| * v 
+  return (other:dot(self)/other:len2()) * other
+end
+
 function Vec3:__eq(other)
   return self.x == other.x and self.y == other.y and self.z == other.z
 end

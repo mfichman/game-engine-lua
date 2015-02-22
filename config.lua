@@ -40,21 +40,23 @@ chunk = {
 }
 
 key = {
-  accel = "i",
-  brake = "j",
-  mine = "m",
-  attack = "space",
-  inspect = "enter",
-  inventory = "u",
-  zoomin = "add",
-  zoomout = "subtract",
+  accel = 'i',
+  descend = 'd',
+  ascend = 'a',
+  brake = 'j',
+  mine = 'm',
+  attack = 'space',
+  inspect = 'enter',
+  inventory = 'u',
+  zoomin = 'add',
+  zoomout = 'subtract',
 }
 
 mouse = {
-  attack = "left",
-  action = "right",
-  click = "left",
-  alt = "right",
+  attack = 'left',
+  action = 'right',
+  click = 'left',
+  alt = 'right',
 }
 
 process = {

@@ -15,8 +15,11 @@ debug = true
 
 display = {
   vsync = false,--true,
-  width = 2560,
+  width = 1600,
+  height = 1200,
+--[[  width = 2560,
   height = 1440,
+]]
 --  width = 1920,
 --  height = 1080,
 --  width = 1200,
@@ -33,8 +36,13 @@ log = {
   memory = false,
 }
 
+block = {
+  seed = 100939191,
+  size = 1024, -- each block is 1024 m^3
+}
+
 chunk = {
-  cachesize = 16,
+  cachesize = 256, -- FIXME
   size = 64, -- size in world units of a chunk
   pitch = 2, -- size of each cell in a chunk
 }
@@ -82,7 +90,6 @@ process = {
   'Sparks',
   'Explosion',
   'Sun',
-  'ChunkCache',
   'Hud',
 }
 

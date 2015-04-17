@@ -26,7 +26,7 @@ local function main()
   local component = require('component')
 
   entity.World{}
-  entity.Fighter{teamId = 1, origin = vec.Vec3(0, 0, 280)}
+  entity.Fighter{teamId = 2, origin = vec.Vec3(0, 0, 205)}
 --  entity.EscapePod{teamId = 1}
 --  entity.CommTower{}
 --  entity.Cruiser{teamId = 1, kind = 'Destroyer'}

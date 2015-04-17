@@ -36,7 +36,7 @@ log = {
   memory = false,
 }
 
-block = {
+zone = {
   seed = 100939191,
   size = 1024, -- each block is 1024 m^3
 }

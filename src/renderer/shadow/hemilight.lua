@@ -27,10 +27,7 @@ local function createLightCamera(g, light)
   
   -- Transform to the center of the light, then point in the reverse of the
   -- light direction.
-  local lightView = vec.Mat4x4.fromForwardVector(-light.direction:unit())--:inverse()
-  local lightViewInverse = lightView:transpose()
-  -- Since lightView is orthogonal, we can use tranpose instead. Minv =
-  -- Mtranspose for an orthogonal matrix M.
+  local lightView = vec.Mat4.fromForwardVector(-light.direction:unit())
 
   local sceneCamera = g.camera
   local sceneFar = sceneCamera.far
@@ -38,7 +35,7 @@ local function createLightCamera(g, light)
   sceneCamera:update()
 
   -- Transform for frustum: device space => world space => light space
-  local transform = lightViewInverse * sceneCamera.viewProjectionInvMatrix
+  local transform = lightView * sceneCamera.viewProjectionInvMatrix
 
   sceneCamera.far = sceneFar
   sceneCamera:update()
@@ -67,25 +64,16 @@ local function createLightCamera(g, light)
 
   for i, point in ipairs(frustum) do
     local point = point/point.w -- Perspective divide
-    lightCamera.near = math.min(lightCamera.near or point.z, point.z)
-    lightCamera.far = math.max(lightCamera.far or point.z, point.z)
+    lightCamera.far = math.min(lightCamera.far or point.z, point.z)
+    lightCamera.near = math.max(lightCamera.near or point.z, point.z)
     lightCamera.left = math.min(lightCamera.left or point.x, point.x)
     lightCamera.right = math.max(lightCamera.right or point.x, point.x)
     lightCamera.bottom = math.min(lightCamera.bottom or point.y, point.y)
     lightCamera.top = math.max(lightCamera.top or point.y, point.y)
   end 
 
-  -- Include objects behind/off to the side of the camera...note that this
-  -- will not work for all scenes. FIXME: Make this margin configurable
-  assert(lightCamera.near < lightCamera.far) 
-  assert(lightCamera.bottom < lightCamera.top) 
-  assert(lightCamera.left < lightCamera.right) 
-  lightCamera.near = lightCamera.near - 100
-  lightCamera.far = lightCamera.far + 100
-  lightCamera.bottom = lightCamera.bottom - 2
-  lightCamera.top = lightCamera.top + 2
-  lightCamera.left = lightCamera.left - 2
-  lightCamera.right = lightCamera.right + 2
+  lightCamera.near = -lightCamera.near
+  lightCamera.far = -lightCamera.far
 
   lightCamera.viewport.width = light.shadowMap.width
   lightCamera.viewport.height = light.shadowMap.height
@@ -109,7 +97,7 @@ local function render(g, light)
     0., 0., .5, 0.,
     .5, .5, .5, 1.)
   -- Transfrom from clip space to texture space (0, 1) x (0, 1)
-  local lightMatrix = lightBias * lightCamera.viewProjectionMatrix
+  local lightMatrix = lightBias * lightCamera.viewProjectionMatrix 
   light.transform = lightMatrix
 
   -- Set the viewport to be equal in dimensions to the shadow target.

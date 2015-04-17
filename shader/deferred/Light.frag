@@ -58,7 +58,9 @@ LightingInfo lightingInfo() {
     info.Kd = texture(diffuseBuffer, viewport).rgb;
     info.Ke = texture(emissiveBuffer, viewport).rgb;
     info.Ks = temp.rgb;
-    info.alpha = temp.a*1024;
+
+    float alphaPackFactor = 1024;
+    info.alpha = temp.a*alphaPackFactor;
 
     // Sample the normal vector for the pixel
     info.N = normalize(texture(normalBuffer, viewport).xyz * 2. - 1.);
@@ -79,31 +81,13 @@ float shadowPoissonPcf(in LightingInfo li) {
     // Transform the view coordinates to light space and renormalize
     vec4 shadowCoord = lightMatrix * vec4(li.view, 1);
 
-    float shadow = 0.f;
-    for (float y = -1.5; y <= 1.5; y += 1.0) {
-        for (float x = -1.5; x <= 1.5; x += 1.0) {
-            vec4 sample = shadowCoord;
-            sample.xy += shadowCoord.w * vec2(x, y) / shadowMapSize;
-            shadow += textureProj(shadowMap, sample);
-        }
+    float shadow = textureProj(shadowMap, shadowCoord);
+    if (shadow <= 0) {
+        float dist = shadowCoord.z/shadowCoord.w;
+        float maxDist = .7;
+        return clamp(sqrt(max(dist-maxDist, 0)/maxDist), 0, 1);
+    } else {
+        return 1;
     }
-    shadow /= 16.;
-
-    return shadow;
-/*
-    vec2 poisson[4] = vec2[](
-        vec2(-0.94201624, -0.39906216),
-        vec2(0.94558609, -0.76890725),
-        vec2(-0.094184101, -0.92938870),
-        vec2(0.34495938, 0.29387760)
-    );
-
-    for(int i = 0; i < 4; i++) {
-        vec4 sample = shadowCoord;
-        sample.xy += shadowCoord.w * poisson[i] / shadowMapSize;
-        shadow += textureProj(shadowMap, sample);
-    }
-    return shadow/4 * shadowIntensity;
-*/
 }
 

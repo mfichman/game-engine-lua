@@ -28,26 +28,26 @@ void main() {
     vec3 Ls = specularColor;
     vec3 La = ambientColor;
 
-	LightingInfo li = lightingInfo();
-	float shadow = shadowPoissonPcf(li);
+    LightingInfo li = lightingInfo();
+    float shadow = shadowPoissonPcf(li);
 
-	// Sample the normal and the view vector
+    // Sample the normal and the view vector
     vec3 V = normalize(li.view);
     vec3 R = reflect(V, li.N);
-	vec3 L = normalize(-direction);
-	float D = length(li.view - lightPosition);
-	float atten = 1./(atten0 + atten1 * D + atten2 * D * D);
+    vec3 L = normalize(-direction);
+    float D = length(li.view - lightPosition);
+    float atten = 1./(atten0 + atten1 * D + atten2 * D * D);
 
-	float Rd = dot(li.N, L);
+    float Rd = dot(li.N, L);
 
     // Calculate specular color coefficient
     vec3 specular = li.Ks * Ls * pow(max(0., dot(L, R)), li.alpha);
 
     if (Rd > 0) {
-	    vec3 diffuse = li.Kd * Ld * Rd;// * mix(Ldb, Ld, Rd);
-        color.rgb = atten * (diffuse + specular) * shadow;
+       vec3 diffuse = li.Kd * Ld * Rd;// * mix(Ldb, Ld, Rd);
+       color.rgb = atten * (diffuse + specular) * shadow;
     } else {
-	    vec3 diffuse = li.Kd * Ldb * -Rd;// * mix(Ldb, Ld, Rd);
+        vec3 diffuse = li.Kd * Ldb * -Rd;// * mix(Ldb, Ld, Rd);
         color.rgb  = atten * diffuse;
         // FIXME: Two-sided lighting model: Need to shadow the unlit side as
         // well.  Currently, on the unlit side, we just ignore the shadow value.

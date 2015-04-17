@@ -105,6 +105,10 @@ function Mat4x4.fromForwardVector(forward)
       0, 0, 0, 1)
 end
 
+function Mat4x4:zAxis()
+  return Vec3(self.d02, self.d06, self.d10)
+end
+
 function Mat4x4.rotate(quat)
   -- This routine is borrowed from Ogre 3D
   local fTx  = 2*quat.x;

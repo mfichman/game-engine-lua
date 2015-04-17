@@ -103,6 +103,8 @@ __declspec(dllexport) void physics_RigidBody_setAngularFactor(physics_RigidBody*
 __declspec(dllexport) void physics_RigidBody_setLinearFactor(physics_RigidBody* self, vec_Vec3 const* factor);
 __declspec(dllexport) void physics_RigidBody_setCollisionFlags(physics_RigidBody* self, uint32_t flags);
 __declspec(dllexport) void physics_RigidBody_setUserPointer(physics_RigidBody* self, void* data);
+__declspec(dllexport) void physics_RigidBody_setCcdMotionThreshold(physics_RigidBody* self, vec_Scalar threshold);
+__declspec(dllexport) void physics_RigidBody_setCcdSweptSphereRadius(physics_RigidBody* self, vec_Scalar radius);
 
 
 

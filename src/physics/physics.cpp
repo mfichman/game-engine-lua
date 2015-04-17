@@ -64,7 +64,7 @@ struct World : public btDiscreteDynamicsWorld {
 
 struct TriangleMeshShape : public btBvhTriangleMeshShape {
     TriangleMeshShape(btTriangleIndexVertexArray* vertexArray) : 
-         btBvhTriangleMeshShape(vertexArray, false),
+         btBvhTriangleMeshShape(vertexArray, true),
          vertexArray_(vertexArray) {
     }
 
@@ -464,5 +464,13 @@ void physics_RigidBody_setCollisionFlags(physics_RigidBody* self, uint32_t flags
 
 void physics_RigidBody_setUserPointer(physics_RigidBody* self, void* data) {
     ((btRigidBody*)self)->setUserPointer(data);
+}
+
+void physics_RigidBody_setCcdMotionThreshold(physics_RigidBody* self, vec_Scalar threshold) {
+    ((btRigidBody*)self)->setCcdMotionThreshold(threshold);
+}
+
+void physics_RigidBody_setCcdSweptSphereRadius(physics_RigidBody* self, vec_Scalar radius) {
+    ((btRigidBody*)self)->setCcdSweptSphereRadius(radius);
 }
 

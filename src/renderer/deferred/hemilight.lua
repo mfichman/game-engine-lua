@@ -36,7 +36,7 @@ local function params(g, light)
   gl.glUniform1f(program.atten2, light.quadraticAttenuation)
 
   -- Transform the light direction from world space into view space
-  local worldViewMatrix = g.worldMatrix * g.camera.viewMatrix
+  local worldViewMatrix = g.camera.viewMatrix * g.worldMatrix
   local direction = worldViewMatrix:rotation() * light.direction:unit()
   gl.glUniform3fv(program.direction, 1, direction:data())
 end

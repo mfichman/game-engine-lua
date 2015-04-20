@@ -46,7 +46,8 @@ function Window.new()
   end
 
   gl.glViewport(0, 0, mode.width, mode.height)
-  gl.glClearColor(.03, .03, .03, 1)
+  --gl.glClearColor(.03, .03, .03, 1)
+  gl.glClearColor(.0, .0, .0, 1)
 
   return window
 end

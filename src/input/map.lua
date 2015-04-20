@@ -21,7 +21,7 @@ local Binding = require('input.binding')
 
 local action = {
   'accel','brake','mine','click','alt','attack','inspect','inventory',
-  'zoomin','zoomout','ascend','descend',
+  'zoomIn','zoomOut','ascend','descend',
 }
 
 -- Convert semantic actions (see above) into SFML keycodes/mousebutton codes

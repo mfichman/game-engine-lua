@@ -289,7 +289,7 @@ end
 
 -- Return origin
 function Mat4x4:origin()
-  return Vec3(self.d11, self.d12, self.d13)
+  return Vec3(self.d13, self.d14, self.d15)
 end
 
 function Mat4x4:data()

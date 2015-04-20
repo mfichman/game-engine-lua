@@ -15,11 +15,11 @@ debug = true
 
 display = {
   vsync = false,--true,
-  width = 1600,
-  height = 1200,
---[[  width = 2560,
+--  width = 1600,
+--  height = 1200,
+  width = 2560,
   height = 1440,
-]]
+
 --  width = 1920,
 --  height = 1080,
 --  width = 1200,
@@ -28,7 +28,7 @@ display = {
 }
 
 render = {
-  shadowmapsize = 4096,
+  shadowMapSize = 4096,
 }
 
 log = {
@@ -42,9 +42,7 @@ zone = {
 }
 
 chunk = {
-  cachesize = 256, -- FIXME
-  size = 64, -- size in world units of a chunk
-  pitch = 2, -- size of each cell in a chunk
+  cacheSize = 256, 
 }
 
 key = {
@@ -56,8 +54,8 @@ key = {
   attack = 'space',
   inspect = 'enter',
   inventory = 'u',
-  zoomin = 'add',
-  zoomout = 'subtract',
+  zoomIn = 'add',
+  zoomOut = 'subtract',
 }
 
 mouse = {

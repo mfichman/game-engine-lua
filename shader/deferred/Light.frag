@@ -81,6 +81,10 @@ float shadowPoissonPcf(in LightingInfo li) {
     // Transform the view coordinates to light space and renormalize
     vec4 shadowCoord = lightMatrix * vec4(li.view, 1);
 
+    if(shadowCoord.x>1||shadowCoord.x<0||shadowCoord.y>1||shadowCoord.y<0) {
+        return 1;
+    }
+
     float shadow = textureProj(shadowMap, shadowCoord);
     if (shadow <= 0) {
         float dist = shadowCoord.z/shadowCoord.w;

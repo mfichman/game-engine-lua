@@ -170,11 +170,11 @@ local function gc()
   local start = clock:getElapsedTime():asSeconds()
   local remaining = timestep - start 
   local budget = .005
-  if remaining > budget then
-    collectgarbage('step', 2)
-  else
-    print('warning: skipped gc')
-  end
+  --if remaining > budget then
+    collectgarbage('step', 1)
+  --else
+   -- print('warning: skipped gc')
+  --end
 end
 
 -- Run the game

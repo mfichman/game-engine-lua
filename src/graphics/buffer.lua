@@ -26,7 +26,7 @@ function Buffer.new(target, usage, kind)
   self.target = target
   self.usage = usage
   self.kind = ffi.typeof(string.format('%s[?]', kind))
-  self.capacity = 32
+  self.capacity = 0
   self.count = 0
   self.stride = ffi.sizeof(kind)
   self.element = self.kind(self.capacity)
@@ -38,31 +38,32 @@ end
 -- Reserve up to 'count' bytes in the buffer, and increase the buffer count
 -- to 'count'. Resizes the underlying array if necessary.
 function Buffer:reserve(count)
-  if count < self.count then return end
-  if count < self.capacity then
-    self.count = count
-    return
-  end 
-  local capacity = count + math.floor(count/2)
+  if count < self.capacity then return end 
+  local capacity = math.max(64, count + math.floor(count/2))
   local element = self.kind(capacity)
   ffi.copy(element, self.element, ffi.sizeof(self.element))
-  self.count = count
   self.capacity = capacity
   self.element = element
   self.status = 'dirty'
 end
 
+function Buffer:resize(count)
+  if count < self.count then return end
+  self:reserve(count)
+  self.count = count
+end
+
 -- Append an element to the end of the buffer, and mark the buffer as dirty.
 function Buffer:push(element)
   local index = self.count
-  self:reserve(index+1)
+  self:resize(index+1)
   self.element[index] = element
   self.status = 'dirty'
 end
 
 -- Insert and element at the given location. Resize the buffer if necessary.
 function Buffer:__newindex(index, element)
-  self:reserve(index+1)
+  self:resize(index+1)
   self.element[index] = element
   self.status = 'dirty'
 end

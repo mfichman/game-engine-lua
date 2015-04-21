@@ -14,16 +14,17 @@
 debug = true
 
 display = {
-  vsync = false,--true,
+  vsync = true,--true,
 --  width = 1600,
 --  height = 1200,
-  width = 2560,
-  height = 1440,
+
+--  width = 2560,
+--  height = 1440,
 
 --  width = 1920,
 --  height = 1080,
---  width = 1200,
---  height = 800,
+  width = 1200,
+  height = 800,
   fullscreen = false,
 }
 

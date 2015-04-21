@@ -15,11 +15,11 @@
 package.path = './src/?.lua;./src/?/init.lua;'..package.path
 
 local config = require('config')
-local game = require('game')
 local dbg = require('dbg')
-local entity = require('entity')
 
 local function main()
+  local game = require('game')
+  local entity = require('entity')
   local graphics = require('graphics')
   local gamemath = require('gamemath')
   local vec = require('vec')

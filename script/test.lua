@@ -16,20 +16,25 @@ package.path = './src/?.lua;./src/?/init.lua;'..package.path
 local os = require('os')
 
 local test = {
+--[[
   'src/asset/test.lua',
+  'src/binfmt/test.lua',
+  'src/freetype/test.lua',
   'src/game/test.lua',
   'src/graphics/test.lua',
-  'src/path/test.lua',
-  'src/sandbox/test.lua',
-  'src/vec/test.lua',
-  'src/physics/test.lua',
-  'src/tablex/test.lua',
   'src/item/test.lua',
-  'src/freetype/test.lua',
-  'src/binfmt/test.lua',
+  'src/msgpack/test.lua',
+  'src/path/test.lua',
+  'src/physics/test.lua',
+  'src/sandbox/test.lua',
+  'src/tablex/test.lua',
+]]
+--  'src/thread/test.lua',
+ -- 'src/vec/test.lua',
+  'src/worker/test.lua',
 }
 
 for i, test in ipairs(test) do
   print(test)
-  dofile(test)
+  xpcall(function() dofile(test) end, require('dbg').start)
 end

@@ -18,12 +18,17 @@ local config = require('config')
 local dbg = require('dbg')
 
 local function main()
-  local game = require('game')
   local entity = require('entity')
   local graphics = require('graphics')
   local gamemath = require('gamemath')
   local vec = require('vec')
   local component = require('component')
+  local world = require('world')
+  local game = require('game')
+
+  dofile('worker.lua')
+
+  game.init()
 
   entity.World{}
   entity.Fighter{teamId = 2, origin = vec.Vec3(0, 0, 205)}

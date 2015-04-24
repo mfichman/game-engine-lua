@@ -28,12 +28,11 @@ local input = require('input')
 local asset = require('asset')
 local profiler = require('profiler')
 
+local self = {}
+
 -- Initialize game variables
-local window = window.Window()
 local db = db.Database()
 local input = input.Map()
-local renderer = renderer.Deferred(graphics.context)
-local world = physics.World()
 local clock = sfml.Clock()
 local accumulator = 0
 local timestep = 1/60
@@ -63,14 +62,6 @@ local function processDb(db, event, process)
       processTable(table, event)
     end
   end
-end
-
--- Initialize the game
-local function init()
-  for i, name in ipairs(config.preload) do
-    asset.open(name)
-  end
-  world:setGravity(vec.Vec3())
 end
 
 -- Call 'event' on each component in the game database.
@@ -178,7 +169,7 @@ local function gc()
 end
 
 -- Run the game
-local function run()
+function self.run()
   collectgarbage('stop')
   for i, name in ipairs(config.process) do -- FIXME
     table.insert(process, component[name])
@@ -212,12 +203,28 @@ local function run()
   collectgarbage('restart')
 end
 
-local function Table(kind)
+-- Initialize the game
+function self.init()
+  world = physics.World()
+  window = window.Window()
+  renderer = renderer.Deferred(graphics.context)
+
+  self.world = world
+  self.window = window
+  self.renderer = renderer
+
+  for i, name in ipairs(config.preload) do
+    asset.open(name)
+  end
+  world:setGravity(vec.Vec3())
+end
+
+function self.Table(kind)
   local kind = component[kind]
   return db:tableIs(kind)
 end
 
-local function Entity(metatable)
+function self.Entity(metatable)
   assert(metatable, 'metatable is nil')
   local id = db:newEntityId()
   local table = db:tableIs(component.Entity)
@@ -225,20 +232,12 @@ local function Entity(metatable)
   return table[id]
 end
 
-init()
+self.timestep = timestep
+self.db = db
+self.input = input
+self.world = world
+self.ticks = function() return ticks end
+self.tickHandler = tickHandler
 
-return {
-  Table = Table,
-  Entity = Entity,
-  run = run,
-  db = db,
-  timestep = timestep,
-  ticks = function() return ticks end,
-  input = input,
-  window = window,
-  world = world,
-  tickHandler = tickHandler,
-  gravity = gravity,
-  down = down,
-}
 
+return self

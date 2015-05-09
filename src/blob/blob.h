@@ -20,10 +20,10 @@
  * IN THE SOFTWARE.
  */
 
-typedef struct blob_Ref blob_Ref;
+typedef uint32_t blob_Id;
 
-__declspec(dllexport) blob_Ref* blob_Ref_new(char const* name);
-__declspec(dllexport) blob_Ref* blob_Ref_find(char const* name);
-__declspec(dllexport) void blob_Ref_alloc(blob_Ref* ref, size_t len);
-__declspec(dllexport) void blob_Ref_del(blob_Ref* ref);
+__declspec(dllexport) void* blob_Ref_new(size_t len);
+__declspec(dllexport) void* blob_Ref_find(blob_Id id);
+__declspec(dllexport) blob_Id blob_Ref_id(void* self);
+__declspec(dllexport) void blob_Ref_del(void* self);
 

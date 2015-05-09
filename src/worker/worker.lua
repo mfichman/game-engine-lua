@@ -45,9 +45,10 @@ end
 
 -- Submit a new job/message to the worker. 'msg' must be a ctype. Returns the
 -- job ID as an integer.
-function Worker:call(func, msg)
+function Worker:call(func, ...)
   local info = debug.getinfo(func)
   local name = info.source..':'..info.linedefined
+  local msg = {...}
   self.thread:send(name)
   self.thread:send(msg)
   self.nextCallId = self.nextCallId+1
@@ -56,7 +57,7 @@ function Worker:call(func, msg)
   while true do
     local msg = self:poll(id)
     if msg then 
-      return msg 
+      return unpack(msg)
     else
       coroutine.yield()
     end
@@ -84,14 +85,14 @@ function Worker:run()
     if not self.thread then
       self.thread = thread.Thread{file = file}
     end
-    return
+    return true
   end
 
   while true do
     local name = thread.recv()
-    local arg = thread.recv()
+    local msg = thread.recv()
     local func = self.func[name]
-    local ret = func(arg)
+    local ret = {func(unpack(msg))}
     thread.send(name)
     thread.send(ret)
   end

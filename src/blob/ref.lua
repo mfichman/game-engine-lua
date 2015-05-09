@@ -23,33 +23,4 @@ local path = require('path')
 
 ffi.cdef(path.open('blob/blob.h'):read('*all'))
 
-local blob = ffi.load('blob')
-
--- Libary for managing and sharing large binary objects in Lua between multiple
--- Lua interpreters within the same process. All BLOBs are owned via the blob
--- interface.
-
-local function new(kind, len)
-  local len = ffi.sizeof(kind, len)
-  local kind = tostring(kind):gsub('ctype<(.+) %[%?%]>','%1*')
-  local kind = ffi.typeof(kind)
-  return ffi.gc(ffi.cast(kind, blob.blob_Ref_new(len)), blob.blob_Ref_del)
-end
-
-local function id(ref)
-  return blob.blob_Ref_id(ref)
-end
-
-local function find(kind, id)
-  local kind = tostring(kind):gsub('ctype<(.*) %[%?%]>','%1*')
-  local kind = ffi.typeof(kind)
-  return ffi.gc(ffi.cast(kind, blob.blob_Ref_find(id)), blob.blob_Ref_del)
-end
-
-return {
-  new = new,
-  find = find,
-  id = id,
-}
-
-
+return ffi.load('blob')

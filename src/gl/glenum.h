@@ -1561,3 +1561,4 @@ enum {
     GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR = 0x93DD,
     GL_KHR_texture_compression_astc_ldr = 1,
 };
+

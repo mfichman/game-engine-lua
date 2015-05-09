@@ -56,10 +56,10 @@ end
 
 -- Calculate and write tangent vectors for the mesh
 local function updateTangents(self)
+  if not self.index.element then return end
   for i = 2,self.index.count-1,3 do
     updateTangent(self, i)
   end
-
   for i = 0,self.vertex.count-1 do
     local vertex = self.vertex[i]
     vertex.tangent = vertex.tangent:unit()

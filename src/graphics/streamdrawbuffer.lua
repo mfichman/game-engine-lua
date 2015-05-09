@@ -56,10 +56,14 @@ function StreamDrawBuffer:draw(kind, buffer)
     gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.id)
   end
 
+--[[
+  This code causes an implicit synchronization when filling the buffer. Not sure why
   local flags = bit.bor(gl.GL_MAP_WRITE_BIT, gl.GL_MAP_UNSYNCHRONIZED_BIT, gl.GL_MAP_INVALIDATE_RANGE_BIT)
   local map = gl.glMapBufferRange(gl.GL_ARRAY_BUFFER, self.offset, size, flags)
   ffi.copy(map, buffer.element, size)
   gl.glUnmapBuffer(gl.GL_ARRAY_BUFFER)
+]]
+  gl.glBufferSubData(gl.GL_ARRAY_BUFFER, self.offset, size, buffer.element)
   gl.glBindVertexArray(self.vertexArrayId)
   gl.glDrawArrays(kind, self.offset/buffer.stride, buffer.count)
   gl.glBindVertexArray(0)

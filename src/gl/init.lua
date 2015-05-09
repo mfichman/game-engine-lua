@@ -53,4 +53,11 @@ local function Handle(gen, delete)
   return ffi.gc(id, function(id) delete(1, id) end)
 end
 
-return setmetatable({Handle=Handle}, {__index = index})
+local m = {
+  Handle = Handle,
+  GL_TIMEOUT_IGNORED = 0xffffffffffffffff,
+}
+
+return setmetatable(m, {__index = index})
+
+

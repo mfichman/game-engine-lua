@@ -31,7 +31,8 @@ local test = {
 ]]
 --  'src/thread/test.lua',
  -- 'src/vec/test.lua',
-  'src/worker/test.lua',
+  --'src/worker/test.lua',
+  'src/blob/test.lua',
 }
 
 for i, test in ipairs(test) do

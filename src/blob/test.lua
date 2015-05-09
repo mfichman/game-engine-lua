@@ -18,20 +18,30 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
+local ffi = require('ffi')
 local blob = require('blob')
 
-local a = blob.new('foo')
-local b = blob.new('foo') 
-local c = blob.find('foo') 
-assert(a == b)
-assert(a == c)
+ffi.cdef[[
+typedef struct blob_TestType {
+  int a; 
+  int b;
+} blob_TestType;
+]]
 
-blob.alloc(a, 10)
+local TestType = ffi.typeof('blob_TestType[?]')
+local a = blob.new(TestType, 10)
+local b = blob.find(TestType, blob.id(a))
+local c = blob.find(TestType, 1) 
+assert(a == b)
+assert(b == c)
 
 a = nil
 b = nil
+
+collectgarbage()
+assert(blob.find(TestType, 1) ~= nil)
+
 c = nil
 
 collectgarbage()
-
-assert(blob.find('foo') == nil)
+assert(blob.find(TestType, 1) == nil)

@@ -56,7 +56,7 @@ thread_Thread* thread_Thread_new(char const* file) {
         lua_State* const env = luaL_newstate();
         luaL_openlibs(env);
         if(luaL_dofile(env, fn.c_str())) {
-            fprintf(stderr, "couldn't load file: %s\n", lua_tostring(env, -1));
+            fprintf(stderr, "thread error: %s\n", lua_tostring(env, -1));
             exit(1);
         }
         fflush(stdout);

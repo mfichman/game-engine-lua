@@ -14,7 +14,7 @@
 debug = true
 
 display = {
-  vsync = true,--true,
+  vsync = false,
 --  width = 1600,
 --  height = 1200,
 
@@ -43,7 +43,7 @@ zone = {
 }
 
 chunk = {
-  cacheSize = 256, 
+  cacheSize = 128, 
 }
 
 key = {

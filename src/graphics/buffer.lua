@@ -15,7 +15,6 @@ local ffi = require('ffi')
 local gl = require('gl')
 local math = require('math')
 
-
 local Buffer = {}; Buffer.__index = Buffer
 
 -- Create a new attribute or index buffer that is an array of the elements 
@@ -41,7 +40,7 @@ function Buffer:reserve(count)
   if count < self.capacity then return end 
   local capacity = math.max(64, count + math.floor(count/2))
   local element = self.kind(capacity)
-  ffi.copy(element, self.element, ffi.sizeof(self.element))
+  ffi.copy(element, self.element, ffi.sizeof(self.kind, self.capacity))
   self.capacity = capacity
   self.element = element
   self.status = 'dirty'

@@ -114,8 +114,8 @@ local function update()
     tick()
   end
 
-  if substeps > 2 then
-    print('warning: > 1 substeps')
+  if substeps > 3 then
+    print('warning: > 3 substeps', substeps)
   end
 
   -- Call Bullet to do intepolation once per frame.
@@ -158,14 +158,22 @@ end
 
 local function gc()
   -- Allocate 5 ms for GC; skip GC if there aren't 5 ms left in the frame
-  local start = clock:getElapsedTime():asSeconds()
-  local remaining = timestep - start 
-  local budget = .005
-  --if remaining > budget then
+  local elapsed = clock:getElapsedTime():asSeconds()
+  local remaining = timestep - elapsed
+  local budget = .002
+
+  if remaining > budget then
     collectgarbage('step', 1)
-  --else
-   -- print('warning: skipped gc')
-  --end
+  else
+    print('warning: skipped gc', budget, elapsed)
+  end
+end
+
+local function sleep()
+  -- Sleep to use remaining frame time
+  local elapsed = clock:getElapsedTime():asSeconds()
+  local remaining = sfml.Seconds(timestep - elapsed - .001)
+  sfml.Sleep(remaining)
 end
 
 -- Run the game
@@ -196,7 +204,8 @@ function self.run()
     window:display()
     -- glGetError stalls the pipeline until prior commands are finished; it
     -- should be delayed until last.
-    assert(gl.glGetError() == 0)
+    --assert(gl.glGetError() == 0)
+    sleep()
   end
   --profiler.stop()
   --profiler.show()

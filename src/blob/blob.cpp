@@ -20,60 +20,59 @@
  * IN THE SOFTWARE.
  */
 
+#include <cstdint>
+#include <unordered_map>
+#include <mutex>
 extern "C" {
     #include <blob/blob.h>
 }
-#include <unordered_map>
-#include <mutex>
-#include <atomic>
 
 typedef struct blob_Ref {
-    std::string name;
-    void* data = 0;
-    std::atomic<uint32_t> refs = 1;
+    blob_Id id;     
+    uint32_t refs; 
+    char data[];
 } blob_Ref;
 
-std::unordered_map<std::string,blob_Ref*> blob;
-std::mutex mutex;
+static std::mutex mutex;
+static std::unordered_map<blob_Id,blob_Ref*> blob;
+static blob_Id nextId = 0;
 
-/* Creates a new blob, and returns it (if the blob doesn't exist already) */
-blob_Ref* blob_Ref_new(char const* name) {
+/* Creates a new blob of the given size, and returns it */
+void* blob_Ref_new(size_t len) {
     std::unique_lock<std::mutex> lock(mutex);
-    blob_Ref* const ref = blob[name];
-    if (ref) {
-        std::atomic_fetch_add_explicit(&ref->refs, 1u, std::memory_order_relaxed);
-        return ref;
+    blob_Ref* const ref = (blob_Ref*)malloc(sizeof(blob_Ref)+len);
+    ref->id = ++nextId;
+    ref->refs = 1;
+    blob[ref->id] = ref;
+    return ref->data;
+}
+
+/* Finds a blob by id, and increments the reference count by one */
+void* blob_Ref_find(blob_Id id) {
+    std::unique_lock<std::mutex> lock(mutex);
+    auto i = blob.find(id);
+    if (i == blob.end()) {
+        return 0;
     } else {
-        blob_Ref* const ref = new blob_Ref;
-        ref->name = name;
-        blob[name] = ref;
-        return ref;
+        i->second->refs++;
+        return i->second->data;
     }
 }
 
-/* Finds a blob by name, and increments the reference count by one */
-blob_Ref* blob_Ref_find(char const* name) {
+/* Finds the ID for a blob */
+blob_Id blob_Ref_id(void* self) {
+    return (((blob_Ref*)self)-1)->id;
+}
+
+/* Deletes a reference to a blob */
+void blob_Ref_del(void* self) {
+    if (!self) { return; }
+
+    blob_Ref* const ref = (((blob_Ref*)self)-1);
     std::unique_lock<std::mutex> lock(mutex);
-    blob_Ref* const ref = blob[name];
-    if (ref) {
-        std::atomic_fetch_add_explicit(&ref->refs, 1u, std::memory_order_relaxed);
-    }
-    return ref;
-}
-
-/* Allocates or reallocates storage for the blob */
-void blob_Ref_alloc(blob_Ref* ref, size_t len) {
-    ref->data = realloc(ref->data, len);
-}
-
-/* Deletes the blob */
-void blob_Ref_del(blob_Ref* ref) {
-    if (!ref) {
-        // Null pointer 
-    } else if (std::atomic_fetch_sub_explicit(&ref->refs, 1u, std::memory_order_release) == 1) {
-        std::atomic_thread_fence(std::memory_order_acquire);
-        std::unique_lock<std::mutex> lock(mutex);
-        blob.erase(ref->name);
+    ref->refs--;
+    if (ref->refs == 0) {
+        blob.erase(ref->id);
         delete ref;
     }
 }

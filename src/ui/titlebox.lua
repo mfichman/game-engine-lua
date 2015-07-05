@@ -13,12 +13,17 @@
 
 local vec = require('vec')
 local asset = require('asset')
+local config = require('config')
+
 local Composite = require('ui.composite')
 
 local TitleBox = {}; TitleBox.__index = TitleBox
 
 -- Renders a title and a border around another component
 function TitleBox.new(args)
+  local fontHeight = .05
+  local fontPt = config.display.height * fontHeight
+
   table.insert(args, {
     -- Render background image
     kind = 'Image', 
@@ -27,17 +32,18 @@ function TitleBox.new(args)
     size = vec.Vec2(1, 1), 
     position = vec.Vec2(.5, .5), 
     pivot = vec.Vec2(.5, .5),
-    padding = {top = .1, bottom = .02, left = .02, right = .02},
+    padding = {top = fontHeight+.02, bottom = .02, left = .02, right = .02},
   })
-  
+
   table.insert(args, {
     -- Render title  
     kind = 'Label',
     text = args.text,
-    font = asset.open('font/Norwester.ttf', 96, 'fixed'),
+    font = asset.open('font/Norwester.ttf', fontPt, 'fixed'),
+    tint = vec.Color(0, 0, 0, 1),
     pivot = vec.Vec2(0, 1),
     position = vec.Vec2(.005, 0),
-    height = .07,
+    height = fontHeight,
     sizing = 'absolute',
   })
 

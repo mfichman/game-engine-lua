@@ -17,7 +17,8 @@ local Composite = require('ui.composite')
 local ItemBox = {}; ItemBox.__index = ItemBox
 
 function ItemBox.new(args)
-  args.size = vec.Vec2(args.box.rows*.1, args.box.cols*.1),
+  local scale = .1
+  args.size = vec.Vec2(args.box.rows*scale, args.box.cols*scale),
 
   table.insert(args, {
     kind = 'TitleBox',

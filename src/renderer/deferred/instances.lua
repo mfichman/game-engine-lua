@@ -17,7 +17,18 @@ local graphics = require('graphics')
 local asset = require('asset')
 local struct = require('graphics.struct')
 
-local program, white, blue
+local program, white, blue, buffer
+
+local function createDrawBuffer()
+  local buffer = graphics.StreamDrawBuffer()
+  gl.glBindVertexArray(buffer.vertexArrayId)
+  gl.glEnableVertexAttribArray(4) -- rotation (per-instance data)
+  gl.glEnableVertexAttribArray(5) -- origin (per-instance data)
+  gl.glVertexAttribDivisor(4, 1) -- advance one entry per instance
+  gl.glVertexAttribDivisor(5, 1) -- advance one entry per instance
+  gl.glBindVertexArray(0)
+  return buffer
+end
 
 -- Pass the texture data to the shader
 local function texture(g, texture, index)
@@ -40,6 +51,40 @@ local function material(g, material)
   texture(g, material.emissiveMap or white, gl.GL_TEXTURE0+3)
 end
 
+local function drawInstances(instances)
+  -- Append the geometry for this frame to the streaming draw buffer, and
+  -- record the offset to the start of the streaming draw buffer.
+  buffer = buffer or createDrawBuffer()
+  
+  local offset = buffer:append(instances.instance)
+  local stride = instances.instance.stride
+  local mesh = instances.model.mesh
+
+  gl.glBindVertexArray(buffer.vertexArrayId)
+
+  -- Bind the normal mesh vertices and indices, as is done with a single
+  -- non-instanced mesh.
+  gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, instances.model.mesh.index.id)
+  gl.glBindBuffer(gl.GL_ARRAY_BUFFER, instances.model.mesh.vertex.id)
+  struct.defAttribute('geom_MeshVertex', 0, 'position')
+  struct.defAttribute('geom_MeshVertex', 1, 'normal')
+  struct.defAttribute('geom_MeshVertex', 2, 'tangent')
+  struct.defAttribute('geom_MeshVertex', 3, 'texcoord')
+
+  -- Define the offset from the beginning of the stream draw buf to the
+  -- rotation/origin attributes to use during the instanced draw call
+  gl.glBindBuffer(gl.GL_ARRAY_BUFFER, buffer.id)
+  gl.glVertexAttribPointer(4, 4, gl.GL_FLOAT, 0, stride, ffi.cast(ffi.typeof('void*'), offset+(0*ffi.sizeof('GLfloat'))))
+  gl.glVertexAttribPointer(5, 3, gl.GL_FLOAT, 0, stride, ffi.cast(ffi.typeof('void*'), offset+(4*ffi.sizeof('GLfloat'))))
+
+  -- Draw the instances
+  local count = instances.instance.count
+  gl.glDrawElementsInstanced(gl.GL_TRIANGLES, mesh.index.count, gl.GL_UNSIGNED_INT, nil, count)
+
+  gl.glBindVertexArray(0)
+
+end
+
 -- Render an instanced model
 local function render(g, instances)
   if instances.model.material.opacity < 1 then return end
@@ -59,14 +104,10 @@ local function render(g, instances)
 
   material(g, instances.model.material)
 
-  instances:sync()
-  local mesh = instances.model.mesh
-  local count = instances.instance.count
   gl.glUniformMatrix4fv(program.viewProjectionMatrix, 1, 0, g.camera.viewProjectionMatrix:data()) 
   gl.glUniformMatrix4fv(program.viewMatrix, 1, 0, g.camera.viewMatrix:data()) 
-  gl.glBindVertexArray(instances.id)
-  gl.glDrawElementsInstanced(gl.GL_TRIANGLES, mesh.index.count, gl.GL_UNSIGNED_INT, nil, count)
-  gl.glBindVertexArray(0)
+
+  drawInstances(instances)
 
   if instances.clearMode == 'auto' then
     instances.instance:clear()
@@ -77,5 +118,6 @@ local function render(g, instances)
 end
 
 return {
-  render=render
+  render=render,
+  drawInstances=drawInstances,
 }

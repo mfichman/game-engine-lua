@@ -14,7 +14,7 @@
 debug = true
 
 display = {
-  vsync = false,
+  vsync = true,
 --  width = 1600,
 --  height = 1200,
 
@@ -44,6 +44,7 @@ zone = {
 
 chunk = {
   cacheSize = 128, 
+  size = 16,
 }
 
 key = {
@@ -87,6 +88,7 @@ process = {
   'EngineTrail',
   'Beam',
   'Sparks',
+  'Stars',
   'Explosion',
   'Sun',
   'Hud',

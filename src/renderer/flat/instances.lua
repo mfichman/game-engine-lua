@@ -13,6 +13,14 @@
 
 local asset = require('asset')
 local gl = require('gl')
+local struct = require('graphics.struct')
+local graphics = require('graphics')
+
+-- FIXME: Steal the drawInstances function from the deferred renderer, so that
+-- we don't have to re-implement it for shadows. Ultimately, geom draw
+-- functions should be located in a convenient place. StreamDrawBuffer.draw
+-- probably belongs there, too.
+local deferred = require('renderer.deferred.instances')
 
 local program
 
@@ -26,13 +34,11 @@ local function render(g, instances)
 
   gl.glUseProgram(program.id)
 
-  instances:sync()
   local mesh = instances.model.mesh
-  local count = instances.instance.count
   gl.glUniformMatrix4fv(program.viewProjectionMatrix, 1, 0, g.camera.viewProjectionMatrix:data()) 
-  gl.glBindVertexArray(instances.id)
-  gl.glDrawElementsInstanced(gl.GL_TRIANGLES, mesh.index.count, gl.GL_UNSIGNED_INT, nil, count)
-  gl.glBindVertexArray(0)
+
+  -- Draw the instances
+  deferred.drawInstances(instances)
 end
 
 return {

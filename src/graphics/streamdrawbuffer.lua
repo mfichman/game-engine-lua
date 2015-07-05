@@ -44,9 +44,8 @@ function StreamDrawBuffer:reset()
   self.offset = 0
 end
 
--- Copy the buffer data to the CPU and issue a draw command. Note that this
--- requires the vertex format was set independently by a renderer.
-function StreamDrawBuffer:draw(kind, buffer)
+-- Copy the buffer data to the GPU.
+function StreamDrawBuffer:append(buffer)
   local size = buffer.count * buffer.stride
   local free = self.size - self.offset
   assert(size <= self.size, "stream draw buffer is too small")
@@ -55,7 +54,6 @@ function StreamDrawBuffer:draw(kind, buffer)
   else
     gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.id)
   end
-
 --[[
   This code causes an implicit synchronization when filling the buffer. Not sure why
   local flags = bit.bor(gl.GL_MAP_WRITE_BIT, gl.GL_MAP_UNSYNCHRONIZED_BIT, gl.GL_MAP_INVALIDATE_RANGE_BIT)
@@ -64,10 +62,18 @@ function StreamDrawBuffer:draw(kind, buffer)
   gl.glUnmapBuffer(gl.GL_ARRAY_BUFFER)
 ]]
   gl.glBufferSubData(gl.GL_ARRAY_BUFFER, self.offset, size, buffer.element)
-  gl.glBindVertexArray(self.vertexArrayId)
-  gl.glDrawArrays(kind, self.offset/buffer.stride, buffer.count)
-  gl.glBindVertexArray(0)
+  local startOffset = self.offset
   self.offset = self.offset + size 
+  return startOffset
+end
+
+-- Copy the buffer data to the GPU and issue a draw command. Note that this
+-- requires the vertex format was set independently by a renderer.
+function StreamDrawBuffer:draw(kind, buffer)
+  local startOffset = self:append(buffer)
+  gl.glBindVertexArray(self.vertexArrayId)
+  gl.glDrawArrays(kind, startOffset/buffer.stride, buffer.count)
+  gl.glBindVertexArray(0)
 end
 
 return StreamDrawBuffer.new

@@ -46,11 +46,13 @@ local tickHandler = {}
 -- an optimization, to avoid iterating through the entire table without 
 -- actually updating anything.
 local function processTable(table, event)
+  local count = 0
   for id, component in pairs(table.component) do
     if type(component) == 'cdata' then return end
     local handler = component[event]
     if not handler then return end
     handler(component, id)
+    count = count +1
   end 
 end
 

@@ -13,6 +13,7 @@
 
 local vec = require('vec')
 local gl = require('gl')
+local geom = require('geom')
 
 local Buffer = require('graphics.buffer')
 local Billboard = require('graphics.billboard')
@@ -31,7 +32,7 @@ function Billboards.new(args)
     clearMode = args.clearMode or 'manual',
     blendMode = args.blendMore or 'additive',
     tint = args.tint or vec.Color(1, 1, 1, 1),
-    billboard = Buffer(nil, nil, 'graphics_Billboard')
+    billboard = geom.Buffer('graphics_Billboard')
   }
   return setmetatable(self, Billboards)
 end

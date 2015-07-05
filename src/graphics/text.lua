@@ -14,7 +14,6 @@
 local vec = require('vec')
 local gl = require('gl')
 local geom = require('geom')
-local struct = require('graphics.struct')
 
 local Buffer = require('graphics.buffer')
 local TextVertex = require('graphics.textvertex')
@@ -24,7 +23,7 @@ local Text = {}; Text.__index = Text
 local function updateTextBuffer(self)
   -- Update the text buffer to prepare it for rendering, using the font glyph
   -- metrics.  For each character, insert a vertex into the attribute buffer.
-  local vertex = self.geom
+  local vertex = self.vertex
   vertex:clear()
 
   local cursorX = 0
@@ -85,10 +84,9 @@ function Text.new(args)
     font = args.font,
     status = 'dirty',
     computedWidth = 0,
-    id = 0,
     color = args.color or vec.Color(1, 1, 1, 1),
     size = args.size or 1,
-    geom = geom.Buffer('graphics_TextVertex'),
+    vertex = geom.Buffer('graphics_TextVertex'),
   }
   return setmetatable(self, Text)
 end
@@ -102,20 +100,7 @@ end
 -- Synchronize the text with the graphics card
 function Text:sync()
   if self.status == 'synced' then return end
-
   updateTextBuffer(self) 
-  self.vertex = Buffer(gl.GL_ARRAY_BUFFER, gl.GL_STATIC_DRAW, self.geom)
-
-  if self.id == 0 then
-    self.handle = gl.Handle(gl.glGenVertexArrays, gl.glDeleteVertexArrays)
-    self.id = self.handle[0]
-
-    gl.glBindVertexArray(self.id)
-    gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vertex.id)
-    struct.defAttribute('graphics_TextVertex', 0, 'position')
-    struct.defAttribute('graphics_TextVertex', 1, 'texcoord')
-    gl.glBindVertexArray(0) 
-  end
   self.status = 'synced'
 end
 

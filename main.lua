@@ -31,7 +31,7 @@ local function main()
   game.init()
 
   entity.World{}
-  entity.Fighter{teamId = 2, origin = vec.Vec3(0, 0, 205)}
+  entity.Fighter{teamId = 2, origin = vec.Vec3(0, 0, 0)}
 --  entity.EscapePod{teamId = 1}
 --  entity.CommTower{}
 --  entity.Cruiser{teamId = 1, kind = 'Destroyer'}

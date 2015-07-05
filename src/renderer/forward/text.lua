@@ -16,8 +16,20 @@ local gl = require('gl')
 local graphics = require('graphics')
 local asset = require('asset')
 local vec = require('vec')
+local struct = require('graphics.struct')
 
 local program
+local buffer
+
+local function createDrawBuffer()
+  local buffer = graphics.StreamDrawBuffer()
+  gl.glBindVertexArray(buffer.vertexArrayId)
+  gl.glBindBuffer(gl.GL_ARRAY_BUFFER, buffer.id)
+  struct.defAttribute('graphics_TextVertex', 0, 'position')
+  struct.defAttribute('graphics_TextVertex', 1, 'texcoord')
+  gl.glBindVertexArray(0) 
+  return buffer
+end
 
 -- Render text objects
 local function render(g, text)
@@ -25,9 +37,8 @@ local function render(g, text)
   local camera = g.camera
   local font = text.font
 
-  text:sync()
-
   program = program or asset.open('shader/forward/Text.prog')
+  buffer = buffer or createDrawBuffer()
 
   g:glUseProgram(program.id)
   g:glDepthMask(gl.GL_FALSE)
@@ -48,8 +59,7 @@ local function render(g, text)
   gl.glUniformMatrix4fv(program.worldViewProjectionMatrix, 1, 0, worldViewProjectionMatrix:data())
   
   -- Render text
-  gl.glBindVertexArray(text.id)
-  gl.glDrawArrays(gl.GL_TRIANGLES, 0, text.vertex.count)
+  buffer:draw(gl.GL_TRIANGLES, text.vertex)
   gl.glBindVertexArray(0)
 end
 

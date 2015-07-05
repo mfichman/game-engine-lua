@@ -32,49 +32,7 @@ ffi.gc(library, function(library)
 end)
 ]]
 
--- Initialize a new font with the given size and kind. The font 'kind' may be 
--- either 'sdf' for scalable signed distance field font rendering, or 'fixed'
--- for fixed fonts.
-function Font.new(name, size, kind)
-  local self = {
-    name = name,
-    size = size,
-    kind = kind,
-    handle = gl.Handle(gl.glGenTextures, gl.glDeleteTextures),
-    face = ffi.new('FT_Face[1]'),
-    glyph = {},
-  }
-  self.id = self.handle[0]
-
-  gl.glBindTexture(gl.GL_TEXTURE_2D, self.id)
-  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR_MIPMAP_NEAREST)
-  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
-  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE)
-  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_EDGE)
-  gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 1)
-
-  if freetype.FT_New_Face(library[0], name, 0, self.face) ~= 0 then
-    error('could not initialize font: '..name)
-  else
-    ffi.gc(self.face, function(face) 
-      freetype.FT_Done_Face(face[0])
-    end)
-  end
-
-  self = setmetatable(self, Font)
-
-  if self.kind == 'fixed' then
-    self:loadFixed()
-  elseif self.kind == 'sdf' then
-    self:loadSdf()
-  else
-    error('invalid font kind: '..self.kind)
-  end
-
-  return self
-end
-
-function Font:loadFixed()
+local function loadFixed(self)
   -- FreeType measures font size in units of 1/64 pixel.  So we multiply the 
   -- height by 64 to get the right size
   local bitmapSize = self.size
@@ -152,7 +110,49 @@ function Font:loadFixed()
   gl.glGenerateMipmap(gl.GL_TEXTURE_2D)
 end
 
-function Font:loadSdf()
+local function loadSdf(self)
+end
+
+-- Initialize a new font with the given size and kind. The font 'kind' may be 
+-- either 'sdf' for scalable signed distance field font rendering, or 'fixed'
+-- for fixed fonts.
+function Font.new(name, size, kind)
+  local self = {
+    name = name,
+    size = size,
+    kind = kind,
+    handle = gl.Handle(gl.glGenTextures, gl.glDeleteTextures),
+    face = ffi.new('FT_Face[1]'),
+    glyph = {},
+  }
+  self.id = self.handle[0]
+
+  gl.glBindTexture(gl.GL_TEXTURE_2D, self.id)
+  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR_MIPMAP_NEAREST)
+  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
+  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE)
+  gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_EDGE)
+  gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 1)
+
+  if freetype.FT_New_Face(library[0], name, 0, self.face) ~= 0 then
+    error('could not initialize font: '..name)
+  else
+    ffi.gc(self.face, function(face) 
+      freetype.FT_Done_Face(face[0])
+    end)
+  end
+
+  self = setmetatable(self, Font)
+
+  if self.kind == 'fixed' then
+    loadFixed(self)
+  elseif self.kind == 'sdf' then
+    loadSdf(self)
+  else
+    error('invalid font kind: '..self.kind)
+  end
+
+  return self
 end
 
 -- Return the kerning for the font given the previous & current characters

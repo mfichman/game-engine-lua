@@ -49,7 +49,6 @@ return {
   HemiLight = require('graphics.hemilight'),
   Material = require('graphics.material'),
   Mesh = require('graphics.mesh'),
-  MeshVertex = require('graphics.meshvertex'),
   Model = require('graphics.model'),
   Particle = require('graphics.particle'),
   Particles = require('graphics.particles'),

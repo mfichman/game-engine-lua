@@ -100,7 +100,10 @@ local function subdivide(face, levels, gen)
 end
 
 return {
-  Face = Face,
+  Buffer = require('geom.buffer'),
+  Face = require('geom.face'),
+  Mesh = require('geom.mesh'),
+  MeshVertex = require('geom.meshvertex'),
   icosohedron = icosohedron,
   subdivide = subdivide,
 }

@@ -19,7 +19,7 @@ local program
 local function render(g, model)
   if model.material.opacity < 1 then return end
   local mesh = model.mesh
-  mesh:sync()
+  --mesh:sync()
 
   program = program or asset.open('shader/flat/Model.prog')
   gl.glUseProgram(program.id)

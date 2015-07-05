@@ -13,6 +13,7 @@
 
 local vec = require('vec')
 local gl = require('gl')
+local geom = require('geom')
 local struct = require('graphics.struct')
 
 local Buffer = require('graphics.buffer')
@@ -23,7 +24,8 @@ local Text = {}; Text.__index = Text
 local function updateTextBuffer(self)
   -- Update the text buffer to prepare it for rendering, using the font glyph
   -- metrics.  For each character, insert a vertex into the attribute buffer.
-  self.vertex:clear()
+  local vertex = self.geom
+  vertex:clear()
 
   local cursorX = 0
   local cursorY = 0
@@ -58,13 +60,13 @@ local function updateTextBuffer(self)
       position = vec.Vec2(x+glyph.width, y),
       texcoord = vec.Vec2(glyph.texX+glyph.texWidth, glyph.texY),
     }
-    self.vertex:push(tg0) 
-    self.vertex:push(tg1) 
-    self.vertex:push(tg2) 
+    vertex:push(tg0) 
+    vertex:push(tg1) 
+    vertex:push(tg2) 
 
-    self.vertex:push(tg0) 
-    self.vertex:push(tg2) 
-    self.vertex:push(tg3) 
+    vertex:push(tg0) 
+    vertex:push(tg2) 
+    vertex:push(tg3) 
 
     cursorX = cursorX+glyph.advanceX
     cursorY = cursorY+glyph.advanceY
@@ -86,7 +88,7 @@ function Text.new(args)
     id = 0,
     color = args.color or vec.Color(1, 1, 1, 1),
     size = args.size or 1,
-    vertex = Buffer(gl.GL_ARRAY_BUFFER, gl.GL_STATIC_DRAW, 'graphics_TextVertex'),
+    geom = geom.Buffer('graphics_TextVertex'),
   }
   return setmetatable(self, Text)
 end
@@ -102,7 +104,7 @@ function Text:sync()
   if self.status == 'synced' then return end
 
   updateTextBuffer(self) 
-  self.vertex:sync()
+  self.vertex = Buffer(gl.GL_ARRAY_BUFFER, gl.GL_STATIC_DRAW, self.geom)
 
   if self.id == 0 then
     self.handle = gl.Handle(gl.glGenVertexArrays, gl.glDeleteVertexArrays)

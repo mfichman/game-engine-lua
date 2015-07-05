@@ -13,8 +13,8 @@
 
 local vec = require('vec')
 local gl = require('gl')
+local geom = require('geom')
 
-local Buffer = require('graphics.buffer')
 local RibbonVertex = require('graphics.ribbonvertex')
 
 local Ribbon = {}; Ribbon.__index = Ribbon
@@ -27,7 +27,7 @@ function Ribbon.new(args)
     width = args.width or 1,
     minWidth = args.minWidth or 1,
     quota = args.quota or 10,
-    vertex = Buffer(nil, nil, 'graphics_RibbonVertex'),
+    vertex = geom.Buffer('graphics_RibbonVertex'),
     prev0 = RibbonVertex(),
     prev1 = RibbonVertex(),
   }

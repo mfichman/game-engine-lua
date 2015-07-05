@@ -19,8 +19,6 @@ local program, white, blue
 
 -- Render a mesh, using the current bindings for the material and texture
 local function mesh(g, mesh)
-  mesh:sync()
-
   -- Calculate the normal matrix and pass it to the vertex shader
   local normalMatrix = (g.camera.viewMatrix * g.worldMatrix):inverse():transpose()
   local temp = ffi.new('GLfloat[9]', {

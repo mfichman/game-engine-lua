@@ -18,7 +18,6 @@ local vec = require('vec')
 local unitQuad, unitSphere, unitCone
 
 local function mesh(g, program, mesh)
-  mesh:sync()
   gl.glBindVertexArray(mesh.id)
   gl.glDrawElements(gl.GL_TRIANGLES, mesh.index.count, gl.GL_UNSIGNED_INT, nil)
   gl.glBindVertexArray(0)

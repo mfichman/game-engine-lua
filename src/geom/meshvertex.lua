@@ -14,12 +14,12 @@
 local ffi = require('ffi')
 
 ffi.cdef[[
-  typedef struct graphics_MeshVertex {
+  typedef struct geom_MeshVertex {
     vec_Vec3 position;
     vec_Vec3 normal;
     vec_Vec3 tangent;
     vec_Vec2 texcoord;
-  } graphics_MeshVertex;
+  } geom_MeshVertex;
 ]]
 
-return ffi.typeof('graphics_MeshVertex')
+return ffi.typeof('geom_MeshVertex')

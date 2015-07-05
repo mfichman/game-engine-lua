@@ -12,6 +12,7 @@
 -- ========================================================================== --
 
 local graphics = require('graphics')
+local geom = require('geom')
 local vec = require('vec')
 local path = require('path')
 local loaded = require('asset.loaded')
@@ -28,7 +29,7 @@ local function vertex(context, key)
   local index = context.model.mesh.vertex.count
   assert(index < bit.lshift(1, 16), 'index is larger than 16 bits')
 
-  local vertex = graphics.MeshVertex{
+  local vertex = geom.MeshVertex{
     position = context.position[tonumber(i)],
     texcoord = context.texcoord[tonumber(j)],
     normal = context.normal[tonumber(k)],
@@ -74,14 +75,16 @@ local function line(context, str)
   elseif 'o' == cmd then
     if context.model then
       shape(context)
+      context.model.mesh:process()
+      context.model.mesh = graphics.Mesh(context.model.mesh)
+      loaded[context.model.name] = context.model.mesh
     end
     context.model = graphics.Model()
-    context.model.mesh = graphics.Mesh()
+    context.model.mesh = geom.Mesh()
     context.model.name = path.join(context.path, rest)
     context.model.material = graphics.Material()
     context.transform:componentIs(context.model)
     context.cache = {}
-    loaded[context.model.name] = context.model.mesh
 
     if rest:match('^%.') then
       context.model.renderMode = 'invisible'
@@ -134,6 +137,9 @@ local function open(path)
 
   if context.model then
     shape(context)
+    context.model.mesh:process()
+    context.model.mesh = graphics.Mesh(context.model.mesh)
+    loaded[context.model.name] = context.model.mesh
   end
 
   loaded[path:gsub('[.]obj', '.shape')] = context.shape

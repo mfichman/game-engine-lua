@@ -26,8 +26,6 @@ local function render(g, quad)
   program = program or asset.open('shader/forward/Quad.prog')
   mesh = mesh or asset.open('mesh/Quad.obj/Quad')
 
-  mesh:sync()
-
   g:glUseProgram(program.id)
   g:glDepthMask(gl.GL_FALSE)
   g:glEnable(gl.GL_BLEND, gl.GL_DEPTH_TEST)

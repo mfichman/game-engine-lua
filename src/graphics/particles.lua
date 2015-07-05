@@ -13,8 +13,8 @@
 
 local vec = require('vec')
 local gl = require('gl')
+local geom = require('geom')
 
-local Buffer = require('graphics.buffer')
 local Particle = require('graphics.particle')
 
 local Particles = {}; Particles.__index = Particles
@@ -26,7 +26,7 @@ function Particles.new(args)
     clearMode = args.clearMode or 'manual',
     blendMode = args.blendMode or 'additive',
     tint = args.tint or vec.Vec4(1, 1, 1, 1),
-    particle = Buffer(nil, nil, 'graphics_Particle'),
+    particle = geom.Buffer('graphics_Particle'),
   }
   return setmetatable(self, Particles)
 end

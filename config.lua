@@ -43,15 +43,14 @@ zone = {
 }
 
 chunk = {
-  cacheSize = 128, 
-  size = 16,
+  cacheSize = 64, 
+  size = 24,
 }
 
 key = {
   accel = 'i',
-  descend = 'd',
-  ascend = 'a',
-  brake = 'j',
+  move = 'a',
+  brake = 'k',
   mine = 'm',
   attack = 'space',
   inspect = 'enter',
@@ -72,6 +71,7 @@ process = {
   'RigidBody',
   'Camera',
   'UserControl',
+  'Move',
   'Thrust',
   'Launch',
   'Mine',
@@ -89,6 +89,7 @@ process = {
   'Beam',
   'Sparks',
   'Stars',
+  'Grid',
   'Explosion',
   'Sun',
   'Hud',

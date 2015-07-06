@@ -30,8 +30,13 @@ build.lib {
   'BulletDynamics',
   'LinearMath',
   'BulletMultiThreaded',
-  'lua51',
 }
+
+if ffi.os == 'Windows' then
+  build.lib {'lua51'}
+else
+  build.lib {'luajit-5.1.2'}
+end
 
 build.module('physics')
 build.module('thread')

@@ -17,6 +17,7 @@
 extern "C" {
     #include <blob/blob.h>
 }
+#include <cstdlib>
 
 typedef struct blob_Ref {
     blob_Id id;     

@@ -43,8 +43,8 @@ local function module(name)
   end)
   
   local cmd = {}
-  table.insert(cmd, 'c++')
-  table.insert(cmd, '-O2 -g -Wno-ignored-attributes')
+  table.insert(cmd, 'clang++')
+  table.insert(cmd, '-O2 -g -Wno-ignored-attributes -std=c++11')
   for i, flag in pairs(flags) do
     table.insert(cmd, flag)
   end

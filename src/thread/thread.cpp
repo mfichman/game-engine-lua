@@ -21,6 +21,8 @@ extern "C" {
 #include <condition_variable>
 #include <mutex>
 #include <queue>
+#include <string>
+#include <cstdlib>
 
 struct thread_Channel {
     std::queue<thread_Message> message;
@@ -36,6 +38,8 @@ struct thread_Thread {
 
 #ifdef _WIN32
 #define thread_local __declspec(thread)
+#else
+#define thread_local __thread
 #endif
 thread_local thread_Thread* current = 0;
 

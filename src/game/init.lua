@@ -167,7 +167,7 @@ local function gc()
   local budget = .002
 
   if remaining > budget then
-    --collectgarbage('step', 1)
+    collectgarbage('step', 1)
   else
     print('warning: skipped gc', budget, elapsed)
   end

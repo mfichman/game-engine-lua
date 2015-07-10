@@ -11,10 +11,10 @@
 --                                                                            --
 -- ========================================================================== --
 
-ffi = require('ffi')
-path = require('path')
+local ffi = require('ffi')
+local path = require('path')
 
 ffi.cdef(path.open('freetype/freetype.h'):read('*all'))
-freetype = ffi.load('freetype')
+local freetype = ffi.load('freetype')
 
 return freetype

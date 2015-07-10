@@ -15,7 +15,7 @@ local ffi = require('ffi')
 local package = require('package')
 local path = require('path')
 
-local glew, opengl32
+local glew, opengl
 ffi.cdef(path.open('gl/glenum.h'):read('*all'))
 
 if ffi.os == 'Windows' then

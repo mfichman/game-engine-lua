@@ -24,6 +24,7 @@ function TitleBox.new(args)
   local fontHeight = .05
   local fontPt = config.display.height * fontHeight
 
+--[[
   table.insert(args, {
     -- Render background image
     kind = 'Image', 
@@ -34,6 +35,7 @@ function TitleBox.new(args)
     pivot = vec.Vec2(.5, .5),
     padding = {top = fontHeight+.02, bottom = .02, left = .02, right = .02},
   })
+]]
 
   table.insert(args, {
     -- Render title  

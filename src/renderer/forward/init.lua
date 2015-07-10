@@ -41,9 +41,9 @@ function Forward:render()
   apply.apply(particles.render, self.context, graphics.Particles)
   apply.apply(billboards.render, self.context, graphics.Billboards)
   apply.apply(ribbon.render, self.context, graphics.Ribbon)
-  --self:apply(quad.render, graphics.Quad)
-  --self:apply(text.render, graphics.Text)
-  --self:apply(ui.render, graphics.Ui) FIXME
+  --self:apply(quad.render, self.context, graphics.Quad)
+  --self:apply(text.render, self.context, graphics.Text)
+  --self:apply(ui.render, self.context, graphics.Ui) FIXME
 end
 
 return Forward.new

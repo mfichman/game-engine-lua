@@ -40,7 +40,6 @@ local function hexadump (s)
 end
 --]]
 
-_ENV = nil
 local m = {}
 
 --[[ debug only

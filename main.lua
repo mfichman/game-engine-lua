@@ -12,10 +12,17 @@
 --                                                                            --
 -- ========================================================================== --
 
+setmetatable(_G, {
+  __newindex = function(t,k,v) 
+    error('_G is read-only!')
+  end
+})
+
 package.path = './src/?.lua;./src/?/init.lua;'..package.path
 
 local config = require('config')
 local dbg = require('dbg')
+
 
 local function main()
   local entity = require('entity')
@@ -32,6 +39,7 @@ local function main()
 
   entity.World{}
   entity.Fighter{teamId = 2, origin = vec.Vec3(0, 0, 0)}
+
 --  entity.EscapePod{teamId = 1}
 --  entity.CommTower{}
 --  entity.Cruiser{teamId = 1, kind = 'Destroyer'}

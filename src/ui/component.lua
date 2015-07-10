@@ -13,7 +13,6 @@
 
 local graphics = require('graphics')
 local vec = require('vec')
-local game = require('game')
 
 local Component = {}; Component.__index = Component
 
@@ -42,7 +41,7 @@ function Component.new(args)
     position = origin,
     click = args.click,
   } 
-  return self
+  return setmetatable(self, Component)
 end
 
 return Component.new

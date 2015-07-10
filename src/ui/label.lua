@@ -23,7 +23,7 @@ local cache = {}
 
 -- Look up a cached text object. This avoids creating a bunch of text objects
 -- that are duplicates of existing text objects.
-local function cachedText(font, text, size)
+local function cachedText(font, text, color, size)
   local fontcache = cache[font] 
   if not fontcache then 
     fontcache = {}
@@ -38,7 +38,7 @@ local function cachedText(font, text, size)
 
   local sizecache = textcache[size]
   if not sizecache then
-    sizecache = graphics.Text{font = font, text = text, size = size}
+    sizecache = graphics.Text{font = font, text = text, size = size, color = color}
     textcache[size] = sizecache
   end
   return sizecache
@@ -56,7 +56,8 @@ function Label.new(args)
     error('invalid sizing mode')
   end
 
-  local text = cachedText(args.font, args.text, height)
+  local color = args.color or vec.Vec4(1, 1, 1, 1)
+  local text = cachedText(args.font, args.text, color, height)
   args.size = vec.Vec2(args.height*text:width(), args.height)
 
   local self = Component(args)

@@ -13,10 +13,9 @@
 
 local graphics = require('graphics')
 local vec = require('vec')
-local game = require('game')
 local asset = require('asset')
 
-local Component = require('ui.Component')
+local Component = require('ui.component')
 local Image = {}; Image.__index = Image
 
 -- Renders an image in the user interface.

@@ -14,6 +14,7 @@
 local debug = require('debug')
 local io = require('io')
 local os = require('os')
+local ffi = require('ffi')
 
 local level = 1
 local input = io.input()
@@ -69,8 +70,8 @@ local function match(line)
       return false
     end
     for _, case in ipairs(cases) do
-      k, f = unpack(case)
-      args = {line:match(k)}
+      local k, f = unpack(case)
+      local args = {line:match(k)}
       if #args > 0 then
         return f(unpack(args))
       end
@@ -585,10 +586,87 @@ local function read(fd)
   return data
 end
 
+-- Iterate over everything reachable from _G
+local function memiter(f)
+  local seen = {}
+  local function memiter(t)
+    if seen[t] then return end
+    f(t)
+    seen[t] = true
+    for k,v in pairs(t) do
+      if type(v) == 'table' then
+        memiter(v)
+      elseif type(v) == 'userdata' then
+        f(v)
+      elseif type(v) == 'cdata' then
+        f(v)
+      end
+    end
+  end
+  memiter(_G)
+end
+
+-- Attempts to discover a human-readable description for t.  This is either the
+-- location of the constructor, if present, or the mem address of the
+-- metatable. For FFI types, the FFI type name is printed.
+local function typeof(t)
+  if type(t) == 'table' then
+    local mt = getmetatable(t)
+    if not mt then
+      local keys = {}
+      for k,v in pairs(t) do
+        table.insert(keys,tostring(k))
+      end
+      return table.concat(keys,',')
+    elseif type(mt.new) == 'function' then
+      --local info = debug.getinfo(mt.new)
+      --return info.source..':'..info.linedefined
+      return mt
+    else
+      return mt
+    end
+  elseif type(t) == 'userdata' then
+    return 'userdata'
+  elseif type(t) == 'cdata' then
+    return tostring(ffi.typeof(t))
+  else
+    return type(t)
+  end
+end
+
+-- Print counts of each type of table (by looking at getmetatable)
+local function memcount(f)
+  local count = {}
+  memiter(function(t) 
+    local mt = typeof(t)
+    count[mt] = (count[mt] or 0)+1
+  end) 
+  return count
+end
+
+-- Print the top 20 tables using the most memory
+local function memtop(f)
+  local count = memcount(f)
+  local values = {}
+  for k,v in pairs(count) do
+    table.insert(values, {k,v})
+  end
+  table.sort(values, function(a,b) 
+    return a[2]>b[2]
+  end)
+  for i=1,math.min(10,#values) do
+    print(unpack(values[i]))
+  end 
+  print()
+end
+
 setmetatable(env, {__index = getvar, __newindex = setvar})
 
 return {
   start = start,
   dump = dump,
   read = read,
+  memiter = memiter,
+  memcount = memcount,
+  memtop = memtop,
 }

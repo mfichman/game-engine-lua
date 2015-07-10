@@ -139,8 +139,8 @@ function Deferred:render()
   apply.apply(particles.render, self.context, graphics.Particles)
   apply.apply(billboards.render, self.context, graphics.Billboards)
   apply.apply(ribbon.render, self.context, graphics.Ribbon)
-  apply.apply(text.render, self.context, graphics.Text)
   apply.apply(quad.render, self.context, graphics.Quad)
+  apply.apply(text.render, self.context, graphics.Text)
 
   -- Pass 5: Text/UI rendering...?
   --self:apply(ui.render, graphics.Ui) FIXME

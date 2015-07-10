@@ -18,7 +18,7 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
-Worker = require('worker.worker')
+local Worker = require('worker.worker')
 return {
   Worker = Worker,
   worker = Worker(),

@@ -13,7 +13,7 @@
 
 local graphics = require('graphics')
 
-function open(name, size, kind)
+local function open(name, size, kind)
   return graphics.Font(name, size, kind)
 end
 

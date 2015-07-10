@@ -27,7 +27,7 @@ function Composite.new(args)
 
   self.component = component
 
-  return self
+  return setmetatable(self, Composite)
 end
 
 return Composite.new

@@ -22,7 +22,7 @@ local graphics = require('graphics')
 -- probably belongs there, too.
 local deferred = require('renderer.deferred.instances')
 
-local program
+local program, white, blue
 
 local function render(g, instances)
   if instances.model.material.opacity < 1 then return end

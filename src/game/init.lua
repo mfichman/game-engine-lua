@@ -40,6 +40,8 @@ local samples = {}
 local process = {}
 local ticks = 0
 local tickHandler = {}
+local world
+local delta = 0
 
 -- Call 'event' on each row in the table. If the first row in the table does 
 -- not have 'event' as a member, then skip all other components in the table as
@@ -180,13 +182,13 @@ end
 
 -- Run the game
 function self.run()
-  --collectgarbage('stop')
+  collectgarbage('stop')
   for i, name in ipairs(config.process) do -- FIXME
     table.insert(process, component[name])
   end
 
   clock:restart()
-  profiler.start()
+  --profiler.start()
   --for i=1,1000 do
   while window:isOpen() do
     -- The order of the operations here is very sensitive for performance

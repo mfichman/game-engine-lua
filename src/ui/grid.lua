@@ -21,12 +21,12 @@ function Grid.new(args)
   for i = 0,args.rows*args.cols-1 do
     local row = math.floor(i/args.cols)
     local col = i%args.cols
-    local x = row/args.rows
-    local y = col/args.cols
+    local x = col/args.rows
+    local y = row/args.cols
 
     local item = args.item(i)
     item.position = vec.Vec2(x, y)
-    item.size = vec.Vec2(1/args.rows, 1/args.cols)
+    item.size = vec.Vec2(1/args.cols, 1/args.rows)
     table.insert(args, item)
   end
   local self = Composite(args)

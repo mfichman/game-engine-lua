@@ -14,6 +14,8 @@
 local Component = require('ui.component')
 local Composite = {}; Composite.__index = Composite
 
+-- A composite is similar to a component, but contains a collection of child 
+-- components to render in the component attribute.
 function Composite.new(args)
   local self = Component(args)
   local component = {}
@@ -24,9 +26,7 @@ function Composite.new(args)
     v.parent = self
     table.insert(component, kind(v))
   end
-
   self.component = component
-
   return setmetatable(self, Composite)
 end
 

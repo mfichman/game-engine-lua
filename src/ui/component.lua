@@ -16,7 +16,9 @@ local vec = require('vec')
 
 local Component = {}; Component.__index = Component
 
--- Renders a UI component in the user interface
+-- Renders a UI component in the user interface. Most other UI items derive from
+-- Component by calling this constructor to generate the transform, size, 
+-- position, parent and pivot attributes.
 function Component.new(args)
   local parent = args.parent or {position = vec.Vec2(), size = vec.Vec2(1, 1)}
   local pivot = args.pivot or vec.Vec2()

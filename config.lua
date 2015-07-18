@@ -15,11 +15,12 @@ debug = true
 
 display = {
   vsync = true,
-  width = 1680,
-  height = 1100,
+--  width = 1680,
+--  height = 1100,
 
---  width = 2400,
---  height = 1600,
+  width = 2400,
+  height = 1600,
+
 --  width = 1200,
 --  height = 800,
   fullscreen = false,

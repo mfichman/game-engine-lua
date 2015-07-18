@@ -25,7 +25,7 @@ function ItemBox.new(args)
     text = args.text,
   }) 
 
-  -- Render a grid cell for each item in the gride
+  -- Render a grid cell for each item in the grid
   table.insert(args, {
     kind = 'Grid',
     rows = args.box.rows,

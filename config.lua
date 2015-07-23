@@ -15,11 +15,11 @@ debug = true
 
 display = {
   vsync = true,
---  width = 1680,
---  height = 1100,
+  width = 1680,
+  height = 1100,
 
-  width = 2400,
-  height = 1600,
+  --width = 2400,
+  --height = 1600,
 
 --  width = 1200,
 --  height = 800,
@@ -43,6 +43,7 @@ zone = {
 chunk = {
   cacheSize = 64, 
   size = 24,
+  depth = 24,
 }
 
 key = {
@@ -52,9 +53,11 @@ key = {
   mine = 'm',
   attack = 'space',
   inspect = 'enter',
-  inventory = 'u',
+  inventory = 'tab',
   zoomIn = 'add',
   zoomOut = 'subtract',
+  up = 'u',
+  down = 'o',
 }
 
 mouse = {

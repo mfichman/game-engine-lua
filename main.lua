@@ -38,7 +38,10 @@ local function main()
   game.init()
 
   entity.World{}
-  entity.Fighter{teamId = 2, origin = vec.Vec3(0, 0, 0)}
+  entity.Fighter{teamId = 2, origin = vec.Vec3(6, 6, 0)}
+  entity.Hub{teamId = 2, origin = vec.Vec3(0, 0, 0)}
+  entity.Cargo{teamId = 2, origin = vec.Vec3(4, 0, 0)}
+  entity.StationHardpoint{teamId = 2, origin = vec.Vec3(6, 0, 0)}
 
 --  entity.EscapePod{teamId = 1}
 --  entity.CommTower{}

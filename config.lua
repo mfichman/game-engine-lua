@@ -41,9 +41,9 @@ zone = {
 }
 
 chunk = {
-  cacheSize = 64, 
+  cacheSize = 128, 
   size = 24,
-  depth = 24,
+  depth = 48,
 }
 
 key = {

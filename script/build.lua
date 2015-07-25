@@ -41,4 +41,5 @@ end
 build.module('physics')
 build.module('thread')
 build.module('blob')
+build.module('rand')
 

@@ -44,7 +44,7 @@ local function module(name)
 
   local cmd = {}
   table.insert(cmd, 'cl')
-  table.insert(cmd, '/nologo /MD /EHsc /Zi /Gm /FS')
+  table.insert(cmd, '/nologo /MD /EHsc /Zi /Gm /FS /O2')
   for i, flag in pairs(flags) do
     table.insert(cmd, flag)
   end

@@ -90,6 +90,7 @@ __declspec(dllexport) vec_Vec3 physics_RigidBody_getLinearFactor(physics_RigidBo
 __declspec(dllexport) vec_Vec3 physics_RigidBody_getAngularFactor(physics_RigidBody* self);
 __declspec(dllexport) uint32_t physics_RigidBody_getCollisionFlags(physics_RigidBody* self);
 __declspec(dllexport) void* physics_RigidBody_getUserPointer(physics_RigidBody* self);
+__declspec(dllexport) void physics_RigidBody_setPosition(physics_RigidBody* self, vec_Vec3 const* position);
 __declspec(dllexport) void physics_RigidBody_setLinearVelocity(physics_RigidBody* self, vec_Vec3 const* velocity);
 __declspec(dllexport) void physics_RigidBody_setAngularVelocity(physics_RigidBody* self, vec_Vec3 const* velocity);
 __declspec(dllexport) void physics_RigidBody_setAngularFactor(physics_RigidBody* self, vec_Vec3 const* factor);

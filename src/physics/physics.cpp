@@ -430,6 +430,12 @@ void* physics_RigidBody_getUserPointer(physics_RigidBody* self) {
     return ((btRigidBody*)self)->getUserPointer();
 }
 
+void physics_RigidBody_setPosition(physics_RigidBody* self, vec_Vec3 const* position) {
+    btTransform transform = ((btRigidBody*)self)->getWorldTransform();
+    transform.setOrigin(convert<btVector3>(position));
+    ((btRigidBody*)self)->setWorldTransform(transform);
+}
+
 void physics_RigidBody_setLinearVelocity(physics_RigidBody* self, vec_Vec3 const* velocity) {
     ((btRigidBody*)self)->setLinearVelocity(convert<btVector3>(velocity));
 }

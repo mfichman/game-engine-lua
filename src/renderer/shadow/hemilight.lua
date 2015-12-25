@@ -105,7 +105,7 @@ local function render(g, light)
   gl.glViewport(0, 0, light.shadowMap.width, light.shadowMap.height)
   gl.glClear(gl.GL_DEPTH_BUFFER_BIT)
   g:glEnable(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST)
-  g:glCullFace(gl.GL_FRONT)
+  g:glCullFace(gl.GL_BACK)
   g:commit()
 
   -- FIXME: Render flat here

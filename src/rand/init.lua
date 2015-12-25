@@ -14,6 +14,10 @@
 local math = require('math')
 local vec = require('vec')
 local ffi = require('ffi')
+local path = require('path')
+
+local rand = ffi.load('rand')
+ffi.cdef(path.open('rand/rand.h'):read('*all'))
 
 -- Returns a random number in the range [min, max)
 local function float(min, max)
@@ -111,13 +115,16 @@ local function noise(x, y, seed, options)
   local persistence = options.persistence or 1
   local bias = options.bias or .5
   local octaves = options.octaves or 1
+--[[
   for i=1,octaves do
-    n = n + a*perlin(x*f, y*f, (seed+i+bias)*f)
+    --n = n + a*perlin(x*f, y*f, (seed+i+bias)*f)
+    n = n + a*rand.rand_perlin(x*f, y*f, (seed+i+bias)*f)
     f = f * lacunarity
     a = a * persistence
     --assert(n < 1)
   end
   return n 
+]]
 end
 
 
@@ -125,6 +132,6 @@ return {
   float = float,
   int = int,
   sphere = sphere,
-  noise = noise,
-  perlin = perlin,
+  noise = rand.rand_noise,--rand.noise,--noise,
+  perlin = rand.rand_perlin,
 }

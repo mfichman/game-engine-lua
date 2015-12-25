@@ -42,4 +42,5 @@ build.module('physics')
 build.module('thread')
 build.module('blob')
 build.module('net')
+build.module('rand')
 

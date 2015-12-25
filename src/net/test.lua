@@ -1,6 +1,6 @@
 -- ========================================================================== --
 --                                                                            --
--- Copyright (c) 2014 Matt Fichman <matt.fichman@gmail.com>                   --
+-- Copyright (c) 2015 Matt Fichman <matt.fichman@gmail.com>                   --
 --                                                                            --
 -- This file is part of Quadrant.  It is subject to the license terms in the  --
 -- LICENSE.md file found in the top-level directory of this software package  --
@@ -11,35 +11,48 @@
 --                                                                            --
 -- ========================================================================== --
 
-package.path = './src/?.lua;./src/?/init.lua;'..package.path
-
-local build = require('build')
+local net = require('net')
 local ffi = require('ffi')
+local dbg = require('dbg')
 
-if ffi.os == 'Windows' then
-  build.libpath { 'C:\\WinBrew\\lib' }
-  build.include {'C:\\WinBrew\\include'}
-  build.include {'C:\\WinBrew\\include\\Bullet'}
-else
-  build.include {'/usr/local/include/Bullet'}
+local l = net.Socket()
+assert(l:bind(9000))
+assert(l:listen())
+
+local c = net.Socket()
+assert(c:connect('127.0.0.1',9000))
+
+local msglen = bit.lshift(1,16)
+
+sender = coroutine.create(function()
+  local buf = ffi.new('char[?]', msglen)
+  for i=1,100 do
+    buf[0] = i
+    buf[ffi.sizeof(buf)-1] = i
+    local str = ffi.string(buf, ffi.sizeof(buf))
+    local _, err = c:write(str)
+    assert(_ == true)
+  end
+  c:close()
+end)
+
+receiver = coroutine.create(function()
+  local s = l:accept(s)
+  for i=1,100 do
+    local buf, err = s:read(msglen)
+    assert(buf)
+    assert(buf:byte(1) == i)
+  end
+  s:close()
+end)
+
+while coroutine.status(sender) ~= 'dead' and coroutine.status(receiver) ~= 'dead' do
+  print(coroutine.resume(sender))
+  print(coroutine.resume(receiver))
 end
 
-build.lib { 
-  'BulletCollision',
-  'BulletSoftBody',
-  'BulletDynamics',
-  'LinearMath',
-  'BulletMultiThreaded',
-}
 
-if ffi.os == 'Windows' then
-  build.lib {'lua51'}
-else
-  build.lib {'luajit-5.1.2'}
-end
 
-build.module('physics')
-build.module('thread')
-build.module('blob')
-build.module('net')
+
+
 

@@ -44,7 +44,7 @@ local function module(name)
   
   local cmd = {}
   table.insert(cmd, 'clang++')
-  table.insert(cmd, '-O2 -g -Wno-ignored-attributes -std=c++11')
+  table.insert(cmd, '-O0 -g -Wno-ignored-attributes -std=c++11')
   for i, flag in pairs(flags) do
     table.insert(cmd, flag)
   end

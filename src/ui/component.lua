@@ -20,8 +20,8 @@ local Component = {}; Component.__index = Component
 -- Component by calling this constructor to generate the transform, size, 
 -- position, parent and pivot attributes.
 function Component.new(args)
-  local parent = args.parent or {position = vec.Vec2(), size = vec.Vec2(1, 1)}
-  local pivot = args.pivot or vec.Vec2()
+  local parent = args.parent or {position = vec.Vec2(0, 0), size = vec.Vec2(1, 1)}
+  local pivot = args.pivot or vec.Vec2(0, 0)
   local size = args.size or vec.Vec2(1, 1)
   if not args.sizing or args.sizing == 'relative' then
     size = parent.size * size

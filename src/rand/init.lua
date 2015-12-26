@@ -81,6 +81,8 @@ end
 -------------------------------------------------------------------------------
 
 local function perlin(x, y, z)
+  return rand.rand_perlin(x, y, z)
+--[[
   local floor = math.floor
   local X = bit.band(floor(x), 255)             -- FIND UNIT CUBE THAT
   local Y = bit.band(floor(y), 255)             -- CONTAINS POINT.
@@ -105,9 +107,12 @@ local function perlin(x, y, z)
                        grad(p[BA+1], x-1, y, z-1)),           -- OF CUBE
                  lerp(u, grad(p[AB+1], x, y-1, z-1),
                        grad(p[BB+1], x-1, y-1, z-1))))
+]]
 end
 
 local function noise(x, y, seed, options)
+  return rand.rand_noise(x, y, seed, options)
+--[[
   local n = 0
   local f = options.frequency or 1
   local a = options.amplitude or 1
@@ -115,23 +120,20 @@ local function noise(x, y, seed, options)
   local persistence = options.persistence or 1
   local bias = options.bias or .5
   local octaves = options.octaves or 1
---[[
   for i=1,octaves do
-    --n = n + a*perlin(x*f, y*f, (seed+i+bias)*f)
-    n = n + a*rand.rand_perlin(x*f, y*f, (seed+i+bias)*f)
+    n = n + a*perlin(x*f, y*f, (seed+i+bias)*f)
+    --n = n + a*rand.rand_perlin(x*f, y*f, (seed+i+bias)*f)
     f = f * lacunarity
     a = a * persistence
-    --assert(n < 1)
   end
   return n 
 ]]
 end
 
-
 return {
   float = float,
   int = int,
   sphere = sphere,
-  noise = rand.rand_noise,--rand.noise,--noise,
-  perlin = rand.rand_perlin,
+  noise = noise,
+  perlin = perlin,
 }

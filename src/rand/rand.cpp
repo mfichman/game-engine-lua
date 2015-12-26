@@ -71,10 +71,11 @@ static bool init() {
     return true;
 }
 
+static bool initialized = init();
+
 //////////////////////////////////////////////////////////////////////////////-
 
 double rand_perlin(double x, double y, double z) {
-  static bool initialized = init();
   int X = int(std::floor(x)) & 255;            // FIND UNIT CUBE THAT
   int Y = int(std::floor(y)) & 255;            // CONTAINS POINT.
   int Z = int(std::floor(z)) & 255;

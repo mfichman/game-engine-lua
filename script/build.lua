@@ -17,10 +17,12 @@ local build = require('build')
 local ffi = require('ffi')
 
 if ffi.os == 'Windows' then
-  build.libpath { 'C:\\WinBrew\\lib' }
+  build.libpath {'C:\\WinBrew\\lib'}
   build.include {'C:\\WinBrew\\include'}
   build.include {'C:\\WinBrew\\include\\Bullet'}
 else
+  build.libpath {'/usr/local/lib'}
+  build.include {'/usr/local/include'}
   build.include {'/usr/local/include/Bullet'}
 end
 
@@ -29,7 +31,6 @@ build.lib {
   'BulletSoftBody',
   'BulletDynamics',
   'LinearMath',
-  'BulletMultiThreaded',
 }
 
 if ffi.os == 'Windows' then

@@ -33,10 +33,9 @@ local function main()
   local world = require('world')
   local game = require('game')
 
-  dofile('worker.lua')
+  --dofile('worker.lua')
 
   game.init()
-
   entity.World{}
   entity.Fighter{teamId = 2, origin = vec.Vec3(6, 6, 0)}
   entity.Hub{teamId = 2, origin = vec.Vec3(0, 0, 0)}

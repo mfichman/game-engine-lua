@@ -21,8 +21,8 @@
 
 extern "C" {
 
-#include <net/net.h>
 #include <sys/socket.h>
+#include <net/net.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>

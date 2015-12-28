@@ -17,9 +17,9 @@ local build = require('build')
 local ffi = require('ffi')
 
 if ffi.os == 'Windows' then
-  build.libpath {'C:\\WinBrew\\lib'}
-  build.include {'C:\\WinBrew\\include'}
-  build.include {'C:\\WinBrew\\include\\Bullet'}
+  build.libpath {os.getenv('LOCALAPPDATA')..'\\WinBrew\\lib'}
+  build.include {os.getenv('LOCALAPPDATA')..'\\WinBrew\\include'}
+  build.include {os.getenv('LOCALAPPDATA')..'\\WinBrew\\include\\Bullet'}
 else
   build.libpath {'/usr/local/lib'}
   build.include {'/usr/local/include'}
@@ -42,6 +42,8 @@ end
 build.module('physics')
 build.module('thread')
 build.module('blob')
-build.module('net')
 build.module('rand')
+if ffi.os ~= 'Windows' then
+  build.module('net')
+end
 

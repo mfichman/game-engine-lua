@@ -29,8 +29,8 @@ function Window.new()
   local settings = sfml.ContextSettings()
   settings.depthBits = 24
   settings.stencilBits = 0
-  settings.majorVersion = 3
-  settings.minorVersion = 2
+  settings.majorVersion = 0
+  settings.minorVersion = 0
 
   local window = sfml.Window(mode, "quadrant", style, settings)
   window:setVerticalSyncEnabled(config.display.vsync)

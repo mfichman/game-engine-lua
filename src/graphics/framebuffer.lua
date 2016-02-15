@@ -64,12 +64,12 @@ end
 function FrameBuffer:check() 
   self:enable()
   assert(gl.GL_FRAMEBUFFER_COMPLETE == gl.glCheckFramebufferStatus(gl.GL_FRAMEBUFFER))
+  gl.glDrawBuffers(self.drawBufferAttachmentCount, self.drawBufferAttachment)
   self:disable()
 end
 
 function FrameBuffer:enable()
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.id) 
-  gl.glDrawBuffers(self.drawBufferAttachmentCount, self.drawBufferAttachment)
 end
 
 function FrameBuffer:disable()

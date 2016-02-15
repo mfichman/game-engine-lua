@@ -37,7 +37,7 @@ sender = coroutine.create(function()
 end)
 
 receiver = coroutine.create(function()
-  local s = l:accept(s)
+  local s = l:accept()
   for i=1,100 do
     local buf, err = s:read(msglen)
     assert(buf)

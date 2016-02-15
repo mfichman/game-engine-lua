@@ -22,7 +22,7 @@ layout(std140) uniform camera {
 
 layout(std140) uniform buffers {
     uniform sampler2D diffuseBuffer;
-    uniform sampler2D specularbuffer;
+    uniform sampler2D specularBuffer;
     uniform sampler2D emissiveBuffer;
     uniform sampler2D depthBuffer;
     uniform sampler2D shadowMap;

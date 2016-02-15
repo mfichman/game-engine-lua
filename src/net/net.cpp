@@ -20,7 +20,6 @@
 #include <cstring>
 
 extern "C" {
-
 #include <sys/socket.h>
 #include <net/net.h>
 #include <arpa/inet.h>
@@ -42,7 +41,6 @@ struct net_Socket {
     int err;
 };
 
-
 /* Create a new non-blocking TCP stream socket, disable SIGPIPE, and set TCP
  * options */
 net_Socket* net_Socket_new() {
@@ -61,6 +59,7 @@ net_Socket* net_Socket_new() {
     }
 }
 
+/* Frees resources associated with the socket */
 void net_Socket_del(net_Socket* self) {
     delete self;
 }
@@ -104,6 +103,10 @@ net_SocketError net_Socket_connect(net_Socket* self, char const* host, uint16_t 
     }
 }
 
+/* Read up to n bytes from the socket into buf. If there's no error, return the
+ * number of bytes read. If the read would block the thread, then this function
+ * returns net_YIELD.
+ */
 net_SocketResult net_Socket_read(net_Socket* self, char* buf, uint32_t n) {
     uint32_t bytes = 0;
     while (true) {
@@ -127,6 +130,10 @@ net_SocketResult net_Socket_read(net_Socket* self, char* buf, uint32_t n) {
     }
 }
 
+/* Write up to bytes from buf into the socket, returning the number of bytes
+ * written, and an error code to indicate the error. If the write would block
+ * the thread, then this function returns net_YIELD.
+ */
 net_SocketResult net_Socket_write(net_Socket* self, char const* buf, uint32_t n) {
     uint32_t bytes = 0;
     while (true) {
@@ -152,6 +159,7 @@ net_SocketResult net_Socket_write(net_Socket* self, char const* buf, uint32_t n)
     }
 }
 
+/* Binds the socket to the given port. */
 net_SocketError net_Socket_bind(net_Socket* self, uint16_t port) {
     int const yes = 1;
     if(setsockopt(self->sd, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(yes))<0) {
@@ -173,6 +181,8 @@ net_SocketError net_Socket_bind(net_Socket* self, uint16_t port) {
     }
 }
 
+/* Listens on the bound port for inoming connections. Returns an error if
+ * the operation fails. */
 net_SocketError net_Socket_listen(net_Socket* self) {
     if(listen(self->sd, 16)<0) {
         return net_DISCONNECT; 
@@ -182,6 +192,10 @@ net_SocketError net_Socket_listen(net_Socket* self) {
     }
 }
 
+/* Accepts an incoming connection. If no connection is in the queue, then this
+ * function returns net_YIELD; otherwise, 'out' is initialized as an endpoint
+ * for the new connection.
+ */
 net_SocketError net_Socket_accept(net_Socket* self, net_Socket* out) {
     sockaddr_in addr;
     socklen_t len = sizeof(addr);
@@ -200,10 +214,12 @@ net_SocketError net_Socket_accept(net_Socket* self, net_Socket* out) {
     }
 }
 
+/* Returns the detailed error code of the last error. */
 int net_Socket_errno(net_Socket* self) {
     return self->err;
 }
 
+/* Closes the socket */
 void net_Socket_close(net_Socket* self) {
     close(self->sd);
     self->sd = -1;

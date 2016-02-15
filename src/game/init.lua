@@ -17,13 +17,11 @@ local config = require('config')
 local graphics = require('graphics')
 local renderer = require('renderer')
 local physics = require('physics')
-local db = require('db')
 local gl = require('gl')
 local bit = require('bit')
 local vec = require('vec')
 local stats = require('stats')
 local window = require('window')
-local component = require('component')
 local input = require('input')
 local asset = require('asset')
 local profiler = require('profiler')
@@ -31,46 +29,21 @@ local profiler = require('profiler')
 local self = {}
 
 -- Initialize game variables
-local db = db.Database()
 local input = input.Map()
 local clock = sfml.Clock()
 local accumulator = 0
 local timestep = 1/60
 local samples = {}
-local process = {}
 local ticks = 0
-local tickHandler = {}
+local eventHandler
 local world
 local delta = 0
 
--- Call 'event' on each row in the table. If the first row in the table does 
--- not have 'event' as a member, then skip all other components in the table as
--- an optimization, to avoid iterating through the entire table without 
--- actually updating anything.
-local function processTable(table, event)
-  local count = 0
-  for id, component in pairs(table.component) do
-    if type(component) == 'cdata' then return end
-    local handler = component[event]
-    if not handler then return end
-    handler(component, id)
-    count = count +1
-  end 
-end
-
--- Call 'event' on each table in the database.
-local function processDb(db, event, process)
-  for i, kind in ipairs(process) do
-    local table = db.table[kind]
-    if table then
-      processTable(table, event)
-    end
-  end
-end
-
--- Call 'event' on each component in the game database.
+-- Send an event to the event handler
 local function sendEvent(event)
-  processDb(db, event, process)
+  if eventHandler then
+    eventHandler(event)
+  end
 end
 
 -- Increment the game by one tick (send the 'tick' event to all components)
@@ -78,9 +51,6 @@ local function tick()
   world:stepSimulation(timestep, 0, timestep) 
   sendEvent('tick')
   ticks = ticks+1
-  for i, handler in ipairs(tickHandler) do
-    handler()
-  end
 end
 
 -- Render a single frame. 
@@ -183,10 +153,6 @@ end
 -- Run the game
 function self.run()
   collectgarbage('stop')
-  for i, name in ipairs(config.process) do -- FIXME
-    table.insert(process, component[name])
-  end
-
   clock:restart()
   --profiler.start()
   --for i=1,1000 do
@@ -217,11 +183,12 @@ function self.run()
 end
 
 -- Initialize the game
-function self.init()
+function self.init(handler)
   world = physics.World()
   window = window.Window()
   renderer = renderer.Deferred(graphics.context)
 
+  eventHandler = handler
   self.world = world
   self.window = window
   self.renderer = renderer
@@ -232,25 +199,9 @@ function self.init()
   world:setGravity(vec.Vec3())
 end
 
-function self.Table(kind)
-  local kind = component[kind]
-  return db:tableIs(kind)
-end
-
-function self.Entity(metatable)
-  assert(metatable, 'metatable is nil')
-  local id = db:newEntityId()
-  local table = db:tableIs(component.Entity)
-  table[id] = metatable
-  return table[id]
-end
-
 self.timestep = timestep
-self.db = db
 self.input = input
 self.world = world
 self.ticks = function() return ticks end
-self.tickHandler = tickHandler
-
 
 return self

@@ -15,6 +15,6 @@ local ffi = require('ffi')
 local path = require('path')
 
 ffi.cdef(path.open('freetype/freetype.h'):read('*all'))
-local freetype = ffi.load('freetype')
+local freetype = ffi.load('lib/freetype')
 
 return freetype

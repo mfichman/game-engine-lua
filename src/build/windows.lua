@@ -42,12 +42,17 @@ local function module(name)
     return all..'.dll'
   end)
 
+  os.execute('mkdir lib')
+  os.execute('mkdir bld')
+
   local cmd = {}
   table.insert(cmd, 'cl')
   table.insert(cmd, '/nologo /MD /EHsc /Zi /Gm /FS /O2')
   for i, flag in pairs(flags) do
     table.insert(cmd, flag)
   end
+  table.insert(cmd, string.format('/Fo:bld/%s.obj', name))
+  table.insert(cmd, string.format('/Fd:bld/vs.pdb', name))
   table.insert(cmd, '/I./src')
   table.insert(cmd, source)
   table.insert(cmd, '/link')
@@ -55,7 +60,7 @@ local function module(name)
     table.insert(cmd, linker)
   end
   table.insert(cmd, '/dll')
-  table.insert(cmd, string.format('/out:%s', lib))
+  table.insert(cmd, string.format('/out:lib/%s', lib))
 
   local cmd = table.concat(cmd, ' ')
   print(cmd)

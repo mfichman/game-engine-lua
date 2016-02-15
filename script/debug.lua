@@ -11,8 +11,7 @@
 --                                                                            --
 -- ========================================================================== --
 
-package.path = './src/?.lua;./src/?/init.lua;'..package.path
-
+local init = require('init')
 local dbg = require('dbg')
 
 local function main()

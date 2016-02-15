@@ -41,6 +41,8 @@ local function module(name)
   local lib = source:gsub('.-([^/]*)[.]cpp', function(all)
     return 'lib'..all..'.dylib'
   end)
+
+  os.execute('mkdir lib')
   
   local cmd = {}
   table.insert(cmd, 'clang++')
@@ -54,7 +56,7 @@ local function module(name)
   for i, linker in pairs(linker) do
     table.insert(cmd, linker)
   end
-  table.insert(cmd, string.format('-o%s', lib))
+  table.insert(cmd, string.format('-olib/%s', lib))
 
   local cmd = table.concat(cmd, ' ')
   print(cmd)

@@ -1,14 +1,6 @@
 *.swp
-*.exp
-*.dylib*
-*.ilk
-*.pdb
-*.idb
-*.obj
-*.lib
-*.dll
-*.so
-*.o
-.DS_Store
 *.blend1
 *.blend2
+.DS_Store
+bld
+lib

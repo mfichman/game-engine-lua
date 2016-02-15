@@ -23,4 +23,4 @@ local path = require('path')
 
 ffi.cdef(path.open('blob/blob.h'):read('*all'))
 
-return ffi.load('lib/blob')
+return ffi.load('blob')

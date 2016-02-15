@@ -15,7 +15,7 @@ local ffi = require('ffi')
 local vec = require('vec')
 local path = require('path')
 
-local physics = ffi.load('lib/physics')
+local physics = ffi.load('physics')
 ffi.cdef(path.open('physics/physics.h'):read('*all'))
 
 local function metatype(class)

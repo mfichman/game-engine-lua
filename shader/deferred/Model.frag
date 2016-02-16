@@ -6,33 +6,23 @@
  *****************************************************************************/
 
 #version 330
-
-uniform sampler2D diffuseMap;
-uniform sampler2D specularMap;
-uniform sampler2D normalMap;
-uniform sampler2D emissiveMap;
-
-uniform vec3 diffuseColor;
-uniform vec3 specularColor;
-uniform vec3 ambientColor;
-uniform vec3 emissiveColor;
-uniform float hardness;
+#pragma include "shader/Material.vert";
 
 in vec3 normal;
 in vec3 tangent;
 in vec2 texcoord;
 
-layout(location=0) out vec3 material;
-layout(location=1) out vec4 specular;
+layout(location=0) out vec3 diffuseOut;
+layout(location=1) out vec4 specularOut;
 layout(location=2) out vec3 normalOut;
-layout(location=3) out vec3 emissive;
+layout(location=3) out vec3 emissiveOut;
 
 /* Deferred render shader with normal, specular, and diffuse mapping */
 void main() {
-    vec3 Kd = diffuseColor;
-    vec3 Ks = specularColor;
-    vec3 Ka = ambientColor;
-    vec3 Ke = emissiveColor;
+    vec3 Kd = diffuseColor.rgb;
+    vec3 Ks = specularColor.rgb;
+    vec3 Ka = ambientColor.rgb;
+    vec3 Ke = emissiveColor.rgb;
 
 	// Get the normal from the normal map texture and unpack it
 	vec3 Tn = normalize((texture(normalMap, texcoord) * 2. - 1.).xyz);	
@@ -49,11 +39,11 @@ void main() {
     vec3 Te = texture(emissiveMap, texcoord).rgb;
 
 	// Save diffuse material parameters
-	material = Td * Kd;
+	diffuseOut = Td * Kd;
 
 	// Save the specular material parameters (with hardness)
-	specular.rgb = Ts * Ks;
-	specular.a = hardness/1024; 
+	specularOut.rgb = Ts * Ks;
+	specularOut.a = hardness/1024; 
     // Shininess must be in the range [0, -1024].  This is required to scale
     // down the shininess to 8 bits, so that "converted" shininess above 1.0f
     // doesn't get clamped.
@@ -62,5 +52,5 @@ void main() {
 	normalOut = (TBN * Tn + 1.) / 2.;
 
     // Emissive color
-    emissive = Te * Ke;
+    emissiveOut = Te * Ke;
 }

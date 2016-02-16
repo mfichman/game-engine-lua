@@ -33,9 +33,9 @@ local function line(context, str)
   if 'newmtl' == cmd then
     if context.material then
       local path = path.join(context.path, context.material.name)
-      loaded[path] = context.material
+      loaded[path] = graphics.Material(context.material)
     end
-    context.material = graphics.Material()
+    context.material = {}
     context.material.name = rest
   elseif 'map_bump' == cmd or 'bump' == cmd then
     context.material.normalMap = asset.open(reset)
@@ -76,7 +76,7 @@ local function open(name)
   end
   if context.material then
     local path = path.join(context.path, context.material.name)
-    loaded[path] = context.material
+    loaded[path] = graphics.Material(context.material)
   end
 end
 

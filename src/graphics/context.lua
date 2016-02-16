@@ -130,6 +130,10 @@ function Context:glBlendFunc(src, dst)
   self.state.blendFuncDst = dst
 end
 
+function Context:glUniform1i(index, value)
+  if index then gl.glUniform1i(index, value) end
+end
+
 function Context:glUniform3fv(index, count, data)
   if index then gl.glUniform3fv(index, count, data) end
 end

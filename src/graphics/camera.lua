@@ -15,6 +15,14 @@ local vec = require('vec')
 
 local Camera = {}; Camera.__index = Camera
 
+--[[
+ffi.cdef[[
+struct graphics_CameraBuffer {
+  vec_Mat4x4 projectionMatrix;
+  vec_mat
+};
+]]
+
 -- Creates a new orthographic or perspective camera object
 function Camera.new(args)
   local self = {

@@ -47,11 +47,7 @@ end
 
 -- Pass the material data to the shader
 local function material(g, material)
-  g:glUniform3fv(program.diffuseColor, 1, material.diffuseColor:data())
-  g:glUniform3fv(program.ambientColor, 1, material.ambientColor:data())
-  g:glUniform3fv(program.specularColor, 1, material.specularColor:data())
-  g:glUniform3fv(program.emissiveColor, 1, material.emissiveColor:data())
-  g:glUniform1f(program.hardness, material.hardness)
+  gl.glBindBufferBase(gl.GL_UNIFORM_BUFFER, program.material, material.id)
 
   texture(g, material.diffuseMap or white, gl.GL_TEXTURE0+0)
   texture(g, material.specularMap or white, gl.GL_TEXTURE0+1)
@@ -72,10 +68,10 @@ local function render(g, model)
   g:glUseProgram(program.id)
   g:glEnable(gl.GL_CULL_FACE, gl.GL_DEPTH_TEST)
   g:commit()
-  gl.glUniform1i(program.diffuseMap, 0)
-  gl.glUniform1i(program.specularMap, 1)
-  gl.glUniform1i(program.normalMap, 2)
-  gl.glUniform1i(program.emissiveMap, 3)
+  g:glUniform1i(program.diffuseMap, 0)
+  g:glUniform1i(program.specularMap, 1)
+  g:glUniform1i(program.normalMap, 2)
+  g:glUniform1i(program.emissiveMap, 3)
 
   material(g, model.material)
   mesh(g, model.mesh)

@@ -29,6 +29,12 @@ function Program.new(fragment, vertex, geometry)
     fragment = fragment,
     vertex = vertex,
     geometry = geometry,
+    
+    -- Uniform block bindings. 
+    camera = 0, 
+    transform = 1,
+    material = 2,
+    light = 3,
   }
   self.handle = ffi.gc(ffi.new('GLint[1]', self.id), destroy)
   if #{fragment, vertex, geometry} == 0 then
@@ -65,6 +71,9 @@ function Program:link()
     gl.glAttachShader(self.id, self.geometry.id) 
   end
   gl.glLinkProgram(self.id)
+  if gl.glGetError() ~= 0 then
+    require('dbg').start()
+  end
 
   local status = ffi.new('GLint[1]')
   gl.glGetProgramiv(self.id, gl.GL_LINK_STATUS, status)
@@ -89,6 +98,24 @@ function Program:link()
     gl.glGetActiveUniform(self.id, i, maxlen[0], nil, size, kind, buf)
     local name = ffi.string(buf)
     self[name] = gl.glGetUniformLocation(self.id, buf)
+  end
+
+  local camera = gl.glGetUniformBlockIndex(self.id, 'camera')
+  local transform = gl.glGetUniformBlockIndex(self.id, 'transform')
+  local material = gl.glGetUniformBlockIndex(self.id, 'material')
+  local light = gl.glGetUniformBlockIndex(self.id, 'light')
+
+  if camera ~= gl.GL_INVALID_INDEX then
+    gl.glUniformBlockBinding(self.id, camera, self.camera)
+  end
+  if transform ~= gl.GL_INVALID_INDEX then
+    gl.glUniformBlockBinding(self.id, transform, self.transform)
+  end
+  if material ~= gl.GL_INVALID_INDEX then
+    gl.glUniformBlockBinding(self.id, material, self.material)
+  end
+  if light ~= gl.GL_INVALID_INDEX then
+    gl.glUniformBlockBinding(self.id, light, self.light)
   end
 end
 

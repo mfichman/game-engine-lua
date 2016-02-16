@@ -19,13 +19,4 @@ layout(std140) uniform camera {
 // worldViewInvMatrix
 // normalMatrix
 // lightMatrix
-
-layout(std140) uniform buffers {
-    uniform sampler2D diffuseBuffer;
-    uniform sampler2D specularBuffer;
-    uniform sampler2D emissiveBuffer;
-    uniform sampler2D depthBuffer;
-    uniform sampler2D shadowMap;
-};
-
 // inverseProject

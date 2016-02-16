@@ -16,7 +16,7 @@ local vec = require('vec')
 local ffi = require('ffi')
 local path = require('path')
 
-local rand = ffi.load('lib/rand')
+local rand = ffi.load('rand')
 ffi.cdef(path.open('rand/rand.h'):read('*all'))
 
 -- Returns a random number in the range [min, max)

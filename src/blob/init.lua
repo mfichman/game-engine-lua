@@ -23,7 +23,7 @@ local path = require('path')
 
 ffi.cdef(path.open('blob/blob.h'):read('*all'))
 
-local blob = ffi.load('lib/blob')
+local blob = ffi.load('blob')
 
 -- Libary for managing and sharing large binary objects in Lua between multiple
 -- Lua interpreters within the same process. All BLOBs are owned via the blob

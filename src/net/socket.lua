@@ -14,7 +14,7 @@
 local Socket = {}; Socket.__index = Socket
 
 local ffi = require('ffi')
-local net = ffi.load('net')
+local net = path.load('net')
 
 function Socket.new()
   local self = {

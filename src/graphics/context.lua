@@ -52,6 +52,10 @@ function Context:submit(node, camera, worldTransform)
     local worldMatrix
     if worldTransform then
       worldMatrix = vec.Mat4.transform(worldTransform.rotation, worldTransform.origin)
+      if worldTransform.scale ~= 1 and worldTransform.scale ~= 0 then
+        local scale = worldTransform.scale
+        worldMatrix = worldMatrix * vec.Mat4.scale(scale, scale, scale)
+      end
     else
       worldMatrix = vec.Mat4.identity()
     end

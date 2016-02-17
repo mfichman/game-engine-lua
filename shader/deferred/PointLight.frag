@@ -12,7 +12,9 @@ uniform float atten0;
 uniform float atten1;
 uniform float atten2;
 uniform vec3 diffuseColor;
+uniform vec3 backDiffuseColor;
 uniform vec3 specularColor;
+uniform vec3 ambientColor;
 
 in vec3 lightPosition;
 
@@ -21,7 +23,9 @@ out vec4 color;
 /* Deferred point light shader */
 void main() {
     vec3 Ld = diffuseColor;
+    vec3 Ldb = backDiffuseColor;
     vec3 Ls = specularColor;
+    vec3 La = ambientColor;
 
     LightingInfo li = lightingInfo();
 
@@ -40,9 +44,12 @@ void main() {
         // Calculate the specular color coefficient
         vec3 specular = li.Ks * Ls * pow(max(0., dot(L, R)), li.alpha);
 
-        color = vec4(diffuse + specular, 1.);
-        color.rgb *= atten;
+        color.rgb = atten * (diffuse + specular);
     } else {
-        color = vec4(0., 0., 0., 1.);
+        vec3 diffuse = li.Kd * Ldb * -Rd;// * mix(Ldb, Ld, Rd);
+        color.rgb = diffuse;
     }
+    color.rgb += li.Ke; // Emissive
+    color.rgb += La * li.Kd; // Ambient
+    color.a = 1;
 }

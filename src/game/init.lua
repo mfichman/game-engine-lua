@@ -207,5 +207,6 @@ self.timestep = timestep
 self.input = input
 self.world = world
 self.ticks = function() return ticks end
+self.accumulator = function() return accumulator end
 
 return self

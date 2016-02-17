@@ -61,6 +61,7 @@ typedef struct vec_Color {
 typedef struct vec_Transform {
     vec_Vec3 origin;
     vec_Quat rotation;
+    vec_Scalar scale;
 } vec_Transform;
 
 

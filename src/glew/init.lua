@@ -16,4 +16,4 @@ local path = require('path')
 
 ffi.cdef(path.open('gl/glew.h'):read('*all'))
 
-return ffi.load('glew')
+return path.load('glew')

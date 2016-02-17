@@ -19,7 +19,9 @@ local PointLight = {}; PointLight.__index = PointLight
 function PointLight.new(args)
   local args = args or {}
   local self = {
+    ambientColor = args.ambientColor or vec.Vec4(0, 0, 0, 1),
     diffuseColor = args.diffuseColor or vec.Vec4(1, 1, 1, 1),
+    backDiffuseColor = args.backDiffuseColor or vec.Vec4(0, 0, 0, 1),
     specularColor = args.specularColor or vec.Vec4(1, 1, 1, 1),
     constantAttenuation = args.constantAttenuation or 1,
     linearAttenuation = args.linearAttenuation or 1,

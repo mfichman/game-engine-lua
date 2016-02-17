@@ -20,7 +20,7 @@ ffi.cdef(path.open('gl/glenum.h'):read('*all'))
 
 if ffi.os == 'Windows' then
   glew = require('glew')
-  opengl = ffi.load('opengl32')
+  opengl = path.load('opengl32')
 else
   ffi.cdef(path.open('gl/gl.h'):read('*all'))
 end

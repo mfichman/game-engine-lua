@@ -18,11 +18,33 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
+-- Set up load paths. Get the game engine directory (for loading resources)
+-- from the directory that 'init.lua' lives in. Add the current working
+-- directory src and lib directories.
+
 setmetatable(_G, {
   __newindex = function(t,k,v) 
     error('_G is read-only!')
   end
 })
 
-package.path = './src/?.lua;./src/?/init.lua;'..package.path
+local file = debug.getinfo(1,'S').source
+local _, _, dir = file:find('@(.+)[/\\]init.lua')
+
+package.path = table.concat({
+  dir..'/src/?.lua',
+  dir..'/src/?/init.lua',
+  './src/?.lua',
+  './src/?/init.lua',
+  package.path,
+}, ';')
+
+local path = require('path')
+
+path.path = table.concat({
+  dir..'/src',
+  dir..'/lib',
+  dir,
+  path.path,
+}, ';')
 

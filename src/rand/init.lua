@@ -16,12 +16,29 @@ local vec = require('vec')
 local ffi = require('ffi')
 local path = require('path')
 
-local rand = ffi.load('rand')
+local rand = path.load('rand')
 ffi.cdef(path.open('rand/rand.h'):read('*all'))
 
 -- Returns a random number in the range [min, max)
 local function float(min, max)
   return min+(max-min)*math.random()
+end
+
+local function normal(mean, stdev)
+  local x1, x2, w, y1, y2
+
+  while true do
+    x1 = 2 * float(0, 1) - 1
+    x2 = 2 * float(0, 1) - 1
+    w = x1*x1 + x2*x2
+    if w < 1 then break end
+  end
+
+  w = math.sqrt((-2*math.log(w))/w)
+  y1 = x1 * w
+  y2 = x2 * w
+
+  return stdev*y1+mean
 end
 
 local function int(min, max)
@@ -136,4 +153,5 @@ return {
   sphere = sphere,
   noise = noise,
   perlin = perlin,
+  normal = normal,
 }

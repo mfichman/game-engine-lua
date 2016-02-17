@@ -19,17 +19,19 @@ local program
 
 -- Set the light color and attenuation, direction, etc.
 local function params(g, light)
-  gl.glUniform1i(program.diffuseBuffer, 0)
-  gl.glUniform1i(program.specularBuffer, 1)
-  gl.glUniform1i(program.normalBuffer, 2)
-  --gl.glUniform1i(program.emissiveBuffer, 3)
-  gl.glUniform1i(program.depthBuffer, 4)
+  g:glUniform1i(program.diffuseBuffer, 0)
+  g:glUniform1i(program.specularBuffer, 1)
+  g:glUniform1i(program.normalBuffer, 2)
+  g:glUniform1i(program.emissiveBuffer, 3)
+  g:glUniform1i(program.depthBuffer, 4)
 
-  gl.glUniform3fv(program.diffuseColor, 1, light.diffuseColor:data())
-  gl.glUniform3fv(program.specularColor, 1, light.specularColor:data())
-  gl.glUniform1f(program.atten0, light.constantAttenuation)
-  gl.glUniform1f(program.atten1, light.linearAttenuation)
-  gl.glUniform1f(program.atten2, light.quadraticAttenuation)
+  g:glUniform3fv(program.diffuseColor, 1, light.diffuseColor:data())
+  g:glUniform3fv(program.backDiffuseColor, 1, light.backDiffuseColor:data())
+  g:glUniform3fv(program.ambientColor, 1, light.ambientColor:data())
+  g:glUniform3fv(program.specularColor, 1, light.specularColor:data())
+  g:glUniform1f(program.atten0, light.constantAttenuation)
+  g:glUniform1f(program.atten1, light.linearAttenuation)
+  g:glUniform1f(program.atten2, light.quadraticAttenuation)
 end
 
 local function render(g, light)

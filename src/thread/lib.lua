@@ -22,4 +22,4 @@ local ffi = require('ffi')
 local path = require('path')
 
 ffi.cdef(path.open('thread/thread.h'):read('*all'))
-return ffi.load('thread')
+return path.load('thread')

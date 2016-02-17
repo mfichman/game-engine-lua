@@ -26,6 +26,7 @@ function Window.new()
   mode.height = config.display.height
   
   local style = config.display.fullscreen and sfml.Fullscreen or sfml.DefaultStyle
+
   local settings = sfml.ContextSettings()
   settings.depthBits = 24
   settings.stencilBits = 0

@@ -12,6 +12,7 @@
 -- ========================================================================== --
 
 local io = require('io')
+local ffi = require('ffi')
 
 local m = {}
 
@@ -36,6 +37,23 @@ function m.find(item)
       fd:close()
       return path
     end
+  end
+end
+
+-- Open a library on the path
+function m.load(name)
+  local path
+  if ffi.os == 'Windows' then
+    path = m.find(name..'.dll')
+  elseif ffi.os == 'OSX' then
+    path = m.find('lib'..name..'.dylib')
+  else
+    error('unsupported platform')
+  end
+  if path then
+    return ffi.load(path)
+  else
+    return ffi.load(name)
   end
 end
 

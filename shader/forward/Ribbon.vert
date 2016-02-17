@@ -6,10 +6,9 @@
  *****************************************************************************/
 
 #version 330
+#pragma include "shader/Camera.vert"
+#pragma include "shader/Transform.vert"
 
-uniform mat4 worldViewMatrix;
-uniform mat4 projectionMatrix;
-uniform mat3 normalMatrix;
 uniform float width;
 uniform float minWidth;
 uniform int tail;

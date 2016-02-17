@@ -54,7 +54,6 @@ local function render(g, ribbon)
   -- Pass matrices to the vertex shader
   local worldViewMatrix = camera.viewMatrix * g.worldMatrix 
   gl.glUniformMatrix4fv(program.worldViewMatrix, 1, 0, worldViewMatrix:data())
-  gl.glUniformMatrix4fv(program.projectionMatrix, 1, 0, camera.projectionMatrix:data())
 
   gl.glUniform1f(program.width, ribbon.width)
   gl.glUniform1f(program.minWidth, ribbon.minWidth)

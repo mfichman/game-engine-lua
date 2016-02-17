@@ -7,8 +7,7 @@
 
 #version 330 
 #pragma include "shader/Mesh.vert"
-
-uniform mat4 worldViewProjectionMatrix;
+#pragma include "shader/Transform.vert"
 
 /* Very fast simple solid-color shader for rendering to depth */
 void main() {

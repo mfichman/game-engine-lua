@@ -5,16 +5,7 @@
  * February, 2011                                                            *
  *****************************************************************************/
 
-layout(location=4) in vec4 rotation;
-layout(location=5) in vec3 origin;
+uniform mat4 worldViewMatrix;
+uniform mat4 worldViewProjectionMatrix;
+uniform mat3 normalMatrix;
 
-/* Transform a vector by a quaternion */
-vec3 mulquat(vec4 self, vec3 v) {
-    // OpenGL quat: x y z w
-    // Lua quat: w x y z
-    vec3 qv = self.yzw;
-    vec3 uv = cross(qv, v);
-    vec3 uuv = cross(qv, uv);
-    return v+((uv*self.x)+uuv)*2;
-}
- 

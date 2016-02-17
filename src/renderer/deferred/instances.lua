@@ -97,11 +97,9 @@ local function render(g, instances)
   g:glUniform1i(program.specularMap, 1)
   g:glUniform1i(program.normalMap, 2)
   g:glUniform1i(program.emissiveMap, 3)
+  gl.glBindBufferBase(gl.GL_UNIFORM_BUFFER, program.camera, g.camera.id)
 
   material(g, instances.model.material)
-
-  gl.glUniformMatrix4fv(program.viewProjectionMatrix, 1, 0, g.camera.viewProjectionMatrix:data()) 
-  gl.glUniformMatrix4fv(program.viewMatrix, 1, 0, g.camera.viewMatrix:data()) 
 
   drawInstances(instances)
 

@@ -5,16 +5,16 @@
  * February, 2011                                                            *
  *****************************************************************************/
 
-layout(location=4) in vec4 rotation;
-layout(location=5) in vec3 origin;
+layout(std140) uniform material {
+    vec4 ambientColor;
+    vec4 diffuseColor;
+    vec4 specularColor;
+    vec4 emissiveColor;
+    float hardness;
+};
 
-/* Transform a vector by a quaternion */
-vec3 mulquat(vec4 self, vec3 v) {
-    // OpenGL quat: x y z w
-    // Lua quat: w x y z
-    vec3 qv = self.yzw;
-    vec3 uv = cross(qv, v);
-    vec3 uuv = cross(qv, uv);
-    return v+((uv*self.x)+uuv)*2;
-}
- 
+uniform sampler2D diffuseMap;
+uniform sampler2D specularMap;
+uniform sampler2D normalMap;
+uniform sampler2D emissiveMap;
+

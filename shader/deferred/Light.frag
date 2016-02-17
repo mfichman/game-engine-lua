@@ -5,6 +5,8 @@
  * February, 2011                                                            *
  *****************************************************************************/
 
+#pragma include "shader/Camera.vert"
+
 uniform sampler2D diffuseBuffer;
 uniform sampler2D specularBuffer;
 uniform sampler2D normalBuffer;
@@ -14,7 +16,6 @@ uniform sampler2D depthBuffer;
 uniform sampler2DShadow shadowMap;
 uniform float shadowMapSize;
 
-uniform mat4 projectionInvMatrix; // From clip space to view space
 uniform mat4 lightMatrix; // From _view space_ (!!) to light space
 
 in vec4 position;

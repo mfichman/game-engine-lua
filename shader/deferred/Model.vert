@@ -7,9 +7,7 @@
  
 #version 330
 #pragma include "shader/Mesh.vert"
-
-uniform mat4 worldViewProjectionMatrix;
-uniform mat3 normalMatrix;
+#pragma include "shader/Transform.vert"
 
 out vec3 normal;
 out vec3 tangent;

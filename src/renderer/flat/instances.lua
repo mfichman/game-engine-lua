@@ -34,9 +34,6 @@ local function render(g, instances)
 
   gl.glUseProgram(program.id)
 
-  local mesh = instances.model.mesh
-  gl.glUniformMatrix4fv(program.viewProjectionMatrix, 1, 0, g.camera.viewProjectionMatrix:data()) 
-
   -- Draw the instances
   deferred.drawInstances(instances)
 end

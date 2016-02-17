@@ -7,8 +7,7 @@
 
 #version 330
 #pragma include "shader/Mesh.vert"
-
-uniform mat4 worldViewProjectionMatrix;
+#pragma include "shader/Transform.vert"
 
 out vec2 texcoord;
 

@@ -66,8 +66,6 @@ local function render(g, particles)
   -- Pass matrices to the vertex shader
   local worldViewMatrix = camera.viewMatrix * g.worldMatrix 
   gl.glUniformMatrix4fv(program.worldViewMatrix, 1, 0, worldViewMatrix:data())
-  gl.glUniformMatrix4fv(program.projectionMatrix, 1, 0, camera.projectionMatrix:data())
-  gl.glUniformMatrix4fv(program.projectionInvMatrix, 1, 0, camera.projectionInvMatrix:data())
 
   -- Render the particles to the streaming draw buffer
   buffer:draw(gl.GL_POINTS, particles.particle)

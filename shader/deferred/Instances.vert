@@ -7,6 +7,7 @@
  
 #version 330
 #pragma include "shader/Mesh.vert"
+#pragma include "shader/Camera.vert"
 #pragma include "shader/Instance.vert"
 
 out vec3 normal;

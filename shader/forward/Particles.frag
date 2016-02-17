@@ -6,10 +6,10 @@
  *****************************************************************************/
 
 #version 330
+#pragma include "shader/Camera.vert"
 
 uniform sampler2D tex;
 uniform sampler2D depthBuffer;
-uniform mat4 projectionInvMatrix; // From clip space to view space
 uniform vec4 tint;
 
 in float alpha;

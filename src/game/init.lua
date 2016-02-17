@@ -192,6 +192,10 @@ function self.init(handler)
   self.world = world
   self.window = window
   self.renderer = renderer
+  self.camera = graphics.Camera{viewport = graphics.viewport}
+  self.camera:update()
+
+  print(self.camera.viewport)
 
   for i, name in ipairs(config.preload) do
     asset.open(name)

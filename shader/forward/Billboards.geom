@@ -6,8 +6,7 @@
  *****************************************************************************/
 
 #version 330
-
-uniform mat4 worldViewProjectionMatrix;
+#pragma include "shader/Transform.vert"
 
 layout (points) in;
 layout (triangle_strip) out;

@@ -13,6 +13,7 @@
 
 local math = require('math')
 local vec = require('vec')
+local ffi = require('ffi')
 
 local HemiLight = {}; HemiLight.__index = HemiLight
 

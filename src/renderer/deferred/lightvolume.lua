@@ -36,7 +36,6 @@ local function quad(g, program)
   -- Use the identity transform for model/view, so that the specially-shaped
   -- unit quad maps to the whole screen as a fullscreen quad in clip-space, 
   -- that is, x=[-1,1] y=[-1,1]
-  gl.glUniformMatrix4fv(program.projectionInvMatrix, 1, 0, g.camera.projectionInvMatrix:data())
   mesh(g, program, unitQuad)
 end
 
@@ -53,7 +52,6 @@ local function sphere(g, program, radius)
   local worldViewMatrix = g.camera.viewMatrix * worldMatrix
   gl.glUniformMatrix4fv(program.worldViewProjectionMatrix, 1, 0, worldViewProjectionMatrix:data())
   gl.glUniformMatrix4fv(program.worldViewMatrix, 1, 0, worldViewMatrix:data())
-  gl.glUniformMatrix4fv(program.projectionInvMatrix, 1, 0, g.camera.projectionInvMatrix:data())
   mesh(g, program, unitSphere)
 end
 
@@ -87,7 +85,6 @@ local function cone(g, program, radius, cutoff, direction)
   local worldViewMatrix = g.camera.viewMatrix * worldMatrix
   gl.glUniformMatrix4fv(program.worldViewProjectionMatrix, 1, 0, worldViewProjectionMatrix:data())
   gl.glUniformMatrix4fv(program.worldViewMatrix, 1, 0, worldViewMatrix:data())
-  gl.glUniformMatrix4fv(program.projectionInvMatrix, 1, 0, g.camera.projectionInvMatrix:data())
   mesh(g, program, unitCone)
 end
 

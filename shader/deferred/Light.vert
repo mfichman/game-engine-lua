@@ -4,10 +4,9 @@
  * Matt Fichman                                                              *
  * February, 2011                                                            *
  *****************************************************************************/
-  
-uniform mat4 worldViewMatrix;
-uniform mat4 worldViewProjectionMatrix;
 
+#pragma include "shader/Transform.vert"
+  
 layout(location=0) in vec3 positionIn;
 
 out vec4 position;

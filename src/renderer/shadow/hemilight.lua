@@ -19,11 +19,16 @@ local model = require('renderer.flat.model')
 local instances = require('renderer.flat.instances')
 local apply = require('renderer.apply')
 
+local lightCamera
+
 -- Set up the virtual light camera. This is an orthographic camera that faces
 -- in the direction the light points. The frustum for the camera is the
 -- bounding box of the view frustum, in light space.
 local function createLightCamera(g, light)
   -- Transform the view frusum into light space from clip space
+  if not lightCamera then
+    lightCamera = graphics.Camera{}
+  end
   
   -- Transform to the center of the light, then point in the reverse of the
   -- light direction.
@@ -52,7 +57,6 @@ local function createLightCamera(g, light)
   } 
 
   -- Set up parameters for the virtual light camera
-  local lightCamera = graphics.Camera{}
   lightCamera.mode = 'ortho'
   lightCamera.viewMatrix = lightView
   lightCamera.near = nil

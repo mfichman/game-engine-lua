@@ -8,6 +8,7 @@
 #version 330 
 #pragma include "shader/Mesh.vert"
 #pragma include "shader/Instance.vert"
+#pragma include "shader/Camera.vert"
 
 /* Very fast simple solid-color shader for rendering to depth */
 void main() {

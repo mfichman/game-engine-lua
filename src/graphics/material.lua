@@ -61,11 +61,7 @@ function Material.new(args)
   gl.glBindBuffer(gl.GL_UNIFORM_BUFFER, self.id)
   gl.glBufferData(gl.GL_UNIFORM_BUFFER, ffi.sizeof(buffer), buffer, gl.GL_STATIC_DRAW)
 
-  setmetatable(self, Material)
-  return setmetatable({}, {
-    __index = self,
-    __newindex = function() error('immutable') end
-  })
+  return setmetatable(self, Material)
 end
 
 function Material:clone()

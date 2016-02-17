@@ -6,8 +6,7 @@
  *****************************************************************************/
 
 #version 330
-
-uniform mat4 projectionMatrix;
+#pragma include "shader/Camera.vert"
 
 layout (points) in;
 layout (triangle_strip) out;

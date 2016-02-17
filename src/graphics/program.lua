@@ -71,9 +71,6 @@ function Program:link()
     gl.glAttachShader(self.id, self.geometry.id) 
   end
   gl.glLinkProgram(self.id)
-  if gl.glGetError() ~= 0 then
-    require('dbg').start()
-  end
 
   local status = ffi.new('GLint[1]')
   gl.glGetProgramiv(self.id, gl.GL_LINK_STATUS, status)

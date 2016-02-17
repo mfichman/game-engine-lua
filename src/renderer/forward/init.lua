@@ -41,6 +41,7 @@ function Forward:render()
   apply.apply(particles.render, self.context, graphics.Particles)
   apply.apply(billboards.render, self.context, graphics.Billboards)
   apply.apply(ribbon.render, self.context, graphics.Ribbon)
+  apply.apply(line.render, self.context, graphics.Line)
   --self:apply(quad.render, self.context, graphics.Quad)
   --self:apply(text.render, self.context, graphics.Text)
   --self:apply(ui.render, self.context, graphics.Ui) FIXME

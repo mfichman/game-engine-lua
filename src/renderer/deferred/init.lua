@@ -29,6 +29,7 @@ local billboards = require('renderer.forward.billboards')
 local ribbon = require('renderer.forward.ribbon')
 local text = require('renderer.forward.text')
 local quad = require('renderer.forward.quad')
+local line = require('renderer.forward.line')
 --[[
 local decal = require('renderer.deferred.decal')
 local skybox = require('renderer.forward.skybox')
@@ -111,7 +112,6 @@ function Deferred:render()
 
   self.finalFrameBuffer:enable()
   gl.glClear(gl.GL_COLOR_BUFFER_BIT)
-  gl.glDisable(gl.GL_STENCIL_TEST) -- ignore stencil for UI/particles
 
   -- Pass 2: Render lighting using light bounding boxes
   gl.glActiveTexture(gl.GL_TEXTURE0)
@@ -141,6 +141,7 @@ function Deferred:render()
   apply.apply(ribbon.render, self.context, graphics.Ribbon)
   apply.apply(quad.render, self.context, graphics.Quad)
   apply.apply(text.render, self.context, graphics.Text)
+  apply.apply(line.render, self.context, graphics.Line)
 
   -- Pass 5: Text/UI rendering...?
   --self:apply(ui.render, graphics.Ui) FIXME

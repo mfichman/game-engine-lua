@@ -39,7 +39,7 @@ function FrameBuffer:drawBufferEnq(target)
   self.drawBufferAttachmentCount = self.drawBufferAttachmentCount + 1
 
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.id)
-  gl.glFramebufferTexture2D(gl.GL_FRAMEBUFFER, attachment, gl.GL_TEXTURE_2D, target.id, 0)
+  gl.glFramebufferTexture2D(gl.GL_FRAMEBUFFER, attachment, target.target, target.id, 0)
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0)
 end
 
@@ -48,7 +48,7 @@ function FrameBuffer:depthBufferIs(target)
   self.depthBuffer = target
 
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.id)
-  gl.glFramebufferTexture2D(gl.GL_FRAMEBUFFER, gl.GL_DEPTH_ATTACHMENT, gl.GL_TEXTURE_2D, target.id, 0)
+  gl.glFramebufferTexture2D(gl.GL_FRAMEBUFFER, gl.GL_DEPTH_ATTACHMENT, target.target, target.id, 0)
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0)
 end
 
@@ -57,13 +57,30 @@ function FrameBuffer:stencilBufferIs(target)
   self.stencilBuffer = target
 
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, self.id)
-  gl.glFramebufferTexture2D(gl.GL_FRAMEBUFFER, gl.GL_STENCIL_ATTACHMENT, gl.GL_TEXTURE_2D,  target.id, 0)
+  gl.glFramebufferTexture2D(gl.GL_FRAMEBUFFER, gl.GL_STENCIL_ATTACHMENT, target.target,  target.id, 0)
   gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0) 
 end
 
 function FrameBuffer:check() 
   self:enable()
-  assert(gl.GL_FRAMEBUFFER_COMPLETE == gl.glCheckFramebufferStatus(gl.GL_FRAMEBUFFER))
+  local status = gl.glCheckFramebufferStatus(gl.GL_FRAMEBUFFER)
+  if status == gl.GL_FRAMEBUFFER_COMPLETE then
+    -- OK
+  elseif status == gl.GL_FRAMEBUFFER_UNDEFINED then
+    error('undefined')
+  elseif status == gl.GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE then
+    error('incomplete multisample')
+  elseif status == gl.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT then
+    error('incomplete attachment')
+  elseif status == gl.GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER then
+    error('incomplete read buffer')
+  elseif status == gl.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT then
+    error('incomplete missing attachment')
+  elseif status == gl.GL_FRAMEBUFFER_UNSUPPORTED then
+    error('incomplete unsupported')
+  else
+    error('unknown')
+  end
   gl.glDrawBuffers(self.drawBufferAttachmentCount, self.drawBufferAttachment)
   self:disable()
 end

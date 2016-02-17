@@ -28,6 +28,7 @@ function Window.new()
   local style = config.display.fullscreen and sfml.Fullscreen or sfml.DefaultStyle
 
   local settings = sfml.ContextSettings()
+  settings.antialiasingLevel = 16
   settings.depthBits = 24
   settings.stencilBits = 0
   settings.majorVersion = 3

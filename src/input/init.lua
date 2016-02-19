@@ -11,8 +11,17 @@
 --                                                                            --
 -- ========================================================================== --
 
+local sfml = require('sfml')
+local vec = require('vec')
+
 return {
   Binding = require('input.binding'),
   Map = require('input.map'),
-  mou,
+  mouse = {
+    position = function() 
+      local game = require('game')
+      local pos = sfml.Mouse_getPosition(game.window)
+      return vec.Vec2(pos.x, pos.y)
+    end,
+  }
 }

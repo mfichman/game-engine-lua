@@ -6,7 +6,7 @@
  *****************************************************************************/
 
 #version 330
-#pragma include "shader/Material.vert";
+#pragma include "shader/Material.vert"
 
 in vec3 normal;
 in vec3 tangent;

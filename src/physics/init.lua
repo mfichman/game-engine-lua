@@ -55,11 +55,24 @@ return {
   RigidBody = ctor(RigidBody, 'physics_RigidBody_new'),
   RigidBodyDesc = ffi.typeof('physics_RigidBodyDesc'),
   Manifold = Manifold,
+
   NONE = 0,
-  BULLET = 0x1,
-  SOLID = 0x2,
-  SHIELD = 0x4,
-  STATIC_OBJECT = 0x1,
-  KINEMATIC_OBJECT = 0x2,
-  NO_CONTACT_RESPONSE = 0x4,
+  BULLET = 1,
+  SOLID = 2,
+  SHIELD = 4,
+
+  STATIC_OBJECT = physics.physics_STATIC_OBJECT,
+  KINEMATIC_OBJECT = physics.physics_KINEMATIC_OBJECT,
+  NO_CONTACT_RESPONSE = physics.physics_NO_CONTACT_RESPONSE,
+  CUSTOM_MATERIAL_CALLBACK = physics.physics_CUSTOM_MATERIAL_CALLBACK,
+  CHARACTER_OBJECT = physics.physics_CHARACTER_OBJECT,
+  DISABLE_VISUALIZE_OBJECT = physics.physics_DISABLE_VISUALIZE_OBJECT,
+  DISABLE_SPU_COLLISION_PROCESSING = physics.physics_DISABLE_SPU_COLLISION_PROCESSING,
+
+  ACTIVE_TAG = physics.physics_ACTIVE_TAG,
+  ISLAND_SLEEPING = physics.physics_ISLAND_SLEEPING,
+  WANTS_DEACTIVATION = physics.physics_WANTS_DEACTIVATION,
+  DISABLE_DEACTIVATION = physics.physics_DISABLE_DEACTIVATION,
+  DISABLE_SIMULATION = physics.physics_DISABLE_SIMULATION,
+
 }

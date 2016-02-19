@@ -44,7 +44,7 @@ struct World : public btDiscreteDynamicsWorld {
      * avoids the need for registering tick callbacks, which cause problems for
      * LuaJIT. We call bullet's substep API directly, but with a fixed timestep
      * value each time. At the end of the substeps, we call synchronizeMotionStates
-     * once to get bullet to go interpolation for rendering.
+     * once to get bullet to do interpolation for rendering.
      */
     void synchronizeMotionStates(btScalar remainder, btScalar fixedTimeStep) {
         m_localTime = remainder;
@@ -456,6 +456,10 @@ void physics_RigidBody_setCollisionFlags(physics_RigidBody* self, uint32_t flags
     ((btRigidBody*)self)->setCollisionFlags(flags);
 }
 
+void physics_RigidBody_setActivationState(physics_RigidBody* self, uint32_t flags) {
+    ((btRigidBody*)self)->setActivationState(flags);
+}
+
 void physics_RigidBody_setUserPointer(physics_RigidBody* self, void* data) {
     ((btRigidBody*)self)->setUserPointer(data);
 }
@@ -466,5 +470,15 @@ void physics_RigidBody_setCcdMotionThreshold(physics_RigidBody* self, vec_Scalar
 
 void physics_RigidBody_setCcdSweptSphereRadius(physics_RigidBody* self, vec_Scalar radius) {
     ((btRigidBody*)self)->setCcdSweptSphereRadius(radius);
+}
+
+void physics_RigidBody_setKinematic(physics_RigidBody* self, bool kinematic) {
+    btRigidBody* body = (btRigidBody*)self;
+    if (kinematic) {
+        body->setCollisionFlags(body->getCollisionFlags()|btRigidBody::CF_KINEMATIC_OBJECT);
+        body->setActivationState(DISABLE_DEACTIVATION);
+    } else {
+        body->setCollisionFlags(body->getCollisionFlags()&(~btRigidBody::CF_KINEMATIC_OBJECT));
+    }
 }
 

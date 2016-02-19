@@ -32,6 +32,7 @@ local self = {}
 local input = input.Map()
 local clock = sfml.Clock()
 local accumulator = 0
+local remainder = 0
 local timestep = 1/60
 local samples = {}
 local ticks = 0
@@ -65,10 +66,9 @@ end
 -- objects using the remaining time.
 local function update()
   delta = clock:getElapsedTime():asSeconds()
-  accumulator = accumulator + delta
   clock:restart()
 
-  local substeps, remainder = math.modf(accumulator/timestep)
+  local substeps, remainder = math.modf((accumulator+delta)/timestep)
   
   -- Clamp substeps to drop ticks if the physics engine gets too far behind.
   -- The game doesn't get stuck in the substep loop for a long time if the
@@ -77,7 +77,8 @@ local function update()
     print(string.format('warning: dropping %d frames', substeps-8))
     substeps = 8
   end
-  accumulator = remainder*timestep
+
+  accumulator = 0
 
   -- Run Bullet with maxSubSteps = 0, which causes Bullet to step by exactly do
   -- one substep of exactly timestep seconds. The code in this function handles
@@ -87,6 +88,8 @@ local function update()
   for i = 1,substeps do
     tick()
   end
+
+  accumulator = remainder*timestep
 
   if substeps > 3 then
     print('warning: > 3 substeps', substeps)
@@ -195,8 +198,6 @@ function self.init(handler)
   self.camera = graphics.Camera{viewport = graphics.viewport}
   self.camera:update()
 
-  print(self.camera.viewport)
-
   for i, name in ipairs(config.preload) do
     asset.open(name)
   end
@@ -207,6 +208,6 @@ self.timestep = timestep
 self.input = input
 self.world = world
 self.ticks = function() return ticks end
-self.accumulator = function() return accumulator end
+self.time = function() return ticks*timestep + accumulator end
 
 return self

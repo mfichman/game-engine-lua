@@ -37,6 +37,24 @@ typedef struct physics_Contact {
     vec_Vec3 normalWorldOn1;
 } physics_Contact;
 
+enum physics_CollisionFlags {
+    physics_STATIC_OBJECT = 1, 
+    physics_KINEMATIC_OBJECT = 2, 
+    physics_NO_CONTACT_RESPONSE = 4, 
+    physics_CUSTOM_MATERIAL_CALLBACK = 8, 
+    physics_CHARACTER_OBJECT = 16, 
+    physics_DISABLE_VISUALIZE_OBJECT = 32, 
+    physics_DISABLE_SPU_COLLISION_PROCESSING = 64 
+};
+
+enum physics_ActivationState {
+    physics_ACTIVE_TAG = 1,
+    physics_ISLAND_SLEEPING = 2,
+    physics_WANTS_DEACTIVATION = 3,
+    physics_DISABLE_DEACTIVATION = 4,
+    physics_DISABLE_SIMULATION = 5,
+};
+
 __declspec(dllexport) physics_World* physics_World_new();
 __declspec(dllexport) void physics_World_del(physics_World* self);
 __declspec(dllexport) int32_t physics_World_getMemUsage(physics_World* self);
@@ -96,9 +114,9 @@ __declspec(dllexport) void physics_RigidBody_setAngularVelocity(physics_RigidBod
 __declspec(dllexport) void physics_RigidBody_setAngularFactor(physics_RigidBody* self, vec_Vec3 const* factor);
 __declspec(dllexport) void physics_RigidBody_setLinearFactor(physics_RigidBody* self, vec_Vec3 const* factor);
 __declspec(dllexport) void physics_RigidBody_setCollisionFlags(physics_RigidBody* self, uint32_t flags);
+__declspec(dllexport) void physics_RigidBody_setActivationState(physics_RigidBody* self, uint32_t state);
 __declspec(dllexport) void physics_RigidBody_setUserPointer(physics_RigidBody* self, void* data);
 __declspec(dllexport) void physics_RigidBody_setCcdMotionThreshold(physics_RigidBody* self, vec_Scalar threshold);
 __declspec(dllexport) void physics_RigidBody_setCcdSweptSphereRadius(physics_RigidBody* self, vec_Scalar radius);
-
-
+__declspec(dllexport) void physics_RigidBody_setKinematic(physics_RigidBody* self, bool kinematic);
 

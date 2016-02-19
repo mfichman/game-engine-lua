@@ -154,7 +154,7 @@ void  glGetProgramInfoLog (GLuint program, GLsizei bufSize, GLsizei *length, GLc
 void  glGetShaderiv (GLuint shader, GLenum pname, GLint *params);
 void  glGetShaderInfoLog (GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *infoLog);
 void  glGetShaderSource (GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *source);
-GLint  glGetUniformLocation (GLuint program, GLchar *name);
+GLint  glGetUniformLocation (GLuint program, GLchar const *name);
 void  glGetUniformfv (GLuint program, GLint location, GLfloat *params);
 void  glGetUniformiv (GLuint program, GLint location, GLint *params);
 void  glGetVertexAttribdv (GLuint index, GLenum pname, GLdouble *params);
@@ -329,7 +329,7 @@ GLboolean  glIsVertexArray (GLuint array);
 void  glGetUniformIndices (GLuint program, GLsizei uniformCount, GLchar* *uniformNames, GLuint *uniformIndices);
 void  glGetActiveUniformsiv (GLuint program, GLsizei uniformCount, GLuint *uniformIndices, GLenum pname, GLint *params);
 void  glGetActiveUniformName (GLuint program, GLuint uniformIndex, GLsizei bufSize, GLsizei *length, GLchar *uniformName);
-GLuint  glGetUniformBlockIndex (GLuint program, GLchar *uniformBlockName);
+GLuint  glGetUniformBlockIndex (GLuint program, GLchar const*uniformBlockName);
 void  glGetActiveUniformBlockiv (GLuint program, GLuint uniformBlockIndex, GLenum pname, GLint *params);
 void  glGetActiveUniformBlockName (GLuint program, GLuint uniformBlockIndex, GLsizei bufSize, GLsizei *length, GLchar *uniformBlockName);
 void  glUniformBlockBinding (GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);

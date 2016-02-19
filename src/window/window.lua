@@ -28,11 +28,14 @@ function Window.new()
   local style = config.display.fullscreen and sfml.Fullscreen or sfml.DefaultStyle
 
   local settings = sfml.ContextSettings()
-  settings.antialiasingLevel = 16
+  settings.antialiasingLevel = 0
   settings.depthBits = 24
   settings.stencilBits = 0
   settings.majorVersion = 3
   settings.minorVersion = 2
+  settings.attributeFlags = sfml.ContextCore
+
+  local context = sfml.Context()
 
   local window = sfml.Window(mode, "quadrant", style, settings)
   window:setVerticalSyncEnabled(config.display.vsync)

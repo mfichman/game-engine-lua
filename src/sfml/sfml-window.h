@@ -1,3 +1,6 @@
+    // MacOS
+        // GCC 4 has special keywords for showing/hidding symbols,
+        // the same keyword is used for both importing and exporting
 typedef int sfBool;
 typedef signed   char sfInt8;
 typedef unsigned char sfUint8;
@@ -74,6 +77,12 @@ typedef struct sfWindow sfWindow;
 sfContext* sfContext_create(void);
 void sfContext_destroy(sfContext* context);
 void sfContext_setActive(sfContext* context, sfBool active);
+typedef struct
+{
+    const char*  name;
+    unsigned int vendorId;
+    unsigned int productId;
+} sfJoystickIdentification;
 enum
 {
     sfJoystickCount       = 8,  ///< Maximum number of supported joysticks
@@ -96,6 +105,7 @@ unsigned int sfJoystick_getButtonCount(unsigned int joystick);
 sfBool sfJoystick_hasAxis(unsigned int joystick, sfJoystickAxis axis);
 sfBool sfJoystick_isButtonPressed(unsigned int joystick, unsigned int button);
 float sfJoystick_getAxisPosition(unsigned int joystick, sfJoystickAxis axis);
+sfJoystickIdentification sfJoystick_getIdentification(unsigned int joystick);
 void sfJoystick_update(void);
 typedef enum
 {
@@ -213,29 +223,53 @@ typedef enum
     sfMouseXButton2,   ///< The second extra mouse button
     sfMouseButtonCount ///< Keep last -- the total number of mouse buttons
 } sfMouseButton;
+typedef enum
+{
+    sfMouseVerticalWheel,  ///< The vertical mouse wheel
+    sfMouseHorizontalWheel ///< The horizontal mouse wheel
+} sfMouseWheel;
 sfBool sfMouse_isButtonPressed(sfMouseButton button);
 sfVector2i sfMouse_getPosition(const sfWindow* relativeTo);
 void sfMouse_setPosition(sfVector2i position, const sfWindow* relativeTo);
 typedef enum
 {
-    sfEvtClosed,
-    sfEvtResized,
-    sfEvtLostFocus,
-    sfEvtGainedFocus,
-    sfEvtTextEntered,
-    sfEvtKeyPressed,
-    sfEvtKeyReleased,
-    sfEvtMouseWheelMoved,
-    sfEvtMouseButtonPressed,
-    sfEvtMouseButtonReleased,
-    sfEvtMouseMoved,
-    sfEvtMouseEntered,
-    sfEvtMouseLeft,
-    sfEvtJoystickButtonPressed,
-    sfEvtJoystickButtonReleased,
-    sfEvtJoystickMoved,
-    sfEvtJoystickConnected,
-    sfEvtJoystickDisconnected
+    sfSensorAccelerometer,    ///< Measures the raw acceleration (m/s^2)
+    sfSensorGyroscope,        ///< Measures the raw rotation rates (degrees/s)
+    sfSensorMagnetometer,     ///< Measures the ambient magnetic field (micro-teslas)
+    sfSensorGravity,          ///< Measures the direction and intensity of gravity, independent of device acceleration (m/s^2)
+    sfSensorUserAcceleration, ///< Measures the direction and intensity of device acceleration, independent of the gravity (m/s^2)
+    sfSensorOrientation,      ///< Measures the absolute 3D orientation (degrees)
+    sfSensorCount             ///< Keep last -- the total number of sensor types
+} sfSensorType;
+sfBool sfSensor_isAvailable(sfSensorType sensor);
+void sfSensor_setEnabled(sfSensorType sensor, sfBool enabled);
+sfVector3f sfSensor_getValue(sfSensorType sensor);
+typedef enum
+{
+    sfEvtClosed,                 ///< The window requested to be closed (no data)
+    sfEvtResized,                ///< The window was resized (data in event.size)
+    sfEvtLostFocus,              ///< The window lost the focus (no data)
+    sfEvtGainedFocus,            ///< The window gained the focus (no data)
+    sfEvtTextEntered,            ///< A character was entered (data in event.text)
+    sfEvtKeyPressed,             ///< A key was pressed (data in event.key)
+    sfEvtKeyReleased,            ///< A key was released (data in event.key)
+    sfEvtMouseWheelMoved,        ///< The mouse wheel was scrolled (data in event.mouseWheel) (deprecated)
+    sfEvtMouseWheelScrolled,     ///< The mouse wheel was scrolled (data in event.mouseWheelScroll)
+    sfEvtMouseButtonPressed,     ///< A mouse button was pressed (data in event.mouseButton)
+    sfEvtMouseButtonReleased,    ///< A mouse button was released (data in event.mouseButton)
+    sfEvtMouseMoved,             ///< The mouse cursor moved (data in event.mouseMove)
+    sfEvtMouseEntered,           ///< The mouse cursor entered the area of the window (no data)
+    sfEvtMouseLeft,              ///< The mouse cursor left the area of the window (no data)
+    sfEvtJoystickButtonPressed,  ///< A joystick button was pressed (data in event.joystickButton)
+    sfEvtJoystickButtonReleased, ///< A joystick button was released (data in event.joystickButton)
+    sfEvtJoystickMoved,          ///< The joystick moved along an axis (data in event.joystickMove)
+    sfEvtJoystickConnected,      ///< A joystick was connected (data in event.joystickConnect)
+    sfEvtJoystickDisconnected,   ///< A joystick was disconnected (data in event.joystickConnect)
+    sfEvtTouchBegan,             ///< A touch event began (data in event.touch)
+    sfEvtTouchMoved,             ///< A touch moved (data in event.touch)
+    sfEvtTouchEnded,             ///< A touch event ended (data in event.touch)
+    sfEvtSensorChanged,          ///< A sensor value changed (data in event.sensor)
+    sfEvtCount,                  ///< Keep last -- the total number of event types
 } sfEventType;
 typedef struct
 {
@@ -273,6 +307,14 @@ typedef struct
 } sfMouseWheelEvent;
 typedef struct
 {
+    sfEventType  type;
+    sfMouseWheel wheel;
+    float        delta;
+    int          x;
+    int          y;
+} sfMouseWheelScrollEvent;
+typedef struct
+{
     sfEventType    type;
     unsigned int   joystickId;
     sfJoystickAxis axis;
@@ -295,25 +337,43 @@ typedef struct
     unsigned int width;
     unsigned int height;
 } sfSizeEvent;
+typedef struct
+{
+    sfEventType  type;
+    unsigned int finger;
+    int          x;
+    int          y;
+} sfTouchEvent;
+typedef struct
+{
+    sfEventType  type;
+    sfSensorType sensorType;
+    float        x;
+    float        y;
+    float        z;
+} sfSensorEvent;
 typedef union
 {
-    ////////////////////////////////////////////////////////////
-    // Member data
-    ////////////////////////////////////////////////////////////
-    sfEventType            type; ///< Type of the event
-    sfSizeEvent            size;
-    sfKeyEvent             key;
-    sfTextEvent            text;
-    sfMouseMoveEvent       mouseMove;
-    sfMouseButtonEvent     mouseButton;
-    sfMouseWheelEvent      mouseWheel;
-    sfJoystickMoveEvent    joystickMove;
-    sfJoystickButtonEvent  joystickButton;
-    sfJoystickConnectEvent joystickConnect;
+    sfEventType            type;            ///< Type of the event
+    sfSizeEvent            size;            ///< Size event parameters
+    sfKeyEvent             key;             ///< Key event parameters
+    sfTextEvent            text;            ///< Text event parameters
+    sfMouseMoveEvent       mouseMove;       ///< Mouse move event parameters
+    sfMouseButtonEvent     mouseButton;     ///< Mouse button event parameters
+    sfMouseWheelEvent       mouseWheel;        ///< Mouse wheel event parameters (deprecated)
+    sfMouseWheelScrollEvent mouseWheelScroll;  ///< Mouse wheel event parameters
+    sfJoystickMoveEvent    joystickMove;    ///< Joystick move event parameters
+    sfJoystickButtonEvent  joystickButton;  ///< Joystick button event parameters
+    sfJoystickConnectEvent joystickConnect; ///< Joystick (dis)connect event parameters
+    sfTouchEvent           touch;           ///< Touch events parameters
+    sfSensorEvent          sensor;          ///< Sensor event parameters
 } sfEvent;
+sfBool sfTouch_isDown(unsigned int finger);
+sfVector2i sfTouch_getPosition(unsigned int finger, const sfWindow* relativeTo);
 typedef long int ptrdiff_t;
 typedef long unsigned int size_t;
 typedef int wchar_t;
+typedef long double max_align_t;
 typedef struct
 {
     unsigned int width;        ///< Video mode width, in pixels
@@ -325,7 +385,7 @@ const sfVideoMode* sfVideoMode_getFullscreenModes(size_t* Count);
 sfBool sfVideoMode_isValid(sfVideoMode mode);
     // Window handle is NSWindow (void*) on Mac OS X - Cocoa
 	typedef void* sfWindowHandle;
-enum
+typedef enum
 {
     sfNone         = 0,      ///< No border / title bar (this flag and all others are mutually exclusive)
     sfTitlebar     = 1 << 0, ///< Title bar + fixed border
@@ -333,7 +393,13 @@ enum
     sfClose        = 1 << 2, ///< Titlebar + close button
     sfFullscreen   = 1 << 3, ///< Fullscreen mode (this flag and all others are mutually exclusive)
     sfDefaultStyle = sfTitlebar | sfResize | sfClose ///< Default window style
-};
+} sfWindowStyle;
+typedef enum
+{
+    sfContextDefault = 0,      ///< Non-debug, compatibility context (this and the core attribute are mutually exclusive)
+    sfContextCore    = 1 << 0, ///< Core attribute
+    sfContextDebug   = 1 << 2  ///< Debug attribute
+} sfContextAttribute;
 typedef struct
 {
     unsigned int depthBits;         ///< Bits of the depth buffer
@@ -341,6 +407,7 @@ typedef struct
     unsigned int antialiasingLevel; ///< Level of antialiasing
     unsigned int majorVersion;      ///< Major number of the context version to create
     unsigned int minorVersion;      ///< Minor number of the context version to create
+    sfUint32     attributeFlags;    ///< The attribute flags to create the context with
 } sfContextSettings;
 sfWindow* sfWindow_create(sfVideoMode mode, const char* title, sfUint32 style, const sfContextSettings* settings);
 sfWindow* sfWindow_createUnicode(sfVideoMode mode, const sfUint32* title, sfUint32 style, const sfContextSettings* settings);
@@ -363,6 +430,8 @@ void sfWindow_setMouseCursorVisible(sfWindow* window, sfBool visible);
 void sfWindow_setVerticalSyncEnabled(sfWindow* window, sfBool enabled);
 void sfWindow_setKeyRepeatEnabled(sfWindow* window, sfBool enabled);
 sfBool sfWindow_setActive(sfWindow* window, sfBool active);
+void sfWindow_requestFocus(sfWindow* window);
+sfBool sfWindow_hasFocus(const sfWindow* window);
 void sfWindow_display(sfWindow* window);
 void sfWindow_setFramerateLimit(sfWindow* window, unsigned int limit);
 void sfWindow_setJoystickThreshold(sfWindow* window, float threshold);

@@ -33,7 +33,10 @@ function Window.new()
   settings.stencilBits = 0
   settings.majorVersion = 3
   settings.minorVersion = 2
-  settings.attributeFlags = sfml.ContextCore
+
+  if ffi.os ~= 'Windows' then
+    settings.attributeFlags = sfml.ContextCore
+  end
 
   local context = sfml.Context()
 
@@ -47,7 +50,10 @@ function Window.new()
 
   if ffi.os == 'Windows' then
     local glew = require('glew')
-    glew.glewInit()
+    local err = glew.glewInit()
+    if err ~= 0 then
+      error(glewGetErrorString(err))
+    end
   end
 
   gl.glViewport(0, 0, mode.width, mode.height)

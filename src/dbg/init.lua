@@ -660,6 +660,16 @@ local function memtop(f)
   print()
 end
 
+-- Begin logging execution of the process
+local function log()
+  local fd = assert(io.open('dbg.log','w'))
+  local function step()
+    fd:write(debug.traceback())
+    fd:write('\n')
+  end
+  debug.sethook(step, 'l')
+end
+
 setmetatable(env, {__index = getvar, __newindex = setvar})
 
 return {
@@ -669,4 +679,5 @@ return {
   memiter = memiter,
   memcount = memcount,
   memtop = memtop,
+  log = log,
 }

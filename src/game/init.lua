@@ -74,7 +74,9 @@ local function update()
   -- The game doesn't get stuck in the substep loop for a long time if the
   -- window is closed or the computer slows down.
   if substeps > 8 then
-    print(string.format('warning: dropping %d frames', substeps-8))
+    if config.log.warning then
+      print(string.format('warning: dropping %d frames', substeps-8))
+    end
     substeps = 8
   end
 
@@ -92,7 +94,9 @@ local function update()
   accumulator = remainder*timestep
 
   if substeps > 3 then
-    print('warning: > 3 substeps', substeps)
+    if config.log.warning then
+      print('warning: > 3 substeps', substeps)
+    end
   end
 
   -- Call Bullet to do intepolation once per frame.
@@ -120,13 +124,15 @@ end
 
 -- Sample performance data
 local function sample()
-  table.insert(samples, delta * 1000) -- convert to ms
-  if #samples > 100 then
-    local min, max, median, mean, stdev = stats.stats(samples)
-    print(string.format('min = %05.2f max = %05.2f median = %05.2f mean = %05.2f stdev = %05.2f', min, max, median, mean, stdev))
-    samples = {}
+  if config.log.cpu then
+    table.insert(samples, delta * 1000) -- convert to ms
+    if #samples > 100 then
+      local min, max, median, mean, stdev = stats.stats(samples)
+      print(string.format('min = %05.2f max = %05.2f median = %05.2f mean = %05.2f stdev = %05.2f', min, max, median, mean, stdev))
+      samples = {}
+    end
   end
-  if ticks % 500 == 0 then
+  if config.log.mem and ticks % 500 == 0 then
     local luaMem = math.floor(collectgarbage('count'))
     local physicsMem = math.floor(world:getMemUsage()/1024)
     print(('luaMem = %.0fK physicsMem = %.0fK'):format(luaMem, physicsMem))
@@ -141,7 +147,7 @@ local function gc()
 
   if remaining > budget then
     collectgarbage('step', 1)
-  else
+  elseif config.log.warning then
     print('warning: skipped gc', budget, elapsed)
   end
 end

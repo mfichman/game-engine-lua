@@ -23,6 +23,7 @@ extern "C" {
 #include <bullet/btBulletDynamicsCommon.h>
 #include <bullet/BulletCollision/CollisionShapes/btShapeHull.h>
 #include <bullet/BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
+#include <iostream>
 
 template <typename T, typename V> T convert(V* val);
 template <typename T, typename V> T convert(V const& val);
@@ -223,6 +224,19 @@ void** physics_World_contactTest(physics_World* self, physics_Shape* shape, vec_
    ((World*)self)->contactTest(&sensor, callback);
    userData.push_back(0);
    return &userData[0];
+}
+
+physics_RayContact physics_World_rayTest(physics_World* self, vec_Vec3 const* p0, vec_Vec3 const* p1) {
+    btCollisionWorld::ClosestRayResultCallback callback(convert<btVector3>(p0), convert<btVector3>(p1));
+    callback.m_collisionFilterGroup |= btBroadphaseProxy::AllFilter;
+    callback.m_collisionFilterMask |= btBroadphaseProxy::AllFilter;
+    ((World*)self)->rayTest(convert<btVector3>(p0), convert<btVector3>(p1), callback);
+
+    physics_RayContact contact;
+    contact.positionWorld = convert<vec_Vec3>(callback.m_hitPointWorld);
+    contact.collisionObject = (physics_CollisionObject*)callback.m_collisionObject;
+    contact.hasHit = callback.hasHit();
+    return contact;
 }
 
 int32_t physics_Manifold_getNumContacts(physics_Manifold* self) {
@@ -431,9 +445,14 @@ void* physics_RigidBody_getUserPointer(physics_RigidBody* self) {
 }
 
 void physics_RigidBody_setPosition(physics_RigidBody* self, vec_Vec3 const* position) {
-    btTransform transform = ((btRigidBody*)self)->getWorldTransform();
+    btRigidBody* const body = (btRigidBody*)self;
+    btTransform transform = body->getWorldTransform();
     transform.setOrigin(convert<btVector3>(position));
-    ((btRigidBody*)self)->setWorldTransform(transform);
+    if (body->isKinematicObject()) {
+        body->getMotionState()->setWorldTransform(transform);
+    } else {
+        body->setWorldTransform(transform);
+    }
 }
 
 void physics_RigidBody_setLinearVelocity(physics_RigidBody* self, vec_Vec3 const* velocity) {

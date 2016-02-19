@@ -53,8 +53,8 @@ end
 -- through the camera. Returns {origin = ?, vector = ?}.
 local function pickRay(camera, screen)
   -- Find a ray from the mouse to the camera in world space, and then intersect
-  -- the ray with the z = 0 plane. Point the thruster in that direction.
-  local cameraWorld = camera.viewMatrix:inverse() * vec.Vec4(0, 0, 0, 1)
+  -- the ray with the z = 0 plane.
+  local cameraWorld = camera.viewInvMatrix * vec.Vec4(0, 0, 0, 1)
   local ray = {}
   ray.origin = screenToWorld(camera, screen)
   ray.direction = (ray.origin-cameraWorld):unit()

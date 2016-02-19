@@ -37,6 +37,12 @@ typedef struct physics_Contact {
     vec_Vec3 normalWorldOn1;
 } physics_Contact;
 
+typedef struct physics_RayContact {
+    vec_Vec3 positionWorld;
+    physics_CollisionObject* collisionObject; 
+    bool hasHit;
+} physics_RayContact;
+
 enum physics_CollisionFlags {
     physics_STATIC_OBJECT = 1, 
     physics_KINEMATIC_OBJECT = 2, 
@@ -71,6 +77,7 @@ __declspec(dllexport) void physics_World_synchronizeMotionStates(physics_World* 
 __declspec(dllexport) int32_t physics_World_getNumManifolds(physics_World* self);
 __declspec(dllexport) physics_Manifold* physics_World_getManifold(physics_World* self, int32_t i);
 __declspec(dllexport) void** physics_World_contactTest(physics_World* self, physics_Shape* shape, vec_Transform* transform);
+__declspec(dllexport) physics_RayContact physics_World_rayTest(physics_World* self, vec_Vec3 const* p0, vec_Vec3 const* p1);
 
 __declspec(dllexport) int32_t physics_Manifold_getNumContacts(physics_Manifold* self);
 __declspec(dllexport) physics_RigidBody* physics_Manifold_getBody0(physics_Manifold* self);

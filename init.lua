@@ -31,6 +31,8 @@ setmetatable(_G, {
 local file = debug.getinfo(1,'S').source
 local _, _, dir = file:find('@(.+)[/\\]init.lua')
 
+local dir = dir or '.'
+
 package.path = table.concat({
   dir..'/src/?.lua',
   dir..'/src/?/init.lua',

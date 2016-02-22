@@ -18,6 +18,7 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
+
 setmetatable(_G, {
   __newindex = function(t,k,v) 
     error('_G is read-only!')
@@ -45,4 +46,3 @@ path.path = table.concat({
   dir,
   path.path,
 }, ';')
-

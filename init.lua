@@ -1,4 +1,4 @@
--- Copyright (c) 2014 Matt Fichman
+-- Copyright (c) 2016 Matt Fichman
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to
@@ -18,9 +18,6 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 
--- Set up load paths. Get the game engine directory (for loading resources)
--- from the directory that 'init.lua' lives in. Add the current working
--- directory src and lib directories.
 
 setmetatable(_G, {
   __newindex = function(t,k,v) 
@@ -30,6 +27,8 @@ setmetatable(_G, {
 
 local file = debug.getinfo(1,'S').source
 local _, _, dir = file:find('@(.+)[/\\]init.lua')
+
+local dir = dir or '.'
 
 package.path = table.concat({
   dir..'/src/?.lua',
@@ -47,4 +46,3 @@ path.path = table.concat({
   dir,
   path.path,
 }, ';')
-

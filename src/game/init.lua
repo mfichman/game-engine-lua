@@ -13,6 +13,7 @@
 
 local sfml = require('sfml')
 local gamemath = require('gamemath')
+local component = require('component')
 local config = require('config')
 local graphics = require('graphics')
 local renderer = require('renderer')
@@ -25,6 +26,7 @@ local window = require('window')
 local input = require('input')
 local asset = require('asset')
 local profiler = require('profiler')
+local db = require('db')
 
 local self = {}
 
@@ -36,16 +38,41 @@ local remainder = 0
 local timestep = 1/60
 local samples = {}
 local ticks = 0
-local eventHandler
 local world
 local delta = 0
+local database = db.Database()
+local process = {}
 
--- Send an event to the event handler
-local function sendEvent(event)
-  if eventHandler then
-    eventHandler(event)
+-- Call 'event' on each row in the table. If the first row in the table does 
+-- not have 'event' as a member, then skip all other components in the table as
+-- an optimization, to avoid iterating through the entire table without 
+-- actually updating anything.
+local function processTable(table, event)
+  local count = 0
+  for id, component in pairs(table.component) do
+    if type(component) == 'cdata' then return end
+    local handler = component[event]
+    if not handler then return end
+    handler(component, id)
+    count = count +1
+  end 
+end
+
+-- Call 'event' on each table in the database.
+local function processDb(database, event, process)
+  for i, kind in ipairs(process) do
+    local table = database.table[kind]
+    if table then
+      processTable(table, event)
+    end
   end
 end
+
+-- Call 'event' on each component in the game database.
+local function sendEvent(event)
+  processDb(database, event, process)
+end
+
 
 -- Increment the game by one tick (send the 'tick' event to all components)
 local function tick()
@@ -197,7 +224,11 @@ function self.init(handler)
   window = window.Window()
   renderer = renderer.Deferred(graphics.context)
 
-  eventHandler = handler
+  for i, name in ipairs(config.process) do -- FIXME
+    table.insert(process, component[name])
+  end
+
+
   self.world = world
   self.window = window
   self.renderer = renderer
@@ -210,6 +241,21 @@ function self.init(handler)
   world:setGravity(vec.Vec3())
 end
 
+function self.Table(kind)
+  local kind = component[kind]
+  return database:tableIs(kind)
+end
+
+function self.Entity(metatable)
+  assert(metatable, 'metatable is nil')
+  local id = database:idIs()
+  local table = database:tableIs(component.Entity)
+  table[id] = metatable
+  return table[id]
+end
+
+
+self.database = database
 self.timestep = timestep
 self.input = input
 self.world = world

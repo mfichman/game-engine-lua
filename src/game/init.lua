@@ -231,8 +231,10 @@ function self.init(handler)
   window = window.Window()
   renderer = renderer.Deferred(graphics.context)
 
-  for i, name in ipairs(config.process) do -- FIXME
-    table.insert(process, component[name])
+  if config.process then
+    for i, name in ipairs(config.process) do -- FIXME (?)
+      table.insert(process, component[name])
+    end
   end
 
 

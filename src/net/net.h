@@ -20,6 +20,10 @@
  * IN THE SOFTWARE.
  */
 
+#ifndef WIN32
+#define __declspec(x)
+#endif
+
 typedef struct net_Socket net_Socket;
 
 typedef enum net_SocketError {

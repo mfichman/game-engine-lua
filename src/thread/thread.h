@@ -20,6 +20,10 @@
  * IN THE SOFTWARE.
  */
 
+#ifndef WIN32
+#define __declspec(x)
+#endif
+
 typedef struct thread_Thread thread_Thread;
 typedef struct thread_Channel thread_Channel;
 

@@ -248,9 +248,10 @@ function self.init(handler)
   world:setGravity(vec.Vec3())
 end
 
-function self.Table(kind)
-  local kind = component[kind]
-  return database:tableIs(kind)
+function self.Table(name)
+  local kind = component[name]
+  local table = database:tableIs(kind)
+  return table
 end
 
 function self.Entity(metatable)

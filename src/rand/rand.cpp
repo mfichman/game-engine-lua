@@ -20,6 +20,9 @@
  * IN THE SOFTWARE.
  */
 
+#ifndef WIN32
+#define __declspec(x)
+#endif
 
 extern "C" {
 #include "rand.h"

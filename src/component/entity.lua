@@ -39,7 +39,8 @@ end
 function Entity:stateIs(data)
   local keep = {[Entity.new]=true}
   for i, data in ipairs(data) do
-    local kind = component[data[1]]
+    local kind = data[1]
+    local kind = (type(kind) == 'function') and kind or component[kind]
     local table = game.database:tableIs(kind)
     if not table[self.id] then
       table[self.id] = data

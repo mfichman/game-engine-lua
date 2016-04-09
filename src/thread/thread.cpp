@@ -20,6 +20,9 @@
  * IN THE SOFTWARE.
  */
 
+#ifndef _WIN32
+#define __declspec(x)
+#endif
 
 extern "C" {
     #include <luajit/lua.h>

@@ -30,12 +30,13 @@ local _, _, dir = file:find('@(.+)[/\\]init.lua')
 
 local dir = dir or '.'
 
+local old = package.path:gsub('[\\]','/')
 package.path = table.concat({
   dir..'/src/?.lua',
   dir..'/src/?/init.lua',
   './src/?.lua',
   './src/?/init.lua',
-  package.path,
+  old,
 }, ';')
 
 local path = require('path')
@@ -46,3 +47,4 @@ path.path = table.concat({
   dir,
   path.path,
 }, ';')
+

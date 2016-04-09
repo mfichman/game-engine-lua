@@ -11,9 +11,13 @@
 --                                                                            --
 -- ========================================================================== --
 
+local component = {}
+
 local function index(t, k)
-  return require(string.format('component.%s', k:lower()))
+  local v = require(string.format('component.%s', k:lower()))
+  rawset(t, k, v)
+  return v
 end
 
-return setmetatable({}, {__index = index})
+return setmetatable(component, {__index = index})
 

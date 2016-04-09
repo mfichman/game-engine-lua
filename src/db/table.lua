@@ -35,8 +35,8 @@ function Table:__newindex(id, data)
 end
 
 -- Index into the component table
-function Table:__index(k)
-  return self.component[k]
+function Table:__index(id)
+  return self.component[id]
 end
 
 return Table.new

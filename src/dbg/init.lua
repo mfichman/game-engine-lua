@@ -157,7 +157,8 @@ local function setlocal(k, v)
 end
 
 -- Pretty-print a value. Basically the same as the base library's print(),
--- except that it prints tables in a human-readable format.
+-- except that it prints tables in a human-readable format and shows function
+-- names if possible.
 local function pretty(val)
   if type(val) == 'table' then
     output:write('{\n')
@@ -169,6 +170,9 @@ local function pretty(val)
       end
     end
     output:write('}\n')
+  elseif type(val) == 'function' then
+    local info = debug.getinfo(val,'S')
+    output:write(tostring(val)..info.source..':'..info.linedefined..'\n')
   else
     output:write(tostring(val)..'\n')
   end

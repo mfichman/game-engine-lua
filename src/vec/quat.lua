@@ -40,6 +40,19 @@ function Quat.fromAxisAngle(axis, angle)
   }
 end
 
+function Quat.fromVectors(a, b)
+  local cross = a:cross(b)
+
+  local ret = Quat.new{
+    w = math.sqrt(a:len2() * b:len2()) + a:dot(b),
+    x = cross.x,
+    y = cross.y,
+    z = cross.z,
+  }
+
+  return ret:unit()
+end
+
 function Quat.lookAt(xaxis, yaxis, zaxis)
   assert(false)
 end

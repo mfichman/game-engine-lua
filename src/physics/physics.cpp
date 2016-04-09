@@ -20,6 +20,9 @@
  * IN THE SOFTWARE.
  */
 
+#ifndef _WIN32
+#define __declspec(x)
+#endif
 
 #include <cstdint>
 #include <cassert>

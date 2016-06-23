@@ -16,6 +16,12 @@ local game = require('game')
 
 local Entity = {}; Entity.__index = Entity
 
+local function kind(data)
+  -- Get the kind of a component from a component data spec
+  local spec = data[1]
+  return (type(spec) == 'function') and spec or component[spec]
+end
+
 -- The entity component is a special component that coordinates the other
 -- components. It acts like a state machine, adding and removing other
 -- components as the entity changes state. Additionally, the user specifies a
@@ -39,18 +45,23 @@ end
 function Entity:stateIs(data)
   local keep = {[Entity.new]=true}
   for i, data in ipairs(data) do
-    local kind = data[1]
-    local kind = (type(kind) == 'function') and kind or component[kind]
-    local table = game.database:tableIs(kind)
-    if not table[self.id] then
-      table[self.id] = data
-    end
-    keep[kind] = true
+    self:componentIs(data)
+    keep[kind(data)] = true
   end
   for kind, table in pairs(game.database.table) do
     if not keep[kind] then
       table[self.id] = nil
     end
+  end
+end
+
+-- Add a component to the entity by making an entry in the relevant table for
+-- the specified kind of component.
+function Entity:componentIs(data)
+  local kind = kind(data)
+  local table = game.database:tableIs(kind)
+  if not table[self.id] then
+    table[self.id] = data
   end
 end
 
